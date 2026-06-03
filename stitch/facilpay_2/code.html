@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="light" dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#004493",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#d3e4fe",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#646263",
+                        "on-secondary-fixed-variant": "#484647",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-error": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "secondary-fixed-dim": "#cac5c6",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-primary": "#adc6ff",
+                        "on-surface-variant": "#414755",
+                        "on-primary": "#ffffff",
+                        "primary": "#0058bc",
+                        "on-primary-fixed": "#001a41",
+                        "background": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#0070eb",
+                        "secondary-container": "#e3dedf",
+                        "on-tertiary-container": "#fcfcff",
+                        "outline": "#717786",
+                        "surface-container": "#e5eeff",
+                        "surface-tint": "#005bc1",
+                        "surface-dim": "#cbdbf5",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed": "#151c22",
+                        "tertiary-fixed-dim": "#c0c7cf",
+                        "on-tertiary-fixed-variant": "#40484e",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#e6e1e2",
+                        "border-light": "#E2E8F0",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#555d63",
+                        "tertiary-container": "#6e757c",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary": "#605e5f",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-fixed": "#1c1b1c",
+                        "surface-subtle": "#F8FAFC",
+                        "surface-container-highest": "#d3e4fe",
+                        "success-vibrant": "#10B981",
+                        "tertiary-fixed": "#dce3eb",
+                        "inverse-surface": "#213145",
+                        "outline-variant": "#c1c6d7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-shadow { shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); }
+        .glass-nav { backdrop-filter: blur(12px); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-b border-border-light dark:border-outline-variant shadow-sm h-16 flex items-center justify-between px-margin-mobile md:px-margin-desktop">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-inverse-on-surface">IdeaFlow</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-primary dark:text-primary-fixed-dim hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg" href="#">Ideas</a>
+<a class="font-label-md text-label-md text-secondary dark:text-secondary-fixed hover:bg-surface-container-low transition-colors px-3 py-2 rounded-lg" href="#">Community</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-xs font-bold overflow-hidden">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional 3D stylized avatar of a creative professional wearing modern glasses and a navy blue blazer. The character is set against a clean, soft-focus background with gentle blue lighting, reflecting a modern corporate high-end aesthetic. The lighting is crisp and sophisticated, emphasizing a sense of reliability and technical expertise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrSl7Hwy6X4u_FlFXQhMzglCRmE8VG9nyRtM6BwszewsCI1j5yy7fkefm98gdULFd6jj4Ncshjl0IhviwvW5mywyVPeQf7C0qiyysqVkmJ4wlgn5ZZp-5hGNjny-jmHGcaangKQEr5qOiyGsGZSTbQqL5ShiRvKS2n6Do46HDjgdeul9WfQhUFcAIstS8UKx2GY-yC_N0LXhZgS8zvMJ4Csem69To0bOhPBLAoQe90tySs6P_feko37PNZ7olLWiADZ2FYrOBiv_0"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-12">
+<!-- Header Section -->
+<header class="mb-10">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">שלום, רותם</h1>
+<p class="font-body-md text-body-md text-secondary max-w-lg">ברוכים הבאים ללוח הבקרה של IdeaFlow. כאן תוכלו לנהל את מאגר הרעיונות שלכם ולעקוב אחר התקדמות הפיתוח.</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    רעיון חדש
+                </button>
+</div>
+</header>
+<!-- Stats Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter mb-10">
+<!-- Main Stat -->
+<div class="md:col-span-4 bg-white p-8 rounded-xl border border-border-light shadow-[0px_4px_20px_rgba(0,0,0,0.05)] flex flex-col justify-between overflow-hidden relative group">
+<div class="relative z-10">
+<p class="font-label-md text-label-md text-secondary mb-1">סך הרעיונות</p>
+<h2 class="font-display-lg text-display-lg text-primary leading-none">124</h2>
+</div>
+<div class="mt-8 flex items-center gap-2 relative z-10">
+<span class="text-success-vibrant flex items-center font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+                        12%
+                    </span>
+<span class="text-secondary font-label-sm text-label-sm">מהחודש האחרון</span>
+</div>
+<!-- Abstract visual element -->
+<div class="absolute -bottom-6 -right-6 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+</div>
+<!-- Distribution Chart Card -->
+<div class="md:col-span-8 bg-white p-8 rounded-xl border border-border-light shadow-[0px_4px_20px_rgba(0,0,0,0.05)]">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline-md text-headline-md text-on-surface">חלוקת סטטוס</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary-container"></div>
+<span class="font-label-sm text-label-sm text-secondary">פיתוח</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary-container"></div>
+<span class="font-label-sm text-label-sm text-secondary">בקרה</span>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface">פיתוח</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">78</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 63%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface">בקרה</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">46</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-container rounded-full" style="width: 37%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Ideas List -->
+<section class="bg-white rounded-xl border border-border-light shadow-[0px_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-6 md:p-8 border-b border-border-light flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">רעיונות אחרונים</h3>
+<button class="text-primary font-label-md text-label-md hover:underline">צפה בכל הרעיונות</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-right">
+<thead class="bg-surface-subtle">
+<tr>
+<th class="px-8 py-4 font-label-md text-label-md text-secondary">שם הרעיון</th>
+<th class="px-8 py-4 font-label-md text-label-md text-secondary">קטגוריה</th>
+<th class="px-8 py-4 font-label-md text-label-md text-secondary">סטטוס</th>
+<th class="px-8 py-4 font-label-md text-label-md text-secondary">תאריך</th>
+<th class="px-8 py-4 font-label-md text-label-md text-secondary"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-light">
+<tr class="hover:bg-surface-subtle transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">ייעול מערך סליקה אוטומטי</span>
+</div>
+</td>
+<td class="px-8 py-5 text-body-md text-secondary">פיננסי</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 bg-primary/10 text-primary-container rounded-full text-xs font-semibold">פיתוח</span>
+</td>
+<td class="px-8 py-5 text-body-md text-secondary">12 אוק׳ 2023</td>
+<td class="px-8 py-5 text-left">
+<button class="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-secondary" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="security">security</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">שיפור פרוטוקול אבטחה KYC</span>
+</div>
+</td>
+<td class="px-8 py-5 text-body-md text-secondary">אבטחה</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 bg-tertiary/10 text-tertiary-container rounded-full text-xs font-semibold">בקרה</span>
+</td>
+<td class="px-8 py-5 text-body-md text-secondary">10 אוק׳ 2023</td>
+<td class="px-8 py-5 text-left">
+<button class="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-secondary" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-subtle transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">בוט תמיכה מבוסס AI לתשלומים</span>
+</div>
+</td>
+<td class="px-8 py-5 text-body-md text-secondary">AI &amp; דאטה</td>
+<td class="px-8 py-5">
+<span class="px-3 py-1 bg-primary/10 text-primary-container rounded-full text-xs font-semibold">פיתוח</span>
+</td>
+<td class="px-8 py-5 text-body-md text-secondary">08 אוק׳ 2023</td>
+<td class="px-8 py-5 text-left">
+<button class="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-secondary" data-icon="more_vert">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-20 px-4 pb-safe bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-t border-border-light dark:border-outline-variant shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] z-50">
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim font-semibold active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="tips_and_updates">tips_and_updates</span>
+<span class="font-label-sm text-label-sm mt-1">Ideas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-label-sm mt-1">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.bg-white').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

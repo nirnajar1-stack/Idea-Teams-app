@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .glass-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#004493",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#d3e4fe",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#646263",
+                        "on-secondary-fixed-variant": "#484647",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "on-error": "#ffffff",
+                        "on-surface": "#0b1c30",
+                        "secondary-fixed-dim": "#cac5c6",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "inverse-primary": "#adc6ff",
+                        "on-surface-variant": "#414755",
+                        "on-primary": "#ffffff",
+                        "primary": "#0058bc",
+                        "on-primary-fixed": "#001a41",
+                        "background": "#f8f9ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#0070eb",
+                        "secondary-container": "#e3dedf",
+                        "on-tertiary-container": "#fcfcff",
+                        "outline": "#717786",
+                        "surface-container": "#e5eeff",
+                        "surface-tint": "#005bc1",
+                        "surface-dim": "#cbdbf5",
+                        "primary-fixed": "#d8e2ff",
+                        "on-tertiary-fixed": "#151c22",
+                        "tertiary-fixed-dim": "#c0c7cf",
+                        "on-tertiary-fixed-variant": "#40484e",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#e6e1e2",
+                        "border-light": "#E2E8F0",
+                        "on-background": "#0b1c30",
+                        "tertiary": "#555d63",
+                        "tertiary-container": "#6e757c",
+                        "primary-fixed-dim": "#adc6ff",
+                        "secondary": "#605e5f",
+                        "on-primary-container": "#fefcff",
+                        "on-secondary-fixed": "#1c1b1c",
+                        "surface-subtle": "#F8FAFC",
+                        "surface-container-highest": "#d3e4fe",
+                        "success-vibrant": "#10B981",
+                        "tertiary-fixed": "#dce3eb",
+                        "inverse-surface": "#213145",
+                        "outline-variant": "#c1c6d7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin-desktop": "40px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24 md:pb-0">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-b border-border-light shadow-sm flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">arrow_forward</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb">lightbulb</span>
+<span class="font-headline-md text-headline-md font-bold text-on-surface">IdeaFlow</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-container-low text-primary font-label-md hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[20px]">share</span>
+                שיתוף
+            </button>
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling business executive in a modern, brightly lit office environment. The lighting is soft and natural, emphasizing a clean, light-mode corporate aesthetic. The background is slightly blurred, showing hints of a glass-walled conference room and minimalist white furniture, reinforcing a sense of high-end fintech reliability." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDTnkcZiMKf_W721PwEKv-f61fieFv5bog53FmFuh0Gt278qfiGJzYNqQFcQEPhCmKXuOUkPAAJqlpErZZGo5i4b8v2Od46h1oFkr8dVrqdtxYkWmZIt_ZcozGIgov8vCcY-9E6oX6s2ozY4UTRVr4zGRSgLQm9qgFwknBOe-mGQNknI-i6FaDqjEXUQ79SJV2yietNbIFGvSfH9RCGvcXWDRlEy7GmypSoV-7hfmPVCIvCYynyZhNSnh4zjZ7y_uzFYKXKY5Ffgs"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="pt-24 pb-12 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Main Content (8 Columns) -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Hero Section Card -->
+<section class="bg-white rounded-xl border border-border-light p-6 md:p-8 shadow-sm">
+<div class="flex flex-wrap items-center gap-3 mb-6">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+                            עדיפות גבוהה
+                        </span>
+<span class="px-3 py-1 rounded-full bg-success-vibrant/10 text-success-vibrant font-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            בביצוע
+                        </span>
+<span class="text-secondary font-label-sm mr-auto">ID: #IF-9042</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-4">אופטימיזציה של תהליך ה-Onboarding למשתמשי FacilPay</h1>
+<p class="font-body-lg text-on-surface-variant leading-relaxed mb-8">
+                        המטרה היא להפחית את זמן הרישום הממוצע מ-4 דקות ל-90 שניות. אנחנו נשיג זאת על ידי שילוב של סריקת מסמכים חכמה (OCR), אימות פנים בזמן אמת, וממשק משתמש שלבי המונע עומס קוגניטיבי. הרעיון כולל גם אינטגרציה עם API ממשלתיים לאימות מהיר.
+                    </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface-subtle rounded-xl border border-border-light">
+<div>
+<h3 class="font-label-md text-secondary mb-2 uppercase tracking-wider">יוצר הרעיון</h3>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center font-bold text-primary">אב</div>
+<div>
+<div class="font-label-md text-on-surface">אלון בן-דוד</div>
+<div class="text-[12px] text-secondary">מנהל מוצר בכיר</div>
+</div>
+</div>
+</div>
+<div>
+<h3 class="font-label-md text-secondary mb-2 uppercase tracking-wider">תאריך יצירה</h3>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">calendar_today</span>
+<div class="font-label-md text-on-surface">12 במאי, 2024</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Detailed Specs Section (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-white rounded-xl border border-border-light p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-4 text-primary">
+<span class="material-symbols-outlined">target</span>
+<h2 class="font-headline-md text-on-surface">יעדים מרכזיים</h2>
+</div>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-success-vibrant mt-1 text-[20px]">task_alt</span>
+<span class="font-body-md text-on-surface-variant">הורדת אחוז הנטישה בטופס הרישום ב-30%</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-success-vibrant mt-1 text-[20px]">task_alt</span>
+<span class="font-body-md text-on-surface-variant">הפחתת תמיכה טכנית הקשורה לרישום ב-15%</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-success-vibrant mt-1 text-[20px]">task_alt</span>
+<span class="font-body-md text-on-surface-variant">הטמעת זיהוי פנים ביומטרי (KYC)</span>
+</li>
+</ul>
+</div>
+<div class="bg-white rounded-xl border border-border-light p-6 shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-center gap-3 mb-4 text-primary">
+<span class="material-symbols-outlined">description</span>
+<h2 class="font-headline-md text-on-surface">קבצים מצורפים</h2>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-subtle border border-border-light hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">picture_as_pdf</span>
+<span class="font-label-md text-on-surface">product_spec_v2.pdf</span>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">download</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-subtle border border-border-light hover:bg-surface-container-low transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">image</span>
+<span class="font-label-md text-on-surface">wireframes_mobile.png</span>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">download</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Actions & Metadata (4 Columns) -->
+<aside class="lg:col-span-4 space-y-6">
+<!-- Action Buttons Card -->
+<div class="bg-white rounded-xl border border-border-light p-6 shadow-sm sticky top-24">
+<h3 class="font-headline-md text-on-surface mb-6">פעולות</h3>
+<div class="space-y-4">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-4 rounded-xl font-label-md hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">done_all</span>
+                            סימון כהושלם
+                        </button>
+<button class="w-full flex items-center justify-center gap-2 border border-border-light bg-white text-secondary py-4 rounded-xl font-label-md hover:bg-surface-subtle active:scale-95 transition-all">
+<span class="material-symbols-outlined">edit</span>
+                            עריכת רעיון
+                        </button>
+<button class="w-full flex items-center justify-center gap-2 text-error font-label-md py-2 hover:bg-error/5 rounded-lg transition-colors">
+<span class="material-symbols-outlined">delete</span>
+                            מחיקת רעיון
+                        </button>
+</div>
+<hr class="my-6 border-border-light"/>
+<div class="space-y-4">
+<h4 class="font-label-md text-secondary uppercase">תגים</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-surface-container-low border border-border-light rounded-full text-on-surface-variant text-[13px]">UX/UI</span>
+<span class="px-3 py-1 bg-surface-container-low border border-border-light rounded-full text-on-surface-variant text-[13px]">FinTech</span>
+<span class="px-3 py-1 bg-surface-container-low border border-border-light rounded-full text-on-surface-variant text-[13px]">Security</span>
+<span class="px-3 py-1 bg-surface-container-low border border-border-light rounded-full text-on-surface-variant text-[13px]">Mobile</span>
+</div>
+</div>
+<div class="mt-8">
+<h4 class="font-label-md text-secondary uppercase mb-4">התקדמות</h4>
+<div class="w-full bg-surface-container-high rounded-full h-2 mb-2">
+<div class="bg-primary h-2 rounded-full" style="width: 65%"></div>
+</div>
+<div class="flex justify-between text-[12px] text-secondary">
+<span>65% הושלם</span>
+<span>שלב 3 מתוך 5</span>
+</div>
+</div>
+</div>
+<!-- Visual Concept Card -->
+<div class="rounded-xl overflow-hidden border border-border-light shadow-sm bg-white">
+<div class="relative h-48">
+<img alt="Concept visualization" class="w-full h-full object-cover" data-alt="A clean, minimalist 3D render of a data dashboard displayed on a high-end smartphone. The screen shows sleek, blue-toned graphs and circular progress indicators consistent with a premium fintech interface. The lighting is soft and professional, with a shallow depth of field, set against a pristine white studio background to emphasize clarity and technical sophistication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAFZ_OLgZM5N0d32Eu-GzeazcvdvwqMJigGiz3-h7UvoKid7QI_hFC7AshElHmpUto03vwE1bqX0G8K3MZx_6a1FM3E09jkP7o4lH4sM8OlT6wXwPmrihekp9xqqkF85Wv01Pd9lSw1qoV-GNKOBwPQQHUaTiPtEafeGEcvMQjMoqDod5rBe3MahlnRpb6tmc5UM5RfrLkv8fYrZIoK3Sl9K0Bv5KImcoTydyFGnHwubY3GNg_r8mHmI5jZprtVu4uC8pX60dBb74"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
+<span class="text-white font-label-md">קונספט ויזואלי ראשוני</span>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center h-20 px-4 pb-safe bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-t border-border-light z-50">
+<button class="flex flex-col items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary font-semibold">
+<span class="material-symbols-outlined" data-icon="tips_and_updates" data-weight="fill" style="font-variation-settings: 'FILL' 1;">tips_and_updates</span>
+<span class="font-label-sm text-label-sm">Ideas</span>
+</button>
+<button class="flex flex-col items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-label-sm">Add</span>
+</button>
+<button class="flex flex-col items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</button>
+</nav>
+<script>
+        // Simple micro-interaction for action buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('.material-symbols-outlined');
+                if(icon) {
+                    icon.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        icon.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        });
+
+        // Add hover effects for cards
+        const cards = document.querySelectorAll('section > div, aside > div');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('transition-all', 'duration-300');
+            });
+        });
+    </script>
+</body></html>

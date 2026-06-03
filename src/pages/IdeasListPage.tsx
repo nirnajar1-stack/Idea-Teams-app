@@ -1,0 +1,133 @@
+import { Plus, Search } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AppShell } from '../components/layout/AppShell'
+import { IdeaListCard } from '../components/sections/IdeaListCard'
+import { useIdeas } from '../context/IdeasContext'
+import { ROUTES } from '../constants/app'
+import type { IdeaCategory, IdeaFilters, IdeaPriority } from '../types/idea'
+import { Button } from '../components/ui/Button'
+import { cn } from '../lib/cn'
+
+export function IdeasListPage() {
+  const navigate = useNavigate()
+  const { getFilteredIdeas } = useIdeas()
+  const [search, setSearch] = useState('')
+  const [categories, setCategories] = useState<IdeaCategory[]>([
+    'development',
+    'monitoring',
+  ])
+  const [priority, setPriority] = useState<IdeaPriority | null>(null)
+
+  const filters: IdeaFilters = useMemo(
+    () => ({ search, categories, priority }),
+    [search, categories, priority],
+  )
+
+  const ideas = getFilteredIdeas(filters)
+
+  const toggleCategory = (cat: IdeaCategory) => {
+    setCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    )
+  }
+
+  return (
+    <AppShell
+      variant="ideas"
+      searchValue={search}
+      onSearchChange={setSearch}
+    >
+      <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div>
+          <h2 className="mb-2 font-display text-headline-lg text-on-surface">
+            רשימת רעיונות
+          </h2>
+          <p className="font-body-md text-secondary">
+            נהלו ותעדפו את הרעיונות המרכזיים של הצוות שלכם.
+          </p>
+        </div>
+        <Button
+          icon={<Plus className="h-5 w-5" />}
+          onClick={() => navigate(ROUTES.addIdea)}
+        >
+          הוסף רעיון חדש
+        </Button>
+      </div>
+
+      <div className="mb-6 md:hidden">
+        <div className="relative w-full">
+          <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="חיפוש..."
+            className="h-12 w-full rounded-xl border border-border-light bg-surface-container-lowest pr-12 pl-4 font-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <aside className="w-full shrink-0 lg:w-64">
+          <div className="sticky top-24 space-y-8">
+            <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+              <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
+              <div className="space-y-2">
+                {(['development', 'monitoring'] as IdeaCategory[]).map((cat) => (
+                  <label
+                    key={cat}
+                    className={cn(
+                      'flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-surface-subtle',
+                      !categories.includes(cat) && 'opacity-50',
+                    )}
+                  >
+                    <span className="font-body-md">
+                      {cat === 'development' ? 'פיתוח' : 'בקרה'}
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={categories.includes(cat)}
+                      onChange={() => toggleCategory(cat)}
+                      className="h-4 w-4 rounded text-primary focus:ring-primary"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+              <h3 className="mb-4 font-label-md text-on-surface">רמת חשיבות</h3>
+              <div className="space-y-3">
+                {(['high', 'medium', 'low'] as IdeaPriority[]).map((p) => (
+                  <label key={p} className="flex cursor-pointer items-center gap-3">
+                    <input
+                      type="radio"
+                      name="priority-filter"
+                      checked={priority === p}
+                      onChange={() => setPriority(priority === p ? null : p)}
+                      className="text-primary focus:ring-primary"
+                    />
+                    <span className="font-body-md transition-colors hover:text-primary">
+                      {p === 'high' ? 'גבוהה' : p === 'medium' ? 'בינונית' : 'נמוכה'}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <div className="flex-1 space-y-4">
+          {ideas.length === 0 ? (
+            <p className="rounded-xl border border-border-light bg-surface-container-lowest p-8 text-center font-body-md text-secondary">
+              לא נמצאו רעיונות התואמים את החיפוש
+            </p>
+          ) : (
+            ideas.map((idea) => <IdeaListCard key={idea.id} idea={idea} />)
+          )}
+        </div>
+      </div>
+    </AppShell>
+  )
+}

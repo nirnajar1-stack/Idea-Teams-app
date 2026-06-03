@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IdeaFlow - Add New Idea</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, .brand-font {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .backdrop-blur-xl {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#004493",
+                      "on-error-container": "#93000a",
+                      "surface-variant": "#d3e4fe",
+                      "error-container": "#ffdad6",
+                      "on-secondary-container": "#646263",
+                      "on-secondary-fixed-variant": "#484647",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "on-error": "#ffffff",
+                      "on-surface": "#0b1c30",
+                      "secondary-fixed-dim": "#cac5c6",
+                      "surface": "#f8f9ff",
+                      "surface-container-high": "#dce9ff",
+                      "inverse-primary": "#adc6ff",
+                      "on-surface-variant": "#414755",
+                      "on-primary": "#ffffff",
+                      "primary": "#0058bc",
+                      "on-primary-fixed": "#001a41",
+                      "background": "#f8f9ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-bright": "#f8f9ff",
+                      "primary-container": "#0070eb",
+                      "secondary-container": "#e3dedf",
+                      "on-tertiary-container": "#fcfcff",
+                      "outline": "#717786",
+                      "surface-container": "#e5eeff",
+                      "surface-tint": "#005bc1",
+                      "surface-dim": "#cbdbf5",
+                      "primary-fixed": "#d8e2ff",
+                      "on-tertiary-fixed": "#151c22",
+                      "tertiary-fixed-dim": "#c0c7cf",
+                      "on-tertiary-fixed-variant": "#40484e",
+                      "on-secondary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "secondary-fixed": "#e6e1e2",
+                      "border-light": "#E2E8F0",
+                      "on-background": "#0b1c30",
+                      "tertiary": "#555d63",
+                      "tertiary-container": "#6e757c",
+                      "primary-fixed-dim": "#adc6ff",
+                      "secondary": "#605e5f",
+                      "on-primary-container": "#fefcff",
+                      "on-secondary-fixed": "#1c1b1c",
+                      "surface-subtle": "#F8FAFC",
+                      "surface-container-highest": "#d3e4fe",
+                      "success-vibrant": "#10B981",
+                      "tertiary-fixed": "#dce3eb",
+                      "inverse-surface": "#213145",
+                      "outline-variant": "#c1c6d7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "base": "8px",
+                      "margin-desktop": "40px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "body-md": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-b border-border-light dark:border-outline-variant shadow-sm flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed-dim hover:bg-surface-container-low p-2 rounded-full transition-colors active:scale-95 duration-200">
+                arrow_back
+            </button>
+<span class="font-headline-md text-headline-md font-bold text-on-surface dark:text-inverse-on-surface">IdeaFlow</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="hidden md:block font-label-md text-label-md text-secondary">מחובר כאלכס</span>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed cursor-pointer">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling young male professional with a friendly expression. The lighting is bright and even, reflecting a high-end corporate studio environment with a clean, soft-focus background. The image has a clean, modern aesthetic that perfectly complements a fintech app's reliable and sophisticated atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwaA24XSFzMGdpqsSh04a6f7SiHJeZFZogFpPP9Pid1NLOcVZfHR4kSDtl12QYj6VIhYnh4pZvPt-THJd9CVLdAZx9Pk37GXmfWyTr5R1_5tBo3L3DMBgWn_ZoGQkmVpqM5E-6mAJOlOq6P4BpPoXDyFjNNmi4Gekr_OE8W6p5GZxdagqYZ6JDc9sXsfjPUsKDAnLmwqSNe0RKHm4vbWEUVxqJNwkbgKJqvHXAkrPd3-k9nxa4-7v7mymi2c-TiQ5HTeouITVeBKI"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 pb-12 px-margin-mobile md:px-margin-desktop max-w-[800px] mx-auto">
+<!-- Welcome Header -->
+<div class="mb-10 text-right">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">הוספת רעיון חדש</h1>
+<p class="font-body-md text-body-md text-secondary">יש לך רעיון מבריק? שתף אותו עם הצוות כדי שנוכל להפוך אותו למציאות.</p>
+</div>
+<!-- Idea Form Card -->
+<div class="bg-surface-container-lowest border border-border-light rounded-xl shadow-[0px_4px_20px_rgba(0,0,0,0.05)] p-8">
+<form class="space-y-8" id="addIdeaForm">
+<!-- Title Field -->
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-secondary" for="title">כותרת הרעיון</label>
+<input class="w-full bg-surface-subtle border border-border-light rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-md transition-all placeholder:text-outline-variant" id="title" name="title" placeholder="למשל: ייעול תהליך החיוב החודשי" required="" type="text"/>
+</div>
+<!-- Category Selection (Bento-style Grid) -->
+<div class="space-y-3">
+<label class="block font-label-md text-label-md text-secondary">קטגוריה</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="relative cursor-pointer group">
+<input checked="" class="peer sr-only" name="category" type="radio" value="development"/>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-subtle border-2 border-transparent rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 hover:bg-surface-container-low transition-all duration-200">
+<span class="material-symbols-outlined text-primary mb-2 text-[32px]">code</span>
+<span class="font-label-md text-label-md text-on-surface">פיתוח</span>
+</div>
+</label>
+<label class="relative cursor-pointer group">
+<input class="peer sr-only" name="category" type="radio" value="monitoring"/>
+<div class="flex flex-col items-center justify-center p-6 bg-surface-subtle border-2 border-transparent rounded-xl peer-checked:border-primary peer-checked:bg-primary/5 hover:bg-surface-container-low transition-all duration-200">
+<span class="material-symbols-outlined text-primary mb-2 text-[32px]">monitoring</span>
+<span class="font-label-md text-label-md text-on-surface">בקרה</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Description Field -->
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-secondary" for="description">תיאור הרעיון</label>
+<textarea class="w-full bg-surface-subtle border border-border-light rounded-lg px-4 py-3 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-md transition-all placeholder:text-outline-variant resize-none" id="description" name="description" placeholder="פרט כאן את המהות של הרעיון, את הבעיה שהוא פותר ואיך הוא ייושם..." required="" rows="5"></textarea>
+</div>
+<!-- Priority Levels (Chips style) -->
+<div class="space-y-3">
+<label class="block font-label-md text-label-md text-secondary">רמת חשיבות</label>
+<div class="flex flex-wrap gap-3">
+<label class="cursor-pointer">
+<input class="peer sr-only" name="priority" type="radio" value="low"/>
+<div class="px-6 py-2 rounded-full border border-border-light bg-surface-subtle text-secondary peer-checked:bg-blue-50 peer-checked:text-blue-700 peer-checked:border-blue-200 font-label-md text-label-md transition-all hover:bg-surface-container-low">נמוכה</div>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="priority" type="radio" value="medium"/>
+<div class="px-6 py-2 rounded-full border border-border-light bg-surface-subtle text-secondary peer-checked:bg-amber-50 peer-checked:text-amber-700 peer-checked:border-amber-200 font-label-md text-label-md transition-all hover:bg-surface-container-low">בינונית</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="priority" type="radio" value="high"/>
+<div class="px-6 py-2 rounded-full border border-border-light bg-surface-subtle text-secondary peer-checked:bg-rose-50 peer-checked:text-rose-700 peer-checked:border-rose-200 font-label-md text-label-md transition-all hover:bg-surface-container-low">גבוהה</div>
+</label>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-4">
+<button class="w-full bg-primary text-on-primary font-headline-md text-headline-md py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all active:scale-[0.98] duration-150 flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined" data-weight="fill">add_circle</span>
+                        הוסף רעיון למערכת
+                    </button>
+</div>
+</form>
+</div>
+<!-- Help Section -->
+<div class="mt-12 p-6 bg-surface-container rounded-xl border border-border-light flex items-center gap-6">
+<div class="bg-primary/10 p-3 rounded-full">
+<span class="material-symbols-outlined text-primary text-[28px]">lightbulb</span>
+</div>
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-1">צריך עזרה בניסוח?</h3>
+<p class="font-body-md text-body-md text-secondary">התייעץ עם צוות ה-Product שלנו בערוץ ה-Slack הייעודי לקבלת משוב ראשוני.</p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl border-t border-border-light dark:border-outline-variant shadow-[0px_-4px_20px_rgba(0,0,0,0.05)] flex justify-around items-center h-20 px-4 pb-safe z-50">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed hover:bg-surface-container-low transition-colors active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed hover:bg-surface-container-low transition-colors active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">tips_and_updates</span>
+<span class="font-label-sm text-label-sm">Ideas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary-fixed-dim font-semibold hover:bg-surface-container-low transition-colors active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-label-sm text-label-sm">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed hover:bg-surface-container-low transition-colors active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<!-- Floating Atmosphere -->
+<div class="fixed top-20 right-[5%] w-64 h-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<div class="fixed bottom-20 left-[5%] w-96 h-96 bg-surface-container-high/40 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+<script>
+        // Simple form submission feedback
+        document.getElementById('addIdeaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> שולח רעיון...`;
+            btn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                btn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> הרעיון נוסף בהצלחה!`;
+                btn.classList.remove('bg-primary');
+                btn.classList.add('bg-success-vibrant');
+                
+                setTimeout(() => {
+                    e.target.reset();
+                    btn.innerHTML = originalContent;
+                    btn.classList.add('bg-primary');
+                    btn.classList.remove('bg-success-vibrant', 'opacity-80');
+                    btn.disabled = false;
+                }, 2000);
+            }, 1500);
+        });
+    </script>
+</body></html>

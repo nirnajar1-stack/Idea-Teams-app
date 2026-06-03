@@ -1,0 +1,82 @@
+import { Bot, CreditCard, Shield } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { useIdeas } from '../../context/IdeasContext'
+import { ROUTES } from '../../constants/app'
+import { formatIdeaDate } from '../../lib/ideaUtils'
+import type { Idea } from '../../types/idea'
+import { IdeaTableRow } from '../ui/IdeaTableRow'
+
+const iconMap = {
+  development: { icon: CreditCard, className: 'bg-primary/10 text-primary' },
+  monitoring: { icon: Shield, className: 'bg-tertiary/10 text-tertiary' },
+  ai: { icon: Bot, className: 'bg-primary/10 text-primary' },
+} as const
+
+function getRowMeta(idea: Idea, index: number) {
+  if (idea.department.includes('AI')) return iconMap.ai
+  return index % 2 === 0 ? iconMap[idea.category] : iconMap.monitoring
+}
+
+export function RecentIdeasSection() {
+  const { getRecentIdeas } = useIdeas()
+  const recent = getRecentIdeas(3)
+
+  return (
+    <section
+      className="overflow-hidden rounded-xl border border-border-light bg-surface-container-lowest shadow-card"
+      aria-label="רעיונות אחרונים"
+    >
+      <div className="flex items-center justify-between border-b border-border-light p-6 md:p-8">
+        <h3 className="font-display text-headline-md text-on-surface">
+          רעיונות אחרונים
+        </h3>
+        <Link
+          to={ROUTES.ideas}
+          className="font-label-md text-primary transition-colors hover:underline"
+        >
+          צפה בכל הרעיונות
+        </Link>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[640px] text-right">
+          <thead className="bg-surface-subtle">
+            <tr>
+              <th className="px-4 py-4 font-label-md text-secondary md:px-8">
+                שם הרעיון
+              </th>
+              <th className="hidden px-8 py-4 font-label-md text-secondary sm:table-cell">
+                קטגוריה
+              </th>
+              <th className="px-4 py-4 font-label-md text-secondary md:px-8">
+                סטטוס
+              </th>
+              <th className="hidden px-8 py-4 font-label-md text-secondary md:table-cell">
+                תאריך
+              </th>
+              <th className="px-4 py-4 md:px-8" aria-hidden />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-light">
+            {recent.map((idea, index) => {
+              const meta = getRowMeta(idea, index)
+              return (
+                <IdeaTableRow
+                  key={idea.id}
+                  ideaId={idea.id}
+                  title={idea.title}
+                  category={idea.department}
+                  status={idea.category === 'development' ? 'פיתוח' : 'בקרה'}
+                  statusVariant={idea.category}
+                  date={formatIdeaDate(idea.createdAt)}
+                  icon={meta.icon}
+                  iconWrapperClassName={meta.className}
+                />
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}

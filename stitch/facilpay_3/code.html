@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IdeaFlow - Ideas List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#004493",
+                    "on-error-container": "#93000a",
+                    "surface-variant": "#d3e4fe",
+                    "error-container": "#ffdad6",
+                    "on-secondary-container": "#646263",
+                    "on-secondary-fixed-variant": "#484647",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "on-error": "#ffffff",
+                    "on-surface": "#0b1c30",
+                    "secondary-fixed-dim": "#cac5c6",
+                    "surface": "#f8f9ff",
+                    "surface-container-high": "#dce9ff",
+                    "inverse-primary": "#adc6ff",
+                    "on-surface-variant": "#414755",
+                    "on-primary": "#ffffff",
+                    "primary": "#0058bc",
+                    "on-primary-fixed": "#001a41",
+                    "background": "#f8f9ff",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-bright": "#f8f9ff",
+                    "primary-container": "#0070eb",
+                    "secondary-container": "#e3dedf",
+                    "on-tertiary-container": "#fcfcff",
+                    "outline": "#717786",
+                    "surface-container": "#e5eeff",
+                    "surface-tint": "#005bc1",
+                    "surface-dim": "#cbdbf5",
+                    "primary-fixed": "#d8e2ff",
+                    "on-tertiary-fixed": "#151c22",
+                    "tertiary-fixed-dim": "#c0c7cf",
+                    "on-tertiary-fixed-variant": "#40484e",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "secondary-fixed": "#e6e1e2",
+                    "border-light": "#E2E8F0",
+                    "on-background": "#0b1c30",
+                    "tertiary": "#555d63",
+                    "tertiary-container": "#6e757c",
+                    "primary-fixed-dim": "#adc6ff",
+                    "secondary": "#605e5f",
+                    "on-primary-container": "#fefcff",
+                    "on-secondary-fixed": "#1c1b1c",
+                    "surface-subtle": "#F8FAFC",
+                    "surface-container-highest": "#d3e4fe",
+                    "success-vibrant": "#10B981",
+                    "tertiary-fixed": "#dce3eb",
+                    "inverse-surface": "#213145",
+                    "outline-variant": "#c1c6d7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "margin-desktop": "40px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f8f9ff;
+            -webkit-font-smoothing: antialiased;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-border-light shadow-sm flex items-center justify-between px-margin-mobile md:px-margin-desktop h-16">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl" data-icon="lightbulb">lightbulb</span>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">IdeaFlow</h1>
+</div>
+<div class="hidden md:flex flex-1 max-w-xl mx-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary" data-icon="search">search</span>
+<input class="w-full h-10 pr-12 pl-4 bg-surface-container-low border-none rounded-full focus:ring-2 focus:ring-primary font-body-md" placeholder="חיפוש רעיונות, צוותים או קטגוריות..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors" data-icon="notifications">notifications</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a smiling business executive with soft studio lighting. The background is a clean, minimalist grey that complements the modern corporate aesthetic of the interface. High-end fintech branding style with natural lighting and sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArWvkHsm757Hcbl_Oprv1a7oQuE8QPAa9A_-7HagF-xsqCxOVLu16BhT_VOSDu2ceS5ZsBPYqb3pOQM24KWPehaffI8JyK1gASdZwCUATbHsJtEzS1Xo37nx9YxvFiaRWybz-uuOh6RoJVYCDFWO8tu-MwOBK__KUSQfjug8UscAXHKSV9zSPz2m5PzWlkC5_hN6iS5P7ylAIloxOs9ZW-1tzEMFRpoHR6L4tvAYNXBag40mh38cyRcwxjJ0OZUzAUMd6jBY1eAps"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-28 md:pb-12 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">רשימת רעיונות</h2>
+<p class="font-body-md text-secondary">נהלו ותעדפו את הרעיונות המרכזיים של הצוות שלכם.</p>
+</div>
+<button class="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-xl font-label-md active:scale-95 transition-transform shadow-md hover:bg-primary-container">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                הוסף רעיון חדש
+            </button>
+</div>
+<!-- Filters & Search Mobile -->
+<div class="md:hidden mb-6">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-secondary" data-icon="search">search</span>
+<input class="w-full h-12 pr-12 pl-4 bg-white border-border-light border rounded-xl focus:ring-2 focus:ring-primary font-body-md" placeholder="חיפוש..." type="text"/>
+</div>
+</div>
+<div class="flex flex-col lg:flex-row gap-8">
+<!-- Sidebar Filters (Desktop) / Quick Filters (Mobile Scroll) -->
+<aside class="w-full lg:w-64 flex-shrink-0">
+<div class="sticky top-24 space-y-8">
+<!-- Categories -->
+<div class="bg-white p-6 rounded-2xl border border-border-light shadow-sm">
+<h3 class="font-label-md text-on-surface mb-4">קטגוריות</h3>
+<div class="space-y-2">
+<label class="flex items-center justify-between p-2 hover:bg-surface-subtle rounded-lg cursor-pointer transition-colors">
+<span class="flex items-center gap-2 font-body-md">
+<span class="material-symbols-outlined text-primary text-lg" data-icon="code">code</span>
+                                    פיתוח
+                                </span>
+<input checked="" class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+</label>
+<label class="flex items-center justify-between p-2 hover:bg-surface-subtle rounded-lg cursor-pointer transition-colors">
+<span class="flex items-center gap-2 font-body-md">
+<span class="material-symbols-outlined text-success-vibrant text-lg" data-icon="verified">verified</span>
+                                    בקרה
+                                </span>
+<input checked="" class="rounded text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
+</label>
+</div>
+</div>
+<!-- Priority -->
+<div class="bg-white p-6 rounded-2xl border border-border-light shadow-sm">
+<h3 class="font-label-md text-on-surface mb-4">רמת חשיבות</h3>
+<div class="space-y-3">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="text-primary focus:ring-primary" name="priority" type="radio"/>
+<span class="font-body-md group-hover:text-primary transition-colors">גבוהה</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="text-primary focus:ring-primary" name="priority" type="radio"/>
+<span class="font-body-md group-hover:text-primary transition-colors">בינונית</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="text-primary focus:ring-primary" name="priority" type="radio"/>
+<span class="font-body-md group-hover:text-primary transition-colors">נמוכה</span>
+</label>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Ideas List (Bento-ish Grid / List) -->
+<div class="flex-1 space-y-4">
+<!-- Idea Card 1 -->
+<div class="bg-white p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-3">
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-3 py-1 rounded-full">גבוהה</span>
+<span class="bg-surface-variant text-on-primary-fixed-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="code">code</span> פיתוח
+                                </span>
+<span class="text-secondary text-label-sm font-label-sm mr-auto md:mr-0">12 באוק׳ 2023</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">אופטימיזציה של תהליך הסליקה ב-API</h3>
+<p class="font-body-md text-on-surface-variant mb-6 line-clamp-2">שיפור זמני התגובה של שרת הסליקה באמצעות Caching שכבות ועדכון ה-Endpoints המרכזיים.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2 space-x-reverse">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Close-up portrait of a developer in a modern office environment. Soft natural lighting from a window, shallow depth of field. High-end, clean corporate aesthetic consistent with financial technology platforms. Professional and trustworthy mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9dwe_m-LNLEdVU3k1ZDsdfgAyEY_3EK9Ch5DFL5RBPeJ07XG3AZH82LdSVRRhPV4OZY3aXcsRw9lUhu-LVNhGUZ9gznk4la676bpc1GVTQY3yyNmtHyp0hfrrD1O_MX3d1AtOt07qb6ASKxlhJTcYkUai4zAYku1T_o7mdAT77akRwqUvf9Ff2Fc_JObgRjADOaimULPlm975nzrZ8WVi-s--cBJslBe1J0qC7L9_koB49w4jl0LzGnFRUjW8K17tkKNL8XWpFg4"/>
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Portrait of a female professional with a confident smile. Soft corporate lighting with a clean office background. Minimalist styling with focus on clarity and professionalism, following the brand's premium fintech visual direction." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgIsNz2sY71nNwKZ6n52n2PfKsHdqaAa6cVJ7LsBGuOwXN5GzMfddz2Qn1u6UIvgEPWeC_634jNATVtyQQTCC94Qw3qDvhWJtWDtnEMPYRJArXJqvzsAFp6cRnrdOc--lCxnH0kzyTInyYLaJetvZx9bAgMPxsupMM6ez6UHCQtutdauf_WyMVy6a3baXzo-xXR4tURAvjtEAXG65gA1GvsmxWS8J9U5lTWal9uyFBouplL_SRfluwFYv2O9IDdYu02dkSp_cBdGg"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">+3</div>
+</div>
+<button class="flex items-center gap-1 text-primary font-label-md hover:underline decoration-2 underline-offset-4">
+                                    פרטים נוספים
+                                    <span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Idea Card 2 -->
+<div class="bg-white p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-3">
+<span class="bg-surface-container text-secondary font-label-sm text-label-sm px-3 py-1 rounded-full">בינונית</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span> בקרה
+                                </span>
+<span class="text-secondary text-label-sm font-label-sm mr-auto md:mr-0">08 באוק׳ 2023</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">מערכת התראות מבוססת AI לזיהוי חריגות</h3>
+<p class="font-body-md text-on-surface-variant mb-6 line-clamp-2">יישום מודל למידת מכונה לניתוח בזמן אמת של עסקאות חשודות והפקת התראות לצוות הבקרה.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2 space-x-reverse">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Headshot of a mid-career professional in a well-lit studio. Clean white background with subtle grey shadows. Sharp focus on eyes, warm skin tones, professional corporate look for a fintech application user profile." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmegYwv2h-Ir1we7Cx288cHXdPBuJqpNHTpRDVnYvo-BHNKOIovFffoNiH3zkyyTrxoAsxGRZScqaM5XpdQLZBRhiJfE0MCjn5uN6DCbMpDEGJ274jqo7gCJ81yRyM3VywcJRYLJyCkyNmuvobeVFR7oY1E9CVyxzmxNKTgS5h7KTeFPCLlFeYzu00uvRF3zLoJmIj9OtVogkW96MpHU03gJVZOWg6VL8dKlLRJVyB-N38navU9CuGzXrY_WONy_d0LswACEMmRGU"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-primary">DS</div>
+</div>
+<button class="flex items-center gap-1 text-primary font-label-md hover:underline decoration-2 underline-offset-4">
+                                    פרטים נוספים
+                                    <span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Idea Card 3 -->
+<div class="bg-white p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-3">
+<span class="bg-surface-container-low text-secondary font-label-sm text-label-sm px-3 py-1 rounded-full">נמוכה</span>
+<span class="bg-surface-variant text-on-primary-fixed-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="code">code</span> פיתוח
+                                </span>
+<span class="text-secondary text-label-sm font-label-sm mr-auto md:mr-0">01 באוק׳ 2023</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">שיפור התיעוד למפתחים (Wiki)</h3>
+<p class="font-body-md text-on-surface-variant mb-6 line-clamp-2">עדכון מסמכי ה-API והוספת דוגמאות קוד חדשות ב-Node.js ו-Python להקלת האינטגרציה.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2 space-x-reverse">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Portrait of a creative lead with soft office lighting. The environment is modern and airy, with slight blurs in the background to emphasize the professional. Clean corporate fintech design style, high resolution and natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV4jlMJQroWGIhnKnHndcwS4KiQEoywV4t1MARMTGH99A7eimiR4_6PrCHNGitxEERHr1qbHeMUgoDfywnWIoJ22-2YUNDAXZQ6i6J6oBEe2kGzXoq_GXqbAcmLgEypHgj6GBEEx8RdHVnNLDI0zx3GQDBXN2ZG1J1QexBfoZBbyVRymQM40KO2G3251JU525897R40YgXhdifuwy-cnSMgYkFBrsEJWWQ-hpH8_H6oArvpY2hsCjjaqC-LEmTrfAuyoVSb6PbWpE"/>
+</div>
+<button class="flex items-center gap-1 text-primary font-label-md hover:underline decoration-2 underline-offset-4">
+                                    פרטים נוספים
+                                    <span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Idea Card 4 -->
+<div class="bg-white p-6 rounded-2xl border border-border-light shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div class="flex-1">
+<div class="flex flex-wrap items-center gap-3 mb-3">
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-3 py-1 rounded-full">גבוהה</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span> בקרה
+                                </span>
+<span class="text-secondary text-label-sm font-label-sm mr-auto md:mr-0">28 בספט׳ 2023</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">דו״ח רבעוני אוטומטי לרגולציה</h3>
+<p class="font-body-md text-on-surface-variant mb-6 line-clamp-2">בניית מודול המרכז את כל נתוני הפעילות הרלוונטיים ומפיק קובץ PDF חתום דיגיטלית.</p>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2 space-x-reverse">
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Portrait of a compliance officer in a modern corporate setting. Soft diffused lighting, minimalist background. The style is sharp, clean, and evokes institutional trust, perfectly matching the modern financial UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbv8DiOt6nNfV7jdRIg-38w22keCjkhB7F2ZuJKLqf4rIdOzd1LViIgzBzw79sQjywO_VOWsw3xpM-rnr89O50uOzdYBDJRZm59bSRCdluXlOw_BlrAqCkFudguoTMiXTqXEQGJz-3B0gHe63NjP038ifEfdulVvLBQsvGBhlig9q6-3cOE5ustujbmd6jy_kYpJT34Usbc-mdJVDu_xHDILc_LDBd7JU19TVusK-DnuJ4qY2uDOoydo_1SuY6gQPijrkCt2DI4Qo"/>
+<img class="w-8 h-8 rounded-full border-2 border-white" data-alt="Professional woman in a bright office space. High-key lighting, soft white and blue color tones. Minimalist and clear visual narrative, high-end utility fintech style for user avatars." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxWdaE7C3L81E1U05GdAL6RM1NgxW8T8X72UFURFrdtfJ3DdhhoBbtGY6MQxNGkVCrNOsqUgX-IzVY_Wu7UxqrR5BaXvBi1TtH__MVBMmpjXCi9TpGztHOMIYuAK9OchIc7v8aCGoS1_SX8AAALasCXtLk4U54MU8uMhUe15xcTc1l7x1wXr2o0Mup2cAVaG6xfjV3XyUj6Vb-VjVCT-Z1zFPGLx7woYm-1w2obXslnq0OOjJoiPfGI5hR8c3jKMqYEnpba9BQIvU"/>
+</div>
+<button class="flex items-center gap-1 text-primary font-label-md hover:underline decoration-2 underline-offset-4">
+                                    פרטים נוספים
+                                    <span class="material-symbols-outlined text-sm" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface/80 backdrop-blur-xl border-t border-border-light h-20 px-4 pb-safe flex justify-around items-center z-50">
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="tips_and_updates" style="font-variation-settings: 'FILL' 1;">tips_and_updates</span>
+<span class="font-label-sm text-label-sm mt-1">Ideas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="font-label-sm text-label-sm mt-1">Add</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('.bg-white.rounded-2xl').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('scale-[1.01]');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('scale-[1.01]');
+            });
+        });
+
+        // Filter toggle logic (simplified for demo)
+        const checkBoxes = document.querySelectorAll('input[type="checkbox"]');
+        checkBoxes.forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const label = e.target.closest('label');
+                if(e.target.checked) {
+                    label.classList.remove('opacity-50');
+                } else {
+                    label.classList.add('opacity-50');
+                }
+            });
+        });
+    </script>
+</body></html>
