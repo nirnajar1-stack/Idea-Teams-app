@@ -22,10 +22,7 @@ export function RecentIdeasSection() {
   const recent = getRecentIdeas(3)
 
   return (
-    <section
-      className="overflow-hidden rounded-xl border border-border-light bg-surface-container-lowest shadow-card"
-      aria-label="רעיונות אחרונים"
-    >
+    <section className="glass-card overflow-hidden animate-fade-up" aria-label="רעיונות אחרונים">
       <div className="flex items-center justify-between border-b border-border-light p-6 md:p-8">
         <h3 className="font-display text-headline-md text-on-surface">
           רעיונות אחרונים
@@ -55,7 +52,10 @@ export function RecentIdeasSection() {
                 סטטוס
               </th>
               <th className="hidden px-8 py-4 font-label-md text-secondary md:table-cell">
-                תאריך
+                יעד התחלה
+              </th>
+              <th className="hidden px-8 py-4 font-label-md text-secondary xl:table-cell">
+                נוצר
               </th>
               <th className="px-4 py-4 md:px-8" aria-hidden />
             </tr>
@@ -69,6 +69,7 @@ export function RecentIdeasSection() {
                   ideaId={idea.id}
                   title={idea.title}
                   authorName={idea.authorName}
+                  targetStartDate={idea.targetStartDate}
                   category={idea.department}
                   status={idea.category === 'development' ? 'פיתוח' : 'בקרה'}
                   statusVariant={idea.category}

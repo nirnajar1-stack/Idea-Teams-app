@@ -4,6 +4,7 @@ export const ROUTES = {
   login: '/login',
   home: '/',
   ideas: '/ideas',
+  inbox: '/inbox',
   ideaDetail: (id: string) => `/ideas/${id}`,
   addIdea: '/ideas/new',
   profile: '/profile',

@@ -3,12 +3,14 @@ import { MoreVertical } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
 import { Badge } from './Badge'
+import { TargetDateBadge } from './TargetDateBadge'
 import { cn } from '../../lib/cn'
 
 export interface IdeaTableRowProps {
   ideaId: string
   title: string
   authorName: string
+  targetStartDate: string
   category: string
   status: string
   statusVariant: 'development' | 'monitoring'
@@ -21,6 +23,7 @@ export function IdeaTableRow({
   ideaId,
   title,
   authorName,
+  targetStartDate,
   category,
   status,
   statusVariant,
@@ -62,7 +65,10 @@ export function IdeaTableRow({
       <td className="px-4 py-5 md:px-8">
         <Badge variant={statusVariant}>{status}</Badge>
       </td>
-      <td className="hidden px-8 py-5 text-body-md text-secondary md:table-cell">
+      <td className="hidden px-4 py-5 md:table-cell md:px-8">
+        <TargetDateBadge targetStartDate={targetStartDate} compact />
+      </td>
+      <td className="hidden px-8 py-5 text-body-md text-secondary xl:table-cell">
         {date}
       </td>
       <td className="px-4 py-5 text-left md:px-8">

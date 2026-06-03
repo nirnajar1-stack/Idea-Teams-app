@@ -8,6 +8,8 @@ import {
 } from '../../lib/ideaUtils'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
+import { InboxBadge } from '../ui/InboxBadge'
+import { TargetDateBadge } from '../ui/TargetDateBadge'
 
 export interface IdeaListCardProps {
   idea: Idea
@@ -26,16 +28,18 @@ export function IdeaListCard({ idea }: IdeaListCardProps) {
   const CategoryIcon = idea.category === 'development' ? Code : Verified
 
   return (
-    <article className="group rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-card transition-all duration-300 hover:shadow-card-hover hover:scale-[1.01]">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+    <article className="glass-card-hover group p-6 md:p-7">
+      <div className="flex flex-col justify-between gap-4">
         <div className="flex-1">
-          <div className="mb-3 flex flex-wrap items-center gap-3">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
             <Badge variant={priorityVariant[idea.priority]}>
               {PRIORITY_LABELS[idea.priority]}
             </Badge>
             <Badge variant="surface" icon={<CategoryIcon className="h-3.5 w-3.5" />}>
               {CATEGORY_LABELS[idea.category]}
             </Badge>
+            {idea.sendToMaybeInbox && <InboxBadge />}
+            <TargetDateBadge targetStartDate={idea.targetStartDate} compact />
             <span className="mr-auto font-label-sm text-secondary md:mr-0">
               {formatIdeaDate(idea.createdAt)}
             </span>
@@ -48,11 +52,11 @@ export function IdeaListCard({ idea }: IdeaListCardProps) {
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface-container-lowest bg-surface-container-high text-[10px] font-bold text-primary">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/80 bg-gradient-to-br from-primary-fixed to-surface-container-high text-[10px] font-bold text-primary shadow-sm">
                 {idea.authorInitials}
               </div>
               <span className="font-label-sm text-secondary">
-                נפתח על ידי {idea.authorName}
+                נפתח על ידי <span className="text-on-surface">{idea.authorName}</span>
               </span>
             </div>
             <Link

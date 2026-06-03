@@ -8,7 +8,7 @@ import { ROUTES } from '../constants/app'
 export function IdeaDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { getIdeaById, markCompleted, deleteIdea } = useIdeas()
+  const { getIdeaById, markCompleted, deleteIdea, updateIdea } = useIdeas()
 
   const idea = id ? getIdeaById(id) : undefined
 
@@ -31,6 +31,7 @@ export function IdeaDetailPage() {
           idea={idea}
           onComplete={() => markCompleted(idea.id)}
           onDelete={handleDelete}
+          onUpdate={(patch) => updateIdea(idea.id, patch)}
         />
       </div>
     </AppShell>

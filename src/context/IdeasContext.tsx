@@ -13,6 +13,7 @@ import {
   filterIdeas,
   generateExternalId,
   generateIdeaId,
+  isActiveIdea,
   normalizeIdea,
 } from '../lib/ideaUtils'
 import { authorFieldsFromUser } from '../lib/userUtils'
@@ -83,6 +84,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const getRecentIdeas = useCallback(
     (limit = 3) =>
       [...ideas]
+        .filter(isActiveIdea)
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -105,8 +107,10 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         category: input.category,
         department: input.category === 'development' ? 'פיתוח' : 'בקרה',
         priority: input.priority,
-        workflowStatus: 'pending',
+        workflowStatus: input.sendToMaybeInbox ? 'pending' : 'pending',
         createdAt: new Date().toISOString().slice(0, 10),
+        targetStartDate: input.targetStartDate,
+        sendToMaybeInbox: input.sendToMaybeInbox,
         ...author,
         tags: [input.category === 'development' ? 'פיתוח' : 'בקרה'],
         goals: [],

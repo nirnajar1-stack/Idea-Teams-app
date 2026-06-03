@@ -19,13 +19,13 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border-light bg-surface-container-lowest p-8 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover',
+        'group relative flex flex-col justify-between overflow-hidden glass-card-hover p-8',
         className,
       )}
     >
       <div className="relative z-10">
         <p className="mb-1 font-label-md text-secondary">{label}</p>
-        <h2 className="font-display text-display-lg leading-none text-primary">
+        <h2 className="bg-gradient-to-l from-primary-deep via-primary to-primary-container bg-clip-text font-display text-display-lg leading-none text-transparent">
           {value}
         </h2>
       </div>
@@ -37,7 +37,7 @@ export function StatCard({
         <span className="font-label-sm text-secondary">{trendLabel}</span>
       </div>
       <div
-        className="absolute -bottom-6 -right-6 h-32 w-32 rounded-full bg-primary/5 blur-3xl transition-colors group-hover:bg-primary/10"
+        className="absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-primary/10 blur-2xl transition-all group-hover:bg-primary/15"
         aria-hidden
       />
     </div>

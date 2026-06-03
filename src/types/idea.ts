@@ -1,18 +1,18 @@
+import type { UserId } from './user'
+
 export type IdeaCategory = 'development' | 'monitoring'
 
 export type IdeaPriority = 'low' | 'medium' | 'high'
 
 export type IdeaWorkflowStatus = 'in_progress' | 'completed' | 'pending'
 
+export type IdeaPipeline = 'active' | 'inbox' | 'all'
+
 export interface IdeaAttachment {
   id: string
   name: string
   type: 'pdf' | 'image'
 }
-
-import type { UserId } from './user'
-
-export type { UserId }
 
 export interface Idea {
   id: string
@@ -24,6 +24,8 @@ export interface Idea {
   priority: IdeaPriority
   workflowStatus: IdeaWorkflowStatus
   createdAt: string
+  targetStartDate: string
+  sendToMaybeInbox: boolean
   createdByUserId: UserId
   authorName: string
   authorRole: string
@@ -41,6 +43,8 @@ export interface IdeaFormInput {
   description: string
   category: IdeaCategory
   priority: IdeaPriority
+  targetStartDate: string
+  sendToMaybeInbox: boolean
 }
 
 export interface IdeaFilters {
@@ -49,10 +53,13 @@ export interface IdeaFilters {
   priority: IdeaPriority | null
   onlyMine?: boolean
   currentUserId?: UserId
+  pipeline?: IdeaPipeline
 }
 
 export interface IdeasStats {
   total: number
+  activeCount: number
+  inboxCount: number
   developmentCount: number
   monitoringCount: number
   developmentPercent: number

@@ -15,10 +15,7 @@ export function Input({ label, id, className, ...props }: InputProps) {
       </label>
       <input
         id={inputId}
-        className={cn(
-          'w-full rounded-lg border border-border-light bg-surface-subtle px-4 py-3 font-body-md text-on-surface transition-all placeholder:text-outline-variant focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary',
-          className,
-        )}
+        className={cn('boutique-input', className)}
         {...props}
       />
     </div>

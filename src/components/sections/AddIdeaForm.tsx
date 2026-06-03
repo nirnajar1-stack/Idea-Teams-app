@@ -1,4 +1,11 @@
-import { Activity, CheckCircle2, CirclePlus, Code, Lightbulb, Loader2 } from 'lucide-react'
+import {
+  Activity,
+  CheckCircle2,
+  CirclePlus,
+  Code,
+  Lightbulb,
+  Loader2,
+} from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
@@ -6,12 +13,20 @@ import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import type { IdeaCategory, IdeaPriority } from '../../types/idea'
 import { CategoryCard } from '../ui/CategoryCard'
+import { DateInput } from '../ui/DateInput'
+import { InboxToggle } from '../ui/InboxToggle'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
 import { Textarea } from '../ui/Textarea'
 import { cn } from '../../lib/cn'
 
 type SubmitState = 'idle' | 'loading' | 'success'
+
+function defaultTargetDate(): string {
+  const d = new Date()
+  d.setDate(d.getDate() + 14)
+  return d.toISOString().slice(0, 10)
+}
 
 export function AddIdeaForm() {
   const navigate = useNavigate()
@@ -21,24 +36,36 @@ export function AddIdeaForm() {
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<IdeaCategory>('development')
   const [priority, setPriority] = useState<IdeaPriority>('medium')
+  const [targetStartDate, setTargetStartDate] = useState(defaultTargetDate)
+  const [sendToMaybeInbox, setSendToMaybeInbox] = useState(false)
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!title.trim() || !description.trim()) return
+    if (!title.trim() || !description.trim() || !targetStartDate) return
 
     setSubmitState('loading')
     await new Promise((r) => setTimeout(r, 800))
 
-    const idea = addIdea({ title, description, category, priority })
+    const idea = addIdea({
+      title,
+      description,
+      category,
+      priority,
+      targetStartDate,
+      sendToMaybeInbox,
+    })
     setSubmitState('success')
     await new Promise((r) => setTimeout(r, 1200))
-    navigate(ROUTES.ideaDetail(idea.id))
+    navigate(
+      sendToMaybeInbox ? ROUTES.inbox : ROUTES.ideaDetail(idea.id),
+    )
   }
 
   return (
     <>
-      <div className="mb-10 text-right">
+      <div className="mb-10 animate-fade-up text-right">
+        <span className="section-eyebrow">רעיון חדש</span>
         <h1 className="mb-2 font-display text-headline-lg text-on-surface">
           הוספת רעיון חדש
         </h1>
@@ -48,7 +75,7 @@ export function AddIdeaForm() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card md:p-8">
+      <div className="glass-card animate-fade-up p-6 md:p-8" style={{ animationDelay: '80ms' }}>
         <form className="space-y-8" onSubmit={handleSubmit}>
           <Input
             label="כותרת הרעיון"
@@ -89,6 +116,15 @@ export function AddIdeaForm() {
             required
           />
 
+          <DateInput
+            label="תאריך יעד להתחלה"
+            name="targetStartDate"
+            value={targetStartDate}
+            onChange={(e) => setTargetStartDate(e.target.value)}
+            hint="מתי מתוכנן להתחיל לעבוד על הרעיון?"
+            required
+          />
+
           <div className="space-y-3">
             <span className="block font-label-md text-secondary">רמת חשיבות</span>
             <div className="flex flex-wrap gap-3">
@@ -103,15 +139,17 @@ export function AddIdeaForm() {
             </div>
           </div>
 
+          <InboxToggle checked={sendToMaybeInbox} onChange={setSendToMaybeInbox} />
+
           <div className="pt-4">
             <button
               type="submit"
               disabled={submitState !== 'idle'}
               className={cn(
-                'flex w-full items-center justify-center gap-2 rounded-xl py-4 font-display text-headline-md text-on-primary shadow-lg transition-all duration-150 active:scale-[0.98]',
+                'flex w-full items-center justify-center gap-2 rounded-xl py-4 font-display text-headline-md transition-all duration-200 active:scale-[0.98]',
                 submitState === 'success'
-                  ? 'bg-success-vibrant'
-                  : 'bg-primary hover:bg-primary-container',
+                  ? 'bg-success-vibrant text-on-primary shadow-glow'
+                  : 'btn-boutique',
                 submitState === 'loading' && 'opacity-80',
               )}
             >
@@ -130,7 +168,7 @@ export function AddIdeaForm() {
               {submitState === 'idle' && (
                 <>
                   <CirclePlus className="h-6 w-6" />
-                  הוסף רעיון למערכת
+                  {sendToMaybeInbox ? 'שמירה ל-Inbox' : 'הוסף רעיון למערכת'}
                 </>
               )}
             </button>
@@ -138,26 +176,17 @@ export function AddIdeaForm() {
         </form>
       </div>
 
-      <div className="mt-12 flex items-center gap-6 rounded-xl border border-border-light bg-surface-container p-6">
-        <div className="rounded-full bg-primary/10 p-3">
+      <div className="mt-12 flex items-center gap-6 glass-card p-6">
+        <div className="rounded-2xl bg-gradient-to-br from-primary/15 to-inbox/10 p-3">
           <Lightbulb className="h-7 w-7 text-primary" />
         </div>
         <div>
           <h3 className="mb-1 font-label-md text-on-surface">צריך עזרה בניסוח?</h3>
           <p className="font-body-md text-secondary">
-            התייעץ עם צוות ה-Product שלנו בערוץ ה-Slack הייעודי לקבלת משוב ראשוני.
+            התייעץ עם צוות ה-Product בערוץ ה-Slack הייעודי לקבלת משוב ראשוני.
           </p>
         </div>
       </div>
-
-      <div
-        className="pointer-events-none fixed top-20 right-[5%] -z-10 h-64 w-64 rounded-full bg-primary/5 blur-[100px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none fixed bottom-20 left-[5%] -z-10 h-96 w-96 rounded-full bg-surface-container-high/40 blur-[100px]"
-        aria-hidden
-      />
     </>
   )
 }

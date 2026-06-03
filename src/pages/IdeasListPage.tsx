@@ -29,6 +29,7 @@ export function IdeasListPage() {
       priority,
       onlyMine,
       currentUserId: user?.id,
+      pipeline: 'active',
     }),
     [search, categories, priority, onlyMine, user?.id],
   )

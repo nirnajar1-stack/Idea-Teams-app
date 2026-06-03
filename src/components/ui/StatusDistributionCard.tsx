@@ -5,6 +5,7 @@ export interface StatusBarItem {
   barClassName: string
 }
 
+import type { CSSProperties } from 'react'
 import { cn } from '../../lib/cn'
 
 export interface StatusDistributionCardProps {
@@ -12,6 +13,7 @@ export interface StatusDistributionCardProps {
   items: StatusBarItem[]
   legend: { label: string; colorClass: string }[]
   className?: string
+  style?: CSSProperties
 }
 
 export function StatusDistributionCard({
@@ -19,13 +21,12 @@ export function StatusDistributionCard({
   items,
   legend,
   className,
+  style,
 }: StatusDistributionCardProps) {
   return (
     <div
-      className={cn(
-        'rounded-xl border border-border-light bg-surface-container-lowest p-8 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover',
-        className,
-      )}
+      className={cn('glass-card-hover p-8', className)}
+      style={style}
     >
       <div className="mb-8 flex items-center justify-between">
         <h3 className="font-display text-headline-md text-on-surface">{title}</h3>

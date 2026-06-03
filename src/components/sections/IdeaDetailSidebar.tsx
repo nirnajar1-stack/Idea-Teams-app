@@ -1,40 +1,69 @@
-import { CheckCheck, Pencil, Trash2 } from 'lucide-react'
+import { Archive, CheckCheck, Pencil, Rocket, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
+import { formatIdeaDateLong } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
+import { DateInput } from '../ui/DateInput'
 import { ProgressBar } from '../ui/ProgressBar'
+import { cn } from '../../lib/cn'
 
 export interface IdeaDetailSidebarProps {
   idea: Idea
   onComplete: () => void
   onDelete: () => void
+  onUpdate: (patch: Partial<Idea>) => void
 }
 
 export function IdeaDetailSidebar({
   idea,
   onComplete,
   onDelete,
+  onUpdate,
 }: IdeaDetailSidebarProps) {
   const navigate = useNavigate()
 
   return (
     <aside className="space-y-6 lg:col-span-4">
-      <div className="sticky top-24 rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+      <div className="sticky top-24 glass-card p-6">
         <h3 className="mb-6 font-display text-headline-md text-on-surface">פעולות</h3>
         <div className="space-y-4">
           <button
             type="button"
             onClick={onComplete}
             disabled={idea.workflowStatus === 'completed'}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-4 font-label-md text-on-primary shadow-lg shadow-primary/20 transition-all hover:brightness-110 active:scale-95 disabled:opacity-60"
+            className="btn-boutique flex w-full items-center justify-center gap-2 disabled:opacity-60"
           >
             <CheckCheck className="h-5 w-5" />
             סימון כהושלם
           </button>
           <button
             type="button"
+            onClick={() =>
+              onUpdate({ sendToMaybeInbox: !idea.sendToMaybeInbox })
+            }
+            className={cn(
+              'flex w-full items-center justify-center gap-2 rounded-xl border py-4 font-label-md transition-all active:scale-95',
+              idea.sendToMaybeInbox
+                ? 'border-primary/30 bg-primary/5 text-primary hover:bg-primary/10'
+                : 'border-inbox/30 bg-inbox-soft text-inbox hover:bg-inbox/10',
+            )}
+          >
+            {idea.sendToMaybeInbox ? (
+              <>
+                <Rocket className="h-5 w-5" />
+                החזר לרעיונות פעילים
+              </>
+            ) : (
+              <>
+                <Archive className="h-5 w-5" />
+                שלח ל-Inbox (אולי בהמשך)
+              </>
+            )}
+          </button>
+          <button
+            type="button"
             onClick={() => navigate(ROUTES.addIdea)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light bg-surface-container-lowest py-4 font-label-md text-secondary transition-all hover:bg-surface-subtle active:scale-95"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light/80 bg-white/50 py-4 font-label-md text-secondary transition-all hover:bg-white active:scale-95"
           >
             <Pencil className="h-5 w-5" />
             עריכת רעיון
@@ -49,15 +78,22 @@ export function IdeaDetailSidebar({
           </button>
         </div>
 
-        <hr className="my-6 border-border-light" />
+        <hr className="my-6 border-border-light/80" />
 
-        <div className="space-y-4">
+        <DateInput
+          label="תאריך יעד להתחלה"
+          value={idea.targetStartDate}
+          onChange={(e) => onUpdate({ targetStartDate: e.target.value })}
+          hint={`עודכן: ${formatIdeaDateLong(idea.createdAt)} נוצר`}
+        />
+
+        <div className="mt-6 space-y-4">
           <h4 className="font-label-md uppercase text-secondary">תגים</h4>
           <div className="flex flex-wrap gap-2">
             {idea.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-border-light bg-surface-container-low px-3 py-1 text-[13px] text-on-surface-variant"
+                className="rounded-full border border-border-light/80 bg-surface-container-low/80 px-3 py-1 text-[13px] text-on-surface-variant backdrop-blur-sm"
               >
                 {tag}
               </span>
@@ -76,14 +112,13 @@ export function IdeaDetailSidebar({
       </div>
 
       {idea.conceptImageUrl && (
-        <div className="overflow-hidden rounded-xl border border-border-light bg-surface-container-lowest shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/50 shadow-card backdrop-blur-sm">
           <div className="relative h-48">
             <img
               src={idea.conceptImageUrl}
               alt="קונספט ויזואלי"
               className="h-full w-full object-cover"
             />
-            {/* PLACEHOLDER: החליפו ב-src/assets/concept.png כשזמין */}
             <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 to-transparent p-4">
               <span className="font-label-md text-white">קונספט ויזואלי ראשוני</span>
             </div>

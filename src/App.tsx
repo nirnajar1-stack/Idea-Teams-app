@@ -8,6 +8,7 @@ import { IdeasListPage } from './pages/IdeasListPage'
 import { IdeaDetailPage } from './pages/IdeaDetailPage'
 import { AddIdeaPage } from './pages/AddIdeaPage'
 import { ProfilePage } from './pages/ProfilePage'
+import { InboxPage } from './pages/InboxPage'
 import { LoginPage } from './pages/LoginPage'
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path={ROUTES.home} element={<HomePage />} />
               <Route path={ROUTES.ideas} element={<IdeasListPage />} />
+              <Route path={ROUTES.inbox} element={<InboxPage />} />
               <Route path="/ideas/:id" element={<IdeaDetailPage />} />
               <Route path={ROUTES.addIdea} element={<AddIdeaPage />} />
               <Route path={ROUTES.profile} element={<ProfilePage />} />

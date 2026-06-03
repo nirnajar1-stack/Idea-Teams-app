@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,16 +6,54 @@
 
 @layer base {
   html {
-    @apply antialiased;
+    @apply antialiased scroll-smooth;
   }
 
   body {
     @apply min-h-screen bg-background font-body text-body-md text-on-surface;
+    background-image: theme('backgroundImage.mesh-gradient');
+    background-attachment: fixed;
   }
 
   h1,
   h2,
   h3 {
-    @apply font-display;
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-on-surface;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border border-white/60 bg-white/75 shadow-card backdrop-blur-xl;
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-card-hover;
+  }
+
+  .boutique-input {
+    @apply w-full rounded-xl border border-border-light/80 bg-white/80 px-4 py-3.5 text-body-md text-on-surface shadow-sm backdrop-blur-sm transition-all placeholder:text-outline-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15;
+  }
+
+  .btn-boutique {
+    @apply relative overflow-hidden rounded-xl px-6 py-3.5 text-label-md text-on-primary shadow-glow transition-all duration-200 hover:brightness-105 active:scale-[0.98];
+    background-image: linear-gradient(
+      to left,
+      theme('colors.primary'),
+      theme('colors.primary-container'),
+      theme('colors.primary-deep')
+    );
+  }
+
+  .ambient-orb {
+    @apply pointer-events-none fixed -z-10 rounded-full blur-3xl animate-soft-pulse;
+  }
+
+  .section-eyebrow {
+    @apply mb-2 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-3 py-1 text-label-sm text-primary;
   }
 }

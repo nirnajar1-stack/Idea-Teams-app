@@ -14,6 +14,8 @@ import {
 } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
 import { Badge } from '../ui/Badge'
+import { InboxBadge } from '../ui/InboxBadge'
+import { TargetDateBadge } from '../ui/TargetDateBadge'
 
 export interface IdeaDetailContentProps {
   idea: Idea
@@ -22,8 +24,8 @@ export interface IdeaDetailContentProps {
 export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
   return (
     <div className="space-y-8 lg:col-span-8">
-      <section className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-sm md:p-8">
-        <div className="mb-6 flex flex-wrap items-center gap-3">
+      <section className="glass-card p-6 md:p-8">
+        <div className="mb-6 flex flex-wrap items-center gap-2">
           <Badge
             variant="priority-high"
             icon={<AlertCircle className="h-3.5 w-3.5" />}
@@ -33,6 +35,8 @@ export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
           <Badge variant="success" icon={<CheckCircle className="h-3.5 w-3.5" />}>
             {WORKFLOW_LABELS[idea.workflowStatus]}
           </Badge>
+          {idea.sendToMaybeInbox && <InboxBadge />}
+          <TargetDateBadge targetStartDate={idea.targetStartDate} />
           <span className="mr-auto font-label-sm text-secondary">
             ID: #{idea.externalId}
           </span>
@@ -69,11 +73,17 @@ export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
               </div>
             </div>
           </div>
+          <div className="md:col-span-2">
+            <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">
+              תאריך יעד להתחלה
+            </h3>
+            <TargetDateBadge targetStartDate={idea.targetStartDate} />
+          </div>
         </div>
       </section>
 
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-sm transition-shadow hover:shadow-md">
+        <div className="glass-card-hover p-6">
           <div className="mb-4 flex items-center gap-3 text-primary">
             <Target className="h-6 w-6" />
             <h2 className="font-display text-headline-md text-on-surface">יעדים מרכזיים</h2>
@@ -92,7 +102,7 @@ export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
           </ul>
         </div>
 
-        <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-sm transition-shadow hover:shadow-md">
+        <div className="glass-card-hover p-6">
           <div className="mb-4 flex items-center gap-3 text-primary">
             <FileText className="h-6 w-6" />
             <h2 className="font-display text-headline-md text-on-surface">קבצים מצורפים</h2>

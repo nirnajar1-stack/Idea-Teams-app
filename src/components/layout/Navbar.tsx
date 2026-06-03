@@ -2,6 +2,7 @@ import { ArrowRight, Bell, Lightbulb, LogOut, Search, Share2 } from 'lucide-reac
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { APP_NAME, ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
+import { useIdeas } from '../../context/IdeasContext'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
 
@@ -21,7 +22,13 @@ const mainLinks = [
   {
     to: ROUTES.ideas,
     label: 'Ideas',
-    match: (p: string) => p.startsWith('/ideas') && p !== ROUTES.addIdea,
+    match: (p: string) =>
+      p.startsWith('/ideas') && p !== ROUTES.addIdea && !p.startsWith('/inbox'),
+  },
+  {
+    to: ROUTES.inbox,
+    label: 'Inbox',
+    match: (p: string) => p === ROUTES.inbox,
   },
   { to: ROUTES.profile, label: 'Community', match: (p: string) => p === ROUTES.profile },
 ]
@@ -37,6 +44,7 @@ export function Navbar({
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
+  const { stats } = useIdeas()
 
   const handleLogout = () => {
     logout()
@@ -44,20 +52,22 @@ export function Navbar({
   }
 
   return (
-    <header className="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b border-border-light bg-surface/80 px-margin-mobile shadow-sm backdrop-blur-xl md:px-margin-desktop">
+    <header className="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b border-white/50 bg-white/70 px-margin-mobile shadow-sm backdrop-blur-2xl md:px-margin-desktop">
       <div className="flex min-w-0 items-center gap-3">
         {variant === 'back' && (
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-all hover:bg-surface-container-low active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-all hover:bg-primary/5 active:scale-95"
             aria-label="חזרה"
           >
             <ArrowRight className="h-6 w-6" />
           </button>
         )}
         {variant !== 'back' && (
-          <Lightbulb className="h-8 w-8 shrink-0 text-primary" aria-hidden />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-container shadow-glow">
+            <Lightbulb className="h-5 w-5 text-on-primary" aria-hidden />
+          </div>
         )}
         <Link
           to={ROUTES.home}
@@ -76,32 +86,37 @@ export function Navbar({
               value={searchValue}
               onChange={(e) => onSearchChange?.(e.target.value)}
               placeholder="חיפוש רעיונות, צוותים או קטגוריות..."
-              className="h-10 w-full rounded-full border-none bg-surface-container-low pr-12 pl-4 font-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="boutique-input h-10 rounded-full pr-12"
             />
           </div>
         </div>
       )}
 
       {variant === 'main' && (
-        <nav className="hidden items-center gap-8 md:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-1 md:flex" aria-label="ניווט ראשי">
           {mainLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
               className={cn(
-                'rounded-lg px-3 py-2 font-label-md transition-colors duration-200',
+                'relative rounded-xl px-3 py-2 font-label-md transition-colors duration-200',
                 link.match(pathname)
-                  ? 'text-primary'
-                  : 'text-secondary hover:bg-surface-container-low',
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-secondary hover:bg-white/60 hover:text-on-surface',
               )}
             >
               {link.label}
+              {link.to === ROUTES.inbox && stats.inboxCount > 0 && (
+                <span className="absolute -left-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-inbox px-1 text-[10px] font-bold text-white">
+                  {stats.inboxCount}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
       )}
 
-      <div className="flex shrink-0 items-center gap-2 md:gap-4">
+      <div className="flex shrink-0 items-center gap-2 md:gap-3">
         {connectedAs && (
           <span className="hidden font-label-md text-secondary md:block">
             מחובר כ<strong className="text-on-surface">{connectedAs}</strong>
@@ -110,7 +125,7 @@ export function Navbar({
         {showShare && (
           <button
             type="button"
-            className="hidden items-center gap-2 rounded-lg bg-surface-container-low px-4 py-2 font-label-md text-primary transition-colors hover:bg-surface-container-high md:flex"
+            className="hidden items-center gap-2 rounded-xl border border-border-light/80 bg-white/50 px-4 py-2 font-label-md text-primary transition-colors hover:bg-white md:flex"
           >
             <Share2 className="h-5 w-5" />
             שיתוף
@@ -118,7 +133,7 @@ export function Navbar({
         )}
         <button
           type="button"
-          className="rounded-full p-2 transition-all duration-200 hover:bg-surface-container-low active:scale-95"
+          className="rounded-full p-2 transition-all duration-200 hover:bg-primary/5 active:scale-95"
           aria-label="התראות"
         >
           <Bell className="h-6 w-6 text-on-surface" />
@@ -129,7 +144,7 @@ export function Navbar({
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-full p-2 text-secondary transition-all hover:bg-surface-container-low hover:text-error active:scale-95"
+          className="rounded-full p-2 text-secondary transition-all hover:bg-error/5 hover:text-error active:scale-95"
           aria-label="יציאה"
         >
           <LogOut className="h-5 w-5" />

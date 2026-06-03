@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 
-export type AppRouteId = 'dashboard' | 'ideas' | 'add' | 'profile'
+export type AppRouteId = 'dashboard' | 'ideas' | 'inbox' | 'add' | 'profile'
 
 export interface NavLinkItem {
   id: AppRouteId | 'community'

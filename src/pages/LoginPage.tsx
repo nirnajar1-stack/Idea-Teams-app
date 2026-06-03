@@ -1,4 +1,4 @@
-import { Lightbulb } from 'lucide-react'
+import { Lightbulb, Sparkles } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import { APP_NAME, ROUTES } from '../constants/app'
 import { useAuth, USER_LIST } from '../context/AuthContext'
@@ -17,41 +17,42 @@ export function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-margin-mobile py-12 md:px-margin-desktop">
-      <div className="mb-10 text-center">
-        <div className="mb-4 flex justify-center">
-          <Lightbulb className="h-12 w-12 text-primary" aria-hidden />
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-margin-mobile py-12 md:px-margin-desktop">
+      <div className="ambient-orb right-[10%] top-16 h-80 w-80 bg-primary/15" />
+      <div className="ambient-orb bottom-16 left-[5%] h-96 w-96 bg-inbox/10" />
+
+      <div className="relative mb-12 max-w-lg animate-fade-up text-center">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-boutique">
+          <Lightbulb className="h-8 w-8 text-on-primary" aria-hidden />
         </div>
-        <h1 className="mb-2 font-display text-headline-lg text-on-surface">
+        <span className="section-eyebrow mx-auto">
+          <Sparkles className="h-3.5 w-3.5" />
+          FacilPay Studio
+        </span>
+        <h1 className="mb-3 font-display text-headline-lg text-on-surface">
           {APP_NAME}
         </h1>
-        <p className="max-w-md font-body-md text-secondary">
-          בחרו משתמש כדי להיכנס. כל רעיון חדש יישמר עם שם היוצר שלכם.
+        <p className="font-body-md text-secondary">
+          בחרו משתמש כדי להיכנס. כל רעיון נשמר עם יוצר, תאריך יעד להתחלה ואפשרות
+          Inbox ל&quot;אולי בהמשך&quot;.
         </p>
       </div>
 
-      <div className="grid w-full max-w-lg grid-cols-1 gap-6 sm:grid-cols-2">
-        {USER_LIST.map((user) => (
-          <UserLoginCard
+      <div className="relative grid w-full max-w-xl grid-cols-1 gap-6 sm:grid-cols-2">
+        {USER_LIST.map((user, i) => (
+          <div
             key={user.id}
-            user={user}
-            onSelect={() => handleLogin(user.id)}
-          />
+            className="animate-fade-up"
+            style={{ animationDelay: `${100 + i * 80}ms` }}
+          >
+            <UserLoginCard user={user} onSelect={() => handleLogin(user.id)} />
+          </div>
         ))}
       </div>
 
-      <p className="mt-10 font-label-sm text-secondary">
-        כניסה פנימית לצוות — ניר וגולן
+      <p className="relative mt-12 font-label-sm text-secondary">
+        כניסה פנימית — ניר וגולן
       </p>
-
-      <div
-        className="pointer-events-none fixed top-20 right-[10%] -z-10 h-64 w-64 rounded-full bg-primary/5 blur-[100px]"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none fixed bottom-20 left-[10%] -z-10 h-96 w-96 rounded-full bg-surface-container-high/40 blur-[100px]"
-        aria-hidden
-      />
     </div>
   )
 }

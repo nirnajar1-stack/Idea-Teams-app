@@ -24,14 +24,18 @@ export function AppShell({
   }[maxWidth]
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-0">
-      <Navbar
-        connectedAs={connectedAs ?? user?.name}
-        {...navbarProps}
+    <div className="relative min-h-screen pb-24 md:pb-0">
+      <div className="ambient-orb right-[5%] top-24 h-72 w-72 bg-primary/10" aria-hidden />
+      <div className="ambient-orb bottom-32 left-[8%] h-96 w-96 bg-inbox/10" aria-hidden />
+      <div
+        className="ambient-orb left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 bg-accent/5"
+        aria-hidden
       />
+
+      <Navbar connectedAs={connectedAs ?? user?.name} {...navbarProps} />
       <main
         className={cn(
-          'mx-auto px-margin-mobile pb-12 pt-24 md:px-margin-desktop',
+          'relative mx-auto px-margin-mobile pb-12 pt-24 md:px-margin-desktop',
           maxWidthClass,
         )}
       >
