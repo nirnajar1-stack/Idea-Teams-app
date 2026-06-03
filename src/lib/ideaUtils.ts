@@ -1,4 +1,20 @@
 import type { Idea, IdeaFilters, IdeasStats } from '../types/idea'
+import type { UserId } from '../types/user'
+
+export function normalizeIdea(idea: Idea): Idea {
+  if (idea.createdByUserId) return idea
+
+  const legacyNir = ['ניר', 'רותם', 'אלון']
+  const isNir = legacyNir.some((n) => idea.authorName?.includes(n))
+  const userId: UserId = isNir ? 'nir' : 'golan'
+
+  return {
+    ...idea,
+    createdByUserId: userId,
+    authorName: userId === 'nir' ? 'ניר' : 'גולן',
+    authorInitials: userId === 'nir' ? 'ניר' : 'גול',
+  }
+}
 
 export function computeStats(ideas: Idea[]): IdeasStats {
   const total = ideas.length
@@ -29,6 +45,13 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
       return false
     }
     if (filters.priority && idea.priority !== filters.priority) {
+      return false
+    }
+    if (
+      filters.onlyMine &&
+      filters.currentUserId &&
+      idea.createdByUserId !== filters.currentUserId
+    ) {
       return false
     }
     if (!query) return true

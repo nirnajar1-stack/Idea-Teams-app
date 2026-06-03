@@ -8,6 +8,7 @@ import { cn } from '../../lib/cn'
 export interface IdeaTableRowProps {
   ideaId: string
   title: string
+  authorName: string
   category: string
   status: string
   statusVariant: 'development' | 'monitoring'
@@ -19,6 +20,7 @@ export interface IdeaTableRowProps {
 export function IdeaTableRow({
   ideaId,
   title,
+  authorName,
   category,
   status,
   statusVariant,
@@ -41,13 +43,21 @@ export function IdeaTableRow({
           >
             <Icon className="h-5 w-5" aria-hidden />
           </div>
-          <span className="font-label-md text-on-surface transition-colors group-hover:text-primary">
-            {title}
-          </span>
+          <div>
+            <span className="font-label-md text-on-surface transition-colors group-hover:text-primary">
+              {title}
+            </span>
+            <span className="mt-0.5 block font-label-sm text-secondary sm:hidden">
+              {authorName}
+            </span>
+          </div>
         </Link>
       </td>
       <td className="hidden px-8 py-5 text-body-md text-secondary sm:table-cell">
         {category}
+      </td>
+      <td className="hidden px-8 py-5 font-label-sm text-secondary lg:table-cell">
+        {authorName}
       </td>
       <td className="px-4 py-5 md:px-8">
         <Badge variant={statusVariant}>{status}</Badge>

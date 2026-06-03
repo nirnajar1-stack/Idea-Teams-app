@@ -10,6 +10,10 @@ export interface IdeaAttachment {
   type: 'pdf' | 'image'
 }
 
+import type { UserId } from './user'
+
+export type { UserId }
+
 export interface Idea {
   id: string
   externalId: string
@@ -20,6 +24,7 @@ export interface Idea {
   priority: IdeaPriority
   workflowStatus: IdeaWorkflowStatus
   createdAt: string
+  createdByUserId: UserId
   authorName: string
   authorRole: string
   authorInitials: string
@@ -42,6 +47,8 @@ export interface IdeaFilters {
   search: string
   categories: IdeaCategory[]
   priority: IdeaPriority | null
+  onlyMine?: boolean
+  currentUserId?: UserId
 }
 
 export interface IdeasStats {

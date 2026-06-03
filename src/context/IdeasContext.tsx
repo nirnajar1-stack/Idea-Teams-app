@@ -13,9 +13,12 @@ import {
   filterIdeas,
   generateExternalId,
   generateIdeaId,
+  normalizeIdea,
 } from '../lib/ideaUtils'
+import { authorFieldsFromUser } from '../lib/userUtils'
 import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats } from '../types/idea'
-import { CURRENT_USER } from '../constants/app'
+import type { UserId } from '../types/user'
+import { useAuth } from './AuthContext'
 
 interface IdeasContextValue {
   ideas: Idea[]
@@ -27,6 +30,7 @@ interface IdeasContextValue {
   getIdeaById: (id: string) => Idea | undefined
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
   getRecentIdeas: (limit?: number) => Idea[]
+  getIdeasByUser: (userId: UserId) => Idea[]
 }
 
 const IdeasContext = createContext<IdeasContextValue | null>(null)
@@ -36,7 +40,9 @@ function loadIdeas(): Idea[] {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as Idea[]
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map(normalizeIdea)
+      }
     }
   } catch {
     /* ignore corrupt storage */
@@ -49,6 +55,7 @@ function persistIdeas(ideas: Idea[]) {
 }
 
 export function IdeasProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
   const [ideas, setIdeas] = useState<Idea[]>(loadIdeas)
 
   const persist = useCallback((next: Idea[]) => {
@@ -68,6 +75,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [ideas],
   )
 
+  const getIdeasByUser = useCallback(
+    (userId: UserId) => ideas.filter((i) => i.createdByUserId === userId),
+    [ideas],
+  )
+
   const getRecentIdeas = useCallback(
     (limit = 3) =>
       [...ideas]
@@ -81,6 +93,10 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
   const addIdea = useCallback(
     (input: IdeaFormInput): Idea => {
+      if (!user) {
+        throw new Error('Cannot add idea without authenticated user')
+      }
+      const author = authorFieldsFromUser(user)
       const newIdea: Idea = {
         id: generateIdeaId(),
         externalId: generateExternalId(),
@@ -91,9 +107,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         priority: input.priority,
         workflowStatus: 'pending',
         createdAt: new Date().toISOString().slice(0, 10),
-        authorName: CURRENT_USER.name,
-        authorRole: CURRENT_USER.role,
-        authorInitials: CURRENT_USER.name.slice(0, 2),
+        ...author,
         tags: [input.category === 'development' ? 'פיתוח' : 'בקרה'],
         goals: [],
         attachments: [],
@@ -103,7 +117,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       persist([newIdea, ...ideas])
       return newIdea
     },
-    [ideas, persist],
+    [ideas, persist, user],
   )
 
   const updateIdea = useCallback(
@@ -122,7 +136,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
   const markCompleted = useCallback(
     (id: string) => {
-      updateIdea(id, { workflowStatus: 'completed', progress: 100, progressStep: 'הושלם' })
+      updateIdea(id, {
+        workflowStatus: 'completed',
+        progress: 100,
+        progressStep: 'הושלם',
+      })
     },
     [updateIdea],
   )
@@ -138,6 +156,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getIdeaById,
       getFilteredIdeas,
       getRecentIdeas,
+      getIdeasByUser,
     }),
     [
       ideas,
@@ -149,6 +168,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getIdeaById,
       getFilteredIdeas,
       getRecentIdeas,
+      getIdeasByUser,
     ],
   )
 

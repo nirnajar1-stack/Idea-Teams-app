@@ -8,8 +8,8 @@ export interface AvatarProps {
 }
 
 const sizeClasses = {
-  sm: 'h-8 w-8',
-  md: 'h-10 w-10',
+  sm: 'h-8 w-8 text-label-sm',
+  md: 'h-10 w-10 text-label-md',
 }
 
 export function Avatar({ src, alt, size = 'md', className }: AvatarProps) {
@@ -27,18 +27,19 @@ export function Avatar({ src, alt, size = 'md', className }: AvatarProps) {
     )
   }
 
-  /* PLACEHOLDER: העתיקו תמונת פרופיל ל-src/assets ועברו src ל-Avatar */
+  const initials = alt.slice(0, 2)
+
   return (
     <div
       role="img"
       aria-label={alt}
       className={cn(
-        'flex items-center justify-center rounded-full border-2 border-primary-container bg-primary-fixed text-label-sm font-bold text-primary',
+        'flex items-center justify-center rounded-full border-2 border-primary-container bg-primary-fixed font-bold text-primary',
         sizeClasses[size],
         className,
       )}
     >
-      רו
+      {initials}
     </div>
   )
 }

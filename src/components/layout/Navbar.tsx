@@ -1,6 +1,7 @@
-import { ArrowRight, Bell, Lightbulb, Search, Share2 } from 'lucide-react'
+import { ArrowRight, Bell, Lightbulb, LogOut, Search, Share2 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { APP_NAME, CURRENT_USER, ROUTES } from '../../constants/app'
+import { APP_NAME, ROUTES } from '../../constants/app'
+import { useAuth } from '../../context/AuthContext'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
 
@@ -9,7 +10,6 @@ export type NavbarVariant = 'main' | 'back' | 'ideas'
 export interface NavbarProps {
   variant?: NavbarVariant
   brandName?: string
-  avatarSrc?: string
   connectedAs?: string
   searchValue?: string
   onSearchChange?: (value: string) => void
@@ -29,7 +29,6 @@ const mainLinks = [
 export function Navbar({
   variant = 'main',
   brandName = APP_NAME,
-  avatarSrc = CURRENT_USER.avatarSrc,
   connectedAs,
   searchValue = '',
   onSearchChange,
@@ -37,6 +36,12 @@ export function Navbar({
 }: NavbarProps) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { user, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    navigate(ROUTES.login)
+  }
 
   return (
     <header className="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b border-border-light bg-surface/80 px-margin-mobile shadow-sm backdrop-blur-xl md:px-margin-desktop">
@@ -96,10 +101,10 @@ export function Navbar({
         </nav>
       )}
 
-      <div className="flex shrink-0 items-center gap-3 md:gap-4">
+      <div className="flex shrink-0 items-center gap-2 md:gap-4">
         {connectedAs && (
           <span className="hidden font-label-md text-secondary md:block">
-            מחובר כ{connectedAs}
+            מחובר כ<strong className="text-on-surface">{connectedAs}</strong>
           </span>
         )}
         {showShare && (
@@ -118,9 +123,17 @@ export function Navbar({
         >
           <Bell className="h-6 w-6 text-on-surface" />
         </button>
-        <Link to={ROUTES.profile}>
-          <Avatar src={avatarSrc} alt="תמונת משתמש" size="md" />
+        <Link to={ROUTES.profile} title={user?.name}>
+          <Avatar alt={user?.name ?? 'משתמש'} size="md" />
         </Link>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="rounded-full p-2 text-secondary transition-all hover:bg-surface-container-low hover:text-error active:scale-95"
+          aria-label="יציאה"
+        >
+          <LogOut className="h-5 w-5" />
+        </button>
       </div>
     </header>
   )

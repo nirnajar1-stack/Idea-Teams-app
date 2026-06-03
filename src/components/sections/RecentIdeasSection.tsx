@@ -48,6 +48,9 @@ export function RecentIdeasSection() {
               <th className="hidden px-8 py-4 font-label-md text-secondary sm:table-cell">
                 קטגוריה
               </th>
+              <th className="hidden px-8 py-4 font-label-md text-secondary lg:table-cell">
+                יוצר
+              </th>
               <th className="px-4 py-4 font-label-md text-secondary md:px-8">
                 סטטוס
               </th>
@@ -65,6 +68,7 @@ export function RecentIdeasSection() {
                   key={idea.id}
                   ideaId={idea.id}
                   title={idea.title}
+                  authorName={idea.authorName}
                   category={idea.department}
                   status={idea.category === 'development' ? 'פיתוח' : 'בקרה'}
                   statusVariant={idea.category}

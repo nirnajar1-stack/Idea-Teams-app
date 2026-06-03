@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
+import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
 import type { IdeaCategory, IdeaFilters, IdeaPriority } from '../types/idea'
@@ -11,6 +12,7 @@ import { cn } from '../lib/cn'
 
 export function IdeasListPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { getFilteredIdeas } = useIdeas()
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState<IdeaCategory[]>([
@@ -18,10 +20,17 @@ export function IdeasListPage() {
     'monitoring',
   ])
   const [priority, setPriority] = useState<IdeaPriority | null>(null)
+  const [onlyMine, setOnlyMine] = useState(false)
 
   const filters: IdeaFilters = useMemo(
-    () => ({ search, categories, priority }),
-    [search, categories, priority],
+    () => ({
+      search,
+      categories,
+      priority,
+      onlyMine,
+      currentUserId: user?.id,
+    }),
+    [search, categories, priority, onlyMine, user?.id],
   )
 
   const ideas = getFilteredIdeas(filters)
@@ -94,6 +103,19 @@ export function IdeasListPage() {
                   </label>
                 ))}
               </div>
+            </div>
+
+            <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+              <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={onlyMine}
+                  onChange={(e) => setOnlyMine(e.target.checked)}
+                  className="h-4 w-4 rounded text-primary focus:ring-primary"
+                />
+                <span className="font-body-md">רק הרעיונות שלי ({user?.name})</span>
+              </label>
             </div>
 
             <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">

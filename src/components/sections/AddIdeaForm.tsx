@@ -1,6 +1,7 @@
 import { Activity, CheckCircle2, CirclePlus, Code, Lightbulb, Loader2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import type { IdeaCategory, IdeaPriority } from '../../types/idea'
@@ -14,6 +15,7 @@ type SubmitState = 'idle' | 'loading' | 'success'
 
 export function AddIdeaForm() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { addIdea } = useIdeas()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -41,7 +43,8 @@ export function AddIdeaForm() {
           הוספת רעיון חדש
         </h1>
         <p className="font-body-md text-secondary">
-          יש לך רעיון מבריק? שתף אותו עם הצוות כדי שנוכל להפוך אותו למציאות.
+          יש לך רעיון מבריק? שתף אותו עם הצוות — הרעיון יירשם בשם{' '}
+          <strong className="text-on-surface">{user?.name}</strong>.
         </p>
       </div>
 

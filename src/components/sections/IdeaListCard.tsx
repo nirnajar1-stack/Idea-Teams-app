@@ -47,8 +47,13 @@ export function IdeaListCard({ idea }: IdeaListCardProps) {
             {idea.description}
           </p>
           <div className="flex items-center justify-between">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface-container-lowest bg-surface-container-high text-[10px] font-bold text-primary">
-              {idea.authorInitials}
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface-container-lowest bg-surface-container-high text-[10px] font-bold text-primary">
+                {idea.authorInitials}
+              </div>
+              <span className="font-label-sm text-secondary">
+                נפתח על ידי {idea.authorName}
+              </span>
             </div>
             <Link
               to={ROUTES.ideaDetail(idea.id)}
