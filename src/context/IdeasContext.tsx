@@ -13,7 +13,10 @@ import {
   filterIdeas,
   generateExternalId,
   generateIdeaId,
+  containerProgress,
   isActiveIdea,
+  isContainerIdea,
+  isRootIdea,
   normalizeIdea,
 } from '../lib/ideaUtils'
 import {
@@ -39,6 +42,7 @@ interface IdeasContextValue {
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
   getRecentIdeas: (limit?: number) => Idea[]
   getIdeasByUser: (userId: string) => Idea[]
+  getSubIdeas: (parentId: string) => Idea[]
   canDelete: (idea: Idea) => boolean
   canEdit: (idea: Idea) => boolean
 }
@@ -111,10 +115,21 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [visibleIdeas],
   )
 
+  const getSubIdeas = useCallback(
+    (parentId: string) =>
+      visibleIdeas
+        .filter((i) => i.parentId === parentId)
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+        ),
+    [visibleIdeas],
+  )
+
   const getRecentIdeas = useCallback(
     (limit = 3) =>
       [...visibleIdeas]
-        .filter(isActiveIdea)
+        .filter((i) => isRootIdea(i) && isActiveIdea(i))
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -129,6 +144,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         throw new Error('Cannot add idea without authenticated user')
       }
       const author = authorFieldsFromUser(user)
+      const ideaKind = input.parentId
+        ? 'standard'
+        : input.ideaKind ?? 'standard'
+      const isContainer = ideaKind === 'container'
+
       const newIdea: Idea = {
         id: generateIdeaId(),
         externalId: generateExternalId(),
@@ -137,18 +157,36 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         category: input.category,
         department: input.category === 'development' ? 'פיתוח' : 'בקרה',
         priority: input.priority,
-        workflowStatus: input.sendToMaybeInbox ? 'pending' : 'pending',
+        workflowStatus: 'pending',
         createdAt: new Date().toISOString().slice(0, 10),
         targetStartDate: input.targetStartDate,
-        sendToMaybeInbox: input.sendToMaybeInbox,
+        sendToMaybeInbox: isContainer ? false : input.sendToMaybeInbox,
+        ideaKind,
+        parentId: input.parentId,
         ...author,
-        tags: [input.category === 'development' ? 'פיתוח' : 'בקרה'],
+        tags: [
+          isContainer
+            ? 'תת-רעיונות'
+            : input.category === 'development'
+              ? 'פיתוח'
+              : 'בקרה',
+        ],
         goals: [],
         attachments: [],
         progress: 0,
-        progressStep: 'שלב 1 מתוך 5',
+        progressStep: isContainer ? 'ממתין לתת-רעיונות' : 'שלב 1 מתוך 5',
       }
-      persist([newIdea, ...ideas])
+
+      let next = [newIdea, ...ideas]
+      if (input.parentId) {
+        next = next.map((i) => {
+          if (i.id !== input.parentId || !isContainerIdea(i)) return i
+          const subs = next.filter((s) => s.parentId === i.id)
+          const prog = containerProgress(subs)
+          return { ...i, progress: prog.percent, progressStep: prog.stepLabel }
+        })
+      }
+      persist(next)
       return newIdea
     },
     [ideas, persist, user],
@@ -158,16 +196,37 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     (id: string, patch: Partial<Idea>) => {
       const idea = ideas.find((i) => i.id === id)
       if (!idea || !canEditIdea(user, idea)) return
-      persist(ideas.map((i) => (i.id === id ? { ...i, ...patch } : i)))
+      let next = ideas.map((i) => (i.id === id ? { ...i, ...patch } : i))
+      const updated = next.find((i) => i.id === id)
+      if (updated?.parentId) {
+        next = syncContainerProgress(next, updated.parentId)
+      } else if (updated && isContainerIdea(updated)) {
+        next = syncContainerProgress(next, id)
+      }
+      persist(next)
     },
     [ideas, persist, user],
   )
+
+  function syncContainerProgress(all: Idea[], containerId: string): Idea[] {
+    const subs = all.filter((i) => i.parentId === containerId)
+    const prog = containerProgress(subs)
+    return all.map((i) =>
+      i.id === containerId
+        ? { ...i, progress: prog.percent, progressStep: prog.stepLabel }
+        : i,
+    )
+  }
 
   const deleteIdea = useCallback(
     (id: string): boolean => {
       const idea = ideas.find((i) => i.id === id)
       if (!idea || !canDeleteIdea(user, idea)) return false
-      persist(ideas.filter((i) => i.id !== id))
+      const toRemove = new Set<string>([id])
+      if (isContainerIdea(idea)) {
+        ideas.filter((i) => i.parentId === id).forEach((s) => toRemove.add(s.id))
+      }
+      persist(ideas.filter((i) => !toRemove.has(i.id)))
       return true
     },
     [ideas, persist, user],
@@ -199,6 +258,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getFilteredIdeas,
       getRecentIdeas,
       getIdeasByUser,
+      getSubIdeas,
       canDelete,
       canEdit,
     }),
@@ -214,6 +274,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getFilteredIdeas,
       getRecentIdeas,
       getIdeasByUser,
+      getSubIdeas,
       canDelete,
       canEdit,
     ],

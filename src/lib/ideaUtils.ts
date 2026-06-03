@@ -1,4 +1,4 @@
-import type { Idea, IdeaFilters, IdeasStats } from '../types/idea'
+import type { Idea, IdeaFilters, IdeaKind, IdeasStats } from '../types/idea'
 
 function addDays(isoDate: string, days: number): string {
   const d = new Date(isoDate)
@@ -19,7 +19,21 @@ export function normalizeIdea(idea: Idea): Idea {
     authorInitials: idea.authorInitials || (userId === 'nir' ? 'ניר' : 'גול'),
     targetStartDate: idea.targetStartDate ?? addDays(idea.createdAt, 14),
     sendToMaybeInbox: idea.sendToMaybeInbox ?? false,
+    ideaKind: idea.ideaKind ?? (idea.parentId ? 'standard' : 'standard'),
+    parentId: idea.parentId,
   }
+}
+
+export function isContainerIdea(idea: Idea): boolean {
+  return idea.ideaKind === 'container'
+}
+
+export function isSubIdea(idea: Idea): boolean {
+  return !!idea.parentId
+}
+
+export function isRootIdea(idea: Idea): boolean {
+  return !idea.parentId
 }
 
 export function isActiveIdea(idea: Idea): boolean {
@@ -54,6 +68,8 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
   const pipeline = filters.pipeline ?? 'active'
 
   return ideas.filter((idea) => {
+    if (idea.parentId) return false
+
     if (pipeline === 'active' && idea.sendToMaybeInbox) return false
     if (pipeline === 'inbox' && !idea.sendToMaybeInbox) return false
 
@@ -145,6 +161,28 @@ export const CATEGORY_LABELS = {
   development: 'פיתוח',
   monitoring: 'בקרה',
 } as const
+
+export const IDEA_KIND_LABELS: Record<IdeaKind, string> = {
+  standard: 'רעיון',
+  container: 'רעיון עם תת-רעיונות',
+}
+
+export function containerProgress(subIdeas: Idea[]): {
+  percent: number
+  stepLabel: string
+} {
+  if (subIdeas.length === 0) {
+    return { percent: 0, stepLabel: 'אין תת-רעיונות עדיין' }
+  }
+  const avg = Math.round(
+    subIdeas.reduce((s, i) => s + i.progress, 0) / subIdeas.length,
+  )
+  const done = subIdeas.filter((i) => i.workflowStatus === 'completed').length
+  return {
+    percent: avg,
+    stepLabel: `${done} מתוך ${subIdeas.length} תת-רעיונות הושלמו`,
+  }
+}
 
 export const WORKFLOW_LABELS = {
   in_progress: 'בביצוע',

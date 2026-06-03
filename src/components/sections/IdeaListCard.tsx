@@ -1,13 +1,16 @@
 import { ArrowLeft, Code, Verified } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
+import { useIdeas } from '../../context/IdeasContext'
 import {
   CATEGORY_LABELS,
   formatIdeaDate,
+  isContainerIdea,
   PRIORITY_LABELS,
 } from '../../lib/ideaUtils'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
+import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 
@@ -25,7 +28,9 @@ const priorityVariant: Record<
 }
 
 export function IdeaListCard({ idea }: IdeaListCardProps) {
+  const { getSubIdeas } = useIdeas()
   const CategoryIcon = idea.category === 'development' ? Code : Verified
+  const subCount = isContainerIdea(idea) ? getSubIdeas(idea.id).length : 0
 
   return (
     <article className="glass-card-hover group p-6 md:p-7">
@@ -38,6 +43,9 @@ export function IdeaListCard({ idea }: IdeaListCardProps) {
             <Badge variant="surface" icon={<CategoryIcon className="h-3.5 w-3.5" />}>
               {CATEGORY_LABELS[idea.category]}
             </Badge>
+            {isContainerIdea(idea) && (
+              <ContainerBadge subCount={subCount} compact />
+            )}
             {idea.sendToMaybeInbox && <InboxBadge />}
             <TargetDateBadge targetStartDate={idea.targetStartDate} compact />
             <span className="mr-auto font-label-sm text-secondary md:mr-0">

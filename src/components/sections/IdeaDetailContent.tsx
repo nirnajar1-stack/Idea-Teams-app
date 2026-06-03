@@ -12,16 +12,29 @@ import {
   PRIORITY_LABELS,
   WORKFLOW_LABELS,
 } from '../../lib/ideaUtils'
+import { Link } from 'react-router-dom'
+import { ROUTES } from '../../constants/app'
+import { isContainerIdea, isSubIdea } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
 import { Badge } from '../ui/Badge'
+import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
+import { SubIdeasSection } from './SubIdeasSection'
 
 export interface IdeaDetailContentProps {
   idea: Idea
+  parent?: Idea
+  subIdeas?: Idea[]
+  canAddSub?: boolean
 }
 
-export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
+export function IdeaDetailContent({
+  idea,
+  parent,
+  subIdeas = [],
+  canAddSub = false,
+}: IdeaDetailContentProps) {
   return (
     <div className="space-y-8 lg:col-span-8">
       <section className="glass-card p-6 md:p-8">
@@ -35,12 +48,26 @@ export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
           <Badge variant="success" icon={<CheckCircle className="h-3.5 w-3.5" />}>
             {WORKFLOW_LABELS[idea.workflowStatus]}
           </Badge>
+          {isContainerIdea(idea) && (
+            <ContainerBadge subCount={subIdeas.length} />
+          )}
+          {isSubIdea(idea) && (
+            <Badge variant="surface">תת-רעיון</Badge>
+          )}
           {idea.sendToMaybeInbox && <InboxBadge />}
           <TargetDateBadge targetStartDate={idea.targetStartDate} />
           <span className="mr-auto font-label-sm text-secondary">
             ID: #{idea.externalId}
           </span>
         </div>
+        {parent && (
+          <Link
+            to={ROUTES.ideaDetail(parent.id)}
+            className="mb-3 inline-flex font-label-md text-primary hover:underline"
+          >
+            ← חלק ממארז: {parent.title}
+          </Link>
+        )}
         <h1 className="mb-4 font-display text-headline-lg-mobile text-on-surface md:text-headline-lg">
           {idea.title}
         </h1>
@@ -81,6 +108,10 @@ export function IdeaDetailContent({ idea }: IdeaDetailContentProps) {
           </div>
         </div>
       </section>
+
+      {isContainerIdea(idea) && (
+        <SubIdeasSection parent={idea} subIdeas={subIdeas} canAdd={canAddSub} />
+      )}
 
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="glass-card-hover p-6">

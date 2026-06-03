@@ -11,7 +11,9 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
+import { canCreateContainerIdea } from '../../lib/permissions'
 import type { IdeaCategory, IdeaPriority } from '../../types/idea'
+import { ContainerKindToggle } from '../ui/ContainerKindToggle'
 import { CategoryCard } from '../ui/CategoryCard'
 import { DateInput } from '../ui/DateInput'
 import { InboxToggle } from '../ui/InboxToggle'
@@ -38,7 +40,9 @@ export function AddIdeaForm() {
   const [priority, setPriority] = useState<IdeaPriority>('medium')
   const [targetStartDate, setTargetStartDate] = useState(defaultTargetDate)
   const [sendToMaybeInbox, setSendToMaybeInbox] = useState(false)
+  const [isContainer, setIsContainer] = useState(false)
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
+  const allowContainer = canCreateContainerIdea(user)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -53,7 +57,8 @@ export function AddIdeaForm() {
       category,
       priority,
       targetStartDate,
-      sendToMaybeInbox,
+      sendToMaybeInbox: isContainer ? false : sendToMaybeInbox,
+      ideaKind: isContainer ? 'container' : 'standard',
     })
     setSubmitState('success')
     await new Promise((r) => setTimeout(r, 1200))
@@ -139,7 +144,19 @@ export function AddIdeaForm() {
             </div>
           </div>
 
-          <InboxToggle checked={sendToMaybeInbox} onChange={setSendToMaybeInbox} />
+          {allowContainer && (
+            <ContainerKindToggle
+              checked={isContainer}
+              onChange={(v) => {
+                setIsContainer(v)
+                if (v) setSendToMaybeInbox(false)
+              }}
+            />
+          )}
+
+          {!isContainer && (
+            <InboxToggle checked={sendToMaybeInbox} onChange={setSendToMaybeInbox} />
+          )}
 
           <div className="pt-4">
             <button
@@ -168,7 +185,11 @@ export function AddIdeaForm() {
               {submitState === 'idle' && (
                 <>
                   <CirclePlus className="h-6 w-6" />
-                  {sendToMaybeInbox ? 'שמירה ל-Inbox' : 'הוסף רעיון למערכת'}
+                  {isContainer
+                    ? 'צור מארז תת-רעיונות'
+                    : sendToMaybeInbox
+                      ? 'שמירה ל-Inbox'
+                      : 'הוסף רעיון למערכת'}
                 </>
               )}
             </button>

@@ -7,6 +7,7 @@ export const ROUTES = {
   inbox: '/inbox',
   ideaDetail: (id: string) => `/ideas/${id}`,
   addIdea: '/ideas/new',
+  addSubIdea: (parentId: string) => `/ideas/${parentId}/sub/new`,
   profile: '/profile',
   users: '/users',
 } as const

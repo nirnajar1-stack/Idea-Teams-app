@@ -11,6 +11,7 @@ export interface IdeaDetailSidebarProps {
   idea: Idea
   canEdit: boolean
   canDelete: boolean
+  isContainer?: boolean
   onComplete: () => void
   onDelete: () => void
   onUpdate: (patch: Partial<Idea>) => void
@@ -20,6 +21,7 @@ export function IdeaDetailSidebar({
   idea,
   canEdit,
   canDelete,
+  isContainer = false,
   onComplete,
   onDelete,
   onUpdate,
@@ -31,7 +33,7 @@ export function IdeaDetailSidebar({
       <div className="sticky top-24 glass-card p-6">
         <h3 className="mb-6 font-display text-headline-md text-on-surface">פעולות</h3>
         <div className="space-y-4">
-          {canEdit && (
+          {canEdit && !isContainer && (
             <button
               type="button"
               onClick={onComplete}
@@ -42,7 +44,7 @@ export function IdeaDetailSidebar({
               סימון כהושלם
             </button>
           )}
-          {canEdit && (
+          {canEdit && !isContainer && (
           <button
             type="button"
             onClick={() =>

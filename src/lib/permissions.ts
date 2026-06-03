@@ -5,6 +5,19 @@ export function canManageUsers(user: AppUser | null): boolean {
   return user?.accessLevel === 'manager'
 }
 
+/** רעיון-מארז עם תת-רעיונות — יצירה למנהל בלבד */
+export function canCreateContainerIdea(user: AppUser | null): boolean {
+  return user?.accessLevel === 'manager'
+}
+
+export function canAddSubIdea(
+  user: AppUser | null,
+  parent: Idea,
+): boolean {
+  if (!user || parent.ideaKind !== 'container') return false
+  return canEditIdea(user, parent)
+}
+
 export function canDeleteIdea(user: AppUser | null, idea: Idea): boolean {
   if (!user) return false
   if (user.accessLevel === 'manager') return true
@@ -61,5 +74,13 @@ export function filterVisibleIdeas(
   usersById: Map<string, StoredUser>,
 ): Idea[] {
   if (!viewer) return []
-  return ideas.filter((idea) => canViewIdea(viewer, idea, usersById))
+  const byId = new Map(ideas.map((i) => [i.id, i]))
+  return ideas.filter((idea) => {
+    if (idea.parentId) {
+      const parent = byId.get(idea.parentId)
+      if (!parent) return false
+      return canViewIdea(viewer, parent, usersById)
+    }
+    return canViewIdea(viewer, idea, usersById)
+  })
 }

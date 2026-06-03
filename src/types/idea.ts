@@ -6,6 +6,9 @@ export type IdeaWorkflowStatus = 'in_progress' | 'completed' | 'pending'
 
 export type IdeaPipeline = 'active' | 'inbox' | 'all'
 
+/** standard — רעיון רגיל; container — רעיון שמכיל תת-רעיונות (יצירה למנהל בלבד) */
+export type IdeaKind = 'standard' | 'container'
+
 export interface IdeaAttachment {
   id: string
   name: string
@@ -35,6 +38,9 @@ export interface Idea {
   progress: number
   progressStep: string
   conceptImageUrl?: string
+  ideaKind?: IdeaKind
+  /** מזהה רעיון-אב (תת-רעיון בלבד) */
+  parentId?: string
 }
 
 export interface IdeaFormInput {
@@ -44,6 +50,8 @@ export interface IdeaFormInput {
   priority: IdeaPriority
   targetStartDate: string
   sendToMaybeInbox: boolean
+  ideaKind?: IdeaKind
+  parentId?: string
 }
 
 export interface IdeaFilters {

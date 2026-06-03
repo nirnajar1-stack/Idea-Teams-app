@@ -13,6 +13,7 @@ import { ProfilePage } from './pages/ProfilePage'
 import { InboxPage } from './pages/InboxPage'
 import { LoginPage } from './pages/LoginPage'
 import { UserManagementPage } from './pages/UserManagementPage'
+import { AddSubIdeaPage } from './pages/AddSubIdeaPage'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
                 <Route path={ROUTES.home} element={<HomePage />} />
                 <Route path={ROUTES.ideas} element={<IdeasListPage />} />
                 <Route path={ROUTES.inbox} element={<InboxPage />} />
+                <Route path="/ideas/:parentId/sub/new" element={<AddSubIdeaPage />} />
                 <Route path="/ideas/:id" element={<IdeaDetailPage />} />
                 <Route path={ROUTES.addIdea} element={<AddIdeaPage />} />
                 <Route path={ROUTES.profile} element={<ProfilePage />} />
