@@ -1,5 +1,4 @@
 import type { Idea, IdeaFilters, IdeasStats } from '../types/idea'
-import type { UserId } from '../types/user'
 
 function addDays(isoDate: string, days: number): string {
   const d = new Date(isoDate)
@@ -10,11 +9,12 @@ function addDays(isoDate: string, days: number): string {
 export function normalizeIdea(idea: Idea): Idea {
   const legacyNir = ['ניר', 'רותם', 'אלון']
   const isNir = legacyNir.some((n) => idea.authorName?.includes(n))
-  const userId: UserId = idea.createdByUserId ?? (isNir ? 'nir' : 'golan')
+  const userId = idea.createdByUserId ?? (isNir ? 'nir' : 'golan')
 
   return {
     ...idea,
     createdByUserId: userId,
+    guestSessionId: idea.guestSessionId,
     authorName: idea.authorName || (userId === 'nir' ? 'ניר' : 'גולן'),
     authorInitials: idea.authorInitials || (userId === 'nir' ? 'ניר' : 'גול'),
     targetStartDate: idea.targetStartDate ?? addDays(idea.createdAt, 14),

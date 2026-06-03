@@ -1,5 +1,3 @@
-import type { UserId } from './user'
-
 export type IdeaCategory = 'development' | 'monitoring'
 
 export type IdeaPriority = 'low' | 'medium' | 'high'
@@ -26,7 +24,8 @@ export interface Idea {
   createdAt: string
   targetStartDate: string
   sendToMaybeInbox: boolean
-  createdByUserId: UserId
+  createdByUserId: string
+  guestSessionId?: string
   authorName: string
   authorRole: string
   authorInitials: string
@@ -52,7 +51,7 @@ export interface IdeaFilters {
   categories: IdeaCategory[]
   priority: IdeaPriority | null
   onlyMine?: boolean
-  currentUserId?: UserId
+  currentUserId?: string
   pipeline?: IdeaPipeline
 }
 

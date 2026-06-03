@@ -1,9 +1,11 @@
-import { LogOut, Mail, Lightbulb, RefreshCw, Users } from 'lucide-react'
+import { LogOut, Mail, Lightbulb, RefreshCw, UserCog, Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
+import { canManageUsers } from '../lib/permissions'
+import { ACCESS_LEVEL_LABELS } from '../types/user'
 import { Avatar } from '../components/ui/Avatar'
 import { Button } from '../components/ui/Button'
 
@@ -16,6 +18,7 @@ export function ProfilePage() {
 
   const myIdeas = getIdeasByUser(user.id)
   const myInProgress = myIdeas.filter((i) => i.workflowStatus === 'in_progress')
+  const isGuest = user.accessLevel === 'guest'
 
   const handleLogout = () => {
     logout()
@@ -35,7 +38,10 @@ export function ProfilePage() {
           <h1 className="mb-2 font-display text-headline-lg text-on-surface">
             {user.name}
           </h1>
-          <p className="mb-4 font-body-md text-secondary">{user.role}</p>
+          <p className="mb-1 font-body-md text-secondary">{user.jobTitle}</p>
+          <p className="mb-4 font-label-sm text-primary">
+            רמת גישה: {ACCESS_LEVEL_LABELS[user.accessLevel]}
+          </p>
           <div className="flex flex-wrap justify-center gap-4 md:justify-start">
             <span className="flex items-center gap-2 font-label-md text-secondary">
               <Mail className="h-4 w-4" />
@@ -47,15 +53,38 @@ export function ProfilePage() {
             </span>
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
-            <Button variant="secondary" icon={<RefreshCw className="h-4 w-4" />} onClick={handleSwitchUser}>
+            {canManageUsers(user) && (
+              <Button
+                icon={<UserCog className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.users)}
+              >
+                ניהול משתמשים
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              icon={<RefreshCw className="h-4 w-4" />}
+              onClick={handleSwitchUser}
+            >
               החלפת משתמש
             </Button>
-            <Button variant="ghost" icon={<LogOut className="h-4 w-4" />} onClick={handleLogout}>
+            <Button
+              variant="ghost"
+              icon={<LogOut className="h-4 w-4" />}
+              onClick={handleLogout}
+            >
               יציאה
             </Button>
           </div>
         </div>
       </div>
+
+      {isGuest && (
+        <p className="mb-8 rounded-xl border border-inbox/20 bg-inbox-soft/50 p-4 font-body-md text-on-surface-variant">
+          כ{ACCESS_LEVEL_LABELS.guest} אתם רואים רק רעיונות שנוצרו בכניסה הנוכחית. לאחר
+          יציאה הסשן מתאפס.
+        </p>
+      )}
 
       <div className="mb-10 grid grid-cols-1 gap-gutter sm:grid-cols-3">
         <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
@@ -64,7 +93,7 @@ export function ProfilePage() {
           <p className="font-display text-display-lg text-primary">{myIdeas.length}</p>
         </div>
         <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
-          <p className="font-label-md text-secondary">סך רעיונות במערכת</p>
+          <p className="font-label-md text-secondary">רעיונות גלויים לי</p>
           <p className="font-display text-display-lg text-primary">{stats.total}</p>
         </div>
         <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">

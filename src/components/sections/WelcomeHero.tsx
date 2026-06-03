@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { ACCESS_LEVEL_LABELS } from '../../types/user'
 
 export function WelcomeHero() {
   const navigate = useNavigate()
@@ -21,8 +22,10 @@ export function WelcomeHero() {
             שלום, {user?.name}
           </h1>
           <p className="max-w-lg font-body-md text-secondary">
-            ברוכים הבאים ל-IdeaFlow. רעיונות חדשים נרשמים תחת שמך, עם תאריך יעד
-            להתחלה ואפשרות שמירה ל-Inbox.
+            ברוכים הבאים ל-IdeaFlow
+            {user?.accessLevel === 'guest'
+              ? ` — כניסה כ${ACCESS_LEVEL_LABELS.guest}, רואים רק רעיונות מסשן זה.`
+              : '. רעיונות חדשים נרשמים תחת שמך, עם תאריך יעד להתחלה ואפשרות שמירה ל-Inbox.'}
           </p>
           {stats.inboxCount > 0 && (
             <Link

@@ -1,8 +1,17 @@
-import { ArrowRight, Bell, Lightbulb, LogOut, Search, Share2 } from 'lucide-react'
+import {
+  ArrowRight,
+  Bell,
+  Lightbulb,
+  LogOut,
+  Search,
+  Share2,
+  UserCog,
+} from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { APP_NAME, ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { canManageUsers } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
 
@@ -45,6 +54,7 @@ export function Navbar({
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
   const { stats } = useIdeas()
+  const showUserManagement = canManageUsers(user)
 
   const handleLogout = () => {
     logout()
@@ -94,6 +104,20 @@ export function Navbar({
 
       {variant === 'main' && (
         <nav className="hidden items-center gap-1 md:flex" aria-label="ניווט ראשי">
+          {showUserManagement && (
+            <Link
+              to={ROUTES.users}
+              className={cn(
+                'relative flex items-center gap-1.5 rounded-xl px-3 py-2 font-label-md transition-colors duration-200',
+                pathname === ROUTES.users
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-secondary hover:bg-white/60 hover:text-on-surface',
+              )}
+            >
+              <UserCog className="h-4 w-4" />
+              משתמשים
+            </Link>
+          )}
           {mainLinks.map((link) => (
             <Link
               key={link.to}

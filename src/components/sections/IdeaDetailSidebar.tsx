@@ -9,6 +9,8 @@ import { cn } from '../../lib/cn'
 
 export interface IdeaDetailSidebarProps {
   idea: Idea
+  canEdit: boolean
+  canDelete: boolean
   onComplete: () => void
   onDelete: () => void
   onUpdate: (patch: Partial<Idea>) => void
@@ -16,6 +18,8 @@ export interface IdeaDetailSidebarProps {
 
 export function IdeaDetailSidebar({
   idea,
+  canEdit,
+  canDelete,
   onComplete,
   onDelete,
   onUpdate,
@@ -27,15 +31,18 @@ export function IdeaDetailSidebar({
       <div className="sticky top-24 glass-card p-6">
         <h3 className="mb-6 font-display text-headline-md text-on-surface">פעולות</h3>
         <div className="space-y-4">
-          <button
-            type="button"
-            onClick={onComplete}
-            disabled={idea.workflowStatus === 'completed'}
-            className="btn-boutique flex w-full items-center justify-center gap-2 disabled:opacity-60"
-          >
-            <CheckCheck className="h-5 w-5" />
-            סימון כהושלם
-          </button>
+          {canEdit && (
+            <button
+              type="button"
+              onClick={onComplete}
+              disabled={idea.workflowStatus === 'completed'}
+              className="btn-boutique flex w-full items-center justify-center gap-2 disabled:opacity-60"
+            >
+              <CheckCheck className="h-5 w-5" />
+              סימון כהושלם
+            </button>
+          )}
+          {canEdit && (
           <button
             type="button"
             onClick={() =>
@@ -60,22 +67,27 @@ export function IdeaDetailSidebar({
               </>
             )}
           </button>
-          <button
-            type="button"
-            onClick={() => navigate(ROUTES.addIdea)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light/80 bg-white/50 py-4 font-label-md text-secondary transition-all hover:bg-white active:scale-95"
-          >
-            <Pencil className="h-5 w-5" />
-            עריכת רעיון
-          </button>
-          <button
-            type="button"
-            onClick={onDelete}
-            className="flex w-full items-center justify-center gap-2 rounded-lg py-2 font-label-md text-error transition-colors hover:bg-error/5"
-          >
-            <Trash2 className="h-5 w-5" />
-            מחיקת רעיון
-          </button>
+          )}
+          {canEdit && (
+            <button
+              type="button"
+              onClick={() => navigate(ROUTES.addIdea)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light/80 bg-white/50 py-4 font-label-md text-secondary transition-all hover:bg-white active:scale-95"
+            >
+              <Pencil className="h-5 w-5" />
+              עריכת רעיון
+            </button>
+          )}
+          {canDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="flex w-full items-center justify-center gap-2 rounded-lg py-2 font-label-md text-error transition-colors hover:bg-error/5"
+            >
+              <Trash2 className="h-5 w-5" />
+              מחיקת רעיון
+            </button>
+          )}
         </div>
 
         <hr className="my-6 border-border-light/80" />
@@ -85,6 +97,7 @@ export function IdeaDetailSidebar({
           value={idea.targetStartDate}
           onChange={(e) => onUpdate({ targetStartDate: e.target.value })}
           hint={`עודכן: ${formatIdeaDateLong(idea.createdAt)} נוצר`}
+          disabled={!canEdit}
         />
 
         <div className="mt-6 space-y-4">

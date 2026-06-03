@@ -1,9 +1,9 @@
 import type { Idea } from '../types/idea'
 import { authorFieldsFromUser } from '../lib/userUtils'
-import { USERS } from './users'
+import { SEED_AUTHORS } from './seedUsers'
 
-const nir = authorFieldsFromUser(USERS.nir)
-const golan = authorFieldsFromUser(USERS.golan)
+const nir = authorFieldsFromUser(SEED_AUTHORS.nir)
+const golan = authorFieldsFromUser(SEED_AUTHORS.golan)
 
 export const SEED_IDEAS: Idea[] = [
   {

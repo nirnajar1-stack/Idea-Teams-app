@@ -16,22 +16,31 @@ import {
   isActiveIdea,
   normalizeIdea,
 } from '../lib/ideaUtils'
+import {
+  canDeleteIdea,
+  canEditIdea,
+  canViewIdea,
+  filterVisibleIdeas,
+} from '../lib/permissions'
 import { authorFieldsFromUser } from '../lib/userUtils'
 import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats } from '../types/idea'
-import type { UserId } from '../types/user'
 import { useAuth } from './AuthContext'
+import { useUsers } from './UsersContext'
 
 interface IdeasContextValue {
   ideas: Idea[]
+  visibleIdeas: Idea[]
   stats: IdeasStats
   addIdea: (input: IdeaFormInput) => Idea
   updateIdea: (id: string, patch: Partial<Idea>) => void
-  deleteIdea: (id: string) => void
+  deleteIdea: (id: string) => boolean
   markCompleted: (id: string) => void
   getIdeaById: (id: string) => Idea | undefined
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
   getRecentIdeas: (limit?: number) => Idea[]
-  getIdeasByUser: (userId: UserId) => Idea[]
+  getIdeasByUser: (userId: string) => Idea[]
+  canDelete: (idea: Idea) => boolean
+  canEdit: (idea: Idea) => boolean
 }
 
 const IdeasContext = createContext<IdeasContextValue | null>(null)
@@ -57,40 +66,61 @@ function persistIdeas(ideas: Idea[]) {
 
 export function IdeasProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
+  const { usersById } = useUsers()
   const [ideas, setIdeas] = useState<Idea[]>(loadIdeas)
+
+  const visibleIdeas = useMemo(
+    () => filterVisibleIdeas(ideas, user, usersById),
+    [ideas, user, usersById],
+  )
+
+  const stats = useMemo(() => computeStats(visibleIdeas), [visibleIdeas])
 
   const persist = useCallback((next: Idea[]) => {
     setIdeas(next)
     persistIdeas(next)
   }, [])
 
-  const stats = useMemo(() => computeStats(ideas), [ideas])
+  const canDelete = useCallback(
+    (idea: Idea) => canDeleteIdea(user, idea),
+    [user],
+  )
+
+  const canEdit = useCallback(
+    (idea: Idea) => canEditIdea(user, idea),
+    [user],
+  )
 
   const getIdeaById = useCallback(
-    (id: string) => ideas.find((i) => i.id === id),
-    [ideas],
+    (id: string) => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !user || !canViewIdea(user, idea, usersById)) return undefined
+      return idea
+    },
+    [ideas, user, usersById],
   )
 
   const getFilteredIdeas = useCallback(
-    (filters: IdeaFilters) => filterIdeas(ideas, filters),
-    [ideas],
+    (filters: IdeaFilters) => filterIdeas(visibleIdeas, filters),
+    [visibleIdeas],
   )
 
   const getIdeasByUser = useCallback(
-    (userId: UserId) => ideas.filter((i) => i.createdByUserId === userId),
-    [ideas],
+    (userId: string) =>
+      visibleIdeas.filter((i) => i.createdByUserId === userId),
+    [visibleIdeas],
   )
 
   const getRecentIdeas = useCallback(
     (limit = 3) =>
-      [...ideas]
+      [...visibleIdeas]
         .filter(isActiveIdea)
         .sort(
           (a, b) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
         )
         .slice(0, limit),
-    [ideas],
+    [visibleIdeas],
   )
 
   const addIdea = useCallback(
@@ -126,32 +156,40 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
   const updateIdea = useCallback(
     (id: string, patch: Partial<Idea>) => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canEditIdea(user, idea)) return
       persist(ideas.map((i) => (i.id === id ? { ...i, ...patch } : i)))
     },
-    [ideas, persist],
+    [ideas, persist, user],
   )
 
   const deleteIdea = useCallback(
-    (id: string) => {
+    (id: string): boolean => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canDeleteIdea(user, idea)) return false
       persist(ideas.filter((i) => i.id !== id))
+      return true
     },
-    [ideas, persist],
+    [ideas, persist, user],
   )
 
   const markCompleted = useCallback(
     (id: string) => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canEditIdea(user, idea)) return
       updateIdea(id, {
         workflowStatus: 'completed',
         progress: 100,
         progressStep: 'הושלם',
       })
     },
-    [updateIdea],
+    [ideas, updateIdea, user],
   )
 
   const value = useMemo(
     () => ({
       ideas,
+      visibleIdeas,
       stats,
       addIdea,
       updateIdea,
@@ -161,9 +199,12 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getFilteredIdeas,
       getRecentIdeas,
       getIdeasByUser,
+      canDelete,
+      canEdit,
     }),
     [
       ideas,
+      visibleIdeas,
       stats,
       addIdea,
       updateIdea,
@@ -173,6 +214,8 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getFilteredIdeas,
       getRecentIdeas,
       getIdeasByUser,
+      canDelete,
+      canEdit,
     ],
   )
 

@@ -7,10 +7,10 @@ export interface UserLoginCardProps {
   onSelect: () => void
 }
 
-const accentByUser = {
+const accentByUser: Record<string, string> = {
   nir: 'hover:border-primary/40 hover:shadow-glow',
   golan: 'hover:border-inbox/40 hover:shadow-[0_8px_32px_rgba(124,107,207,0.2)]',
-} as const
+}
 
 export function UserLoginCard({ user, onSelect }: UserLoginCardProps) {
   return (
@@ -19,7 +19,7 @@ export function UserLoginCard({ user, onSelect }: UserLoginCardProps) {
       onClick={onSelect}
       className={cn(
         'group w-full rounded-2xl border border-white/70 bg-white/70 p-8 text-center shadow-card backdrop-blur-xl transition-all duration-300 active:scale-[0.98]',
-        accentByUser[user.id],
+        accentByUser[user.id] ?? 'hover:border-primary/30 hover:shadow-card-hover',
       )}
     >
       <div
@@ -33,7 +33,7 @@ export function UserLoginCard({ user, onSelect }: UserLoginCardProps) {
         {user.initials}
       </div>
       <h2 className="mb-1 font-display text-headline-md text-on-surface">{user.name}</h2>
-      <p className="mb-6 font-body-md text-secondary">{user.role}</p>
+      <p className="mb-6 font-body-md text-secondary">{user.jobTitle}</p>
       <span className="inline-flex items-center gap-2 font-label-md text-primary">
         <LogIn className="h-5 w-5 transition-transform group-hover:-translate-x-0.5" />
         כניסה

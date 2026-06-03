@@ -1,19 +1,39 @@
-import { Lightbulb, Sparkles } from 'lucide-react'
-import { Navigate } from 'react-router-dom'
+import { Eye, EyeOff, Lightbulb, Sparkles, UserRound } from 'lucide-react'
+import { useState } from 'react'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { APP_NAME, ROUTES } from '../constants/app'
-import { useAuth, USER_LIST } from '../context/AuthContext'
-import { UserLoginCard } from '../components/ui/UserLoginCard'
-import type { UserId } from '../types/user'
+import { useAuth } from '../context/AuthContext'
+import { ACCESS_LEVEL_LABELS } from '../types/user'
+import { cn } from '../lib/cn'
 
 export function LoginPage() {
-  const { isAuthenticated, login } = useAuth()
+  const navigate = useNavigate()
+  const { isAuthenticated, login, loginAsGuest } = useAuth()
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   if (isAuthenticated) {
     return <Navigate to={ROUTES.home} replace />
   }
 
-  const handleLogin = (userId: UserId) => {
-    login(userId)
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+    const result = await login(password)
+    setLoading(false)
+    if (result.ok) {
+      navigate(ROUTES.home)
+    } else {
+      setError(result.error ?? 'שגיאה בהתחברות')
+    }
+  }
+
+  const handleGuest = () => {
+    loginAsGuest()
+    navigate(ROUTES.home)
   }
 
   return (
@@ -21,7 +41,7 @@ export function LoginPage() {
       <div className="ambient-orb right-[10%] top-16 h-80 w-80 bg-primary/15" />
       <div className="ambient-orb bottom-16 left-[5%] h-96 w-96 bg-inbox/10" />
 
-      <div className="relative mb-12 max-w-lg animate-fade-up text-center">
+      <div className="relative mb-10 max-w-md animate-fade-up text-center">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-boutique">
           <Lightbulb className="h-8 w-8 text-on-primary" aria-hidden />
         </div>
@@ -33,26 +53,75 @@ export function LoginPage() {
           {APP_NAME}
         </h1>
         <p className="font-body-md text-secondary">
-          בחרו משתמש כדי להיכנס. כל רעיון נשמר עם יוצר, תאריך יעד להתחלה ואפשרות
-          Inbox ל&quot;אולי בהמשך&quot;.
+          הזינו את הסיסמה שלכם לכניסה, או היכנסו כ{ACCESS_LEVEL_LABELS.guest} לסשן
+          זמני.
         </p>
       </div>
 
-      <div className="relative grid w-full max-w-xl grid-cols-1 gap-6 sm:grid-cols-2">
-        {USER_LIST.map((user, i) => (
-          <div
-            key={user.id}
-            className="animate-fade-up"
-            style={{ animationDelay: `${100 + i * 80}ms` }}
-          >
-            <UserLoginCard user={user} onSelect={() => handleLogin(user.id)} />
+      <form
+        onSubmit={handleSubmit}
+        className="relative w-full max-w-md animate-fade-up glass-card p-8"
+        style={{ animationDelay: '80ms' }}
+      >
+        <div className="mb-6">
+          <label htmlFor="password" className="mb-2 block font-label-md text-on-surface">
+            סיסמה
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="boutique-input pl-12"
+              placeholder="הזינו סיסמה"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-secondary hover:bg-primary/5"
+              aria-label={showPassword ? 'הסתר' : 'הצג'}
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
 
-      <p className="relative mt-12 font-label-sm text-secondary">
-        כניסה פנימית — ניר וגולן
-      </p>
+        {error && (
+          <p className="mb-4 rounded-xl border border-error/20 bg-error-container/50 px-4 py-3 font-label-md text-on-error-container">
+            {error}
+          </p>
+        )}
+
+        <button type="submit" disabled={loading} className="btn-boutique w-full">
+          {loading ? 'מזהה…' : 'כניסה'}
+        </button>
+
+        <div className="my-6 flex items-center gap-3">
+          <hr className="flex-1 border-border-light/80" />
+          <span className="font-label-sm text-secondary">או</span>
+          <hr className="flex-1 border-border-light/80" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGuest}
+          className={cn(
+            'flex w-full items-center justify-center gap-2 rounded-xl border border-border-light/80',
+            'bg-white/60 py-3.5 font-label-md text-on-surface transition-all',
+            'hover:border-inbox/30 hover:bg-inbox-soft/50 active:scale-[0.98]',
+          )}
+        >
+          <UserRound className="h-5 w-5 text-inbox" />
+          כניסה כ{ACCESS_LEVEL_LABELS.guest}
+        </button>
+      </form>
     </div>
   )
 }

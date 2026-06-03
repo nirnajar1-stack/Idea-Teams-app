@@ -8,7 +8,8 @@ import { ROUTES } from '../constants/app'
 export function IdeaDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { getIdeaById, markCompleted, deleteIdea, updateIdea } = useIdeas()
+  const { getIdeaById, markCompleted, deleteIdea, updateIdea, canDelete, canEdit } =
+    useIdeas()
 
   const idea = id ? getIdeaById(id) : undefined
 
@@ -17,9 +18,11 @@ export function IdeaDetailPage() {
   }
 
   const handleDelete = () => {
+    if (!canDelete(idea)) return
     if (window.confirm('האם למחוק את הרעיון?')) {
-      deleteIdea(idea.id)
-      navigate(ROUTES.ideas)
+      if (deleteIdea(idea.id)) {
+        navigate(ROUTES.ideas)
+      }
     }
   }
 
@@ -29,6 +32,8 @@ export function IdeaDetailPage() {
         <IdeaDetailContent idea={idea} />
         <IdeaDetailSidebar
           idea={idea}
+          canEdit={canEdit(idea)}
+          canDelete={canDelete(idea)}
           onComplete={() => markCompleted(idea.id)}
           onDelete={handleDelete}
           onUpdate={(patch) => updateIdea(idea.id, patch)}
