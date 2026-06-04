@@ -34,11 +34,18 @@ export function IdeaDetailPage() {
   const canAddSub = canAddSubIdea(user, idea)
 
   const handleDelete = () => {
-    if (!canDelete(idea)) return
-    if (window.confirm('האם למחוק את הרעיון?')) {
-      if (deleteIdea(idea.id)) {
-        navigate(ROUTES.ideas)
-      }
+    if (!canDelete(idea)) {
+      window.alert('אין לך הרשאה למחוק רעיון זה.')
+      return
+    }
+    if (window.confirm('האם למחוק את הרעיון? השינוי נשמר בענן.')) {
+      void (async () => {
+        if (await deleteIdea(idea.id)) {
+          navigate(ROUTES.ideas)
+        } else {
+          window.alert('המחיקה נכשלה. נסו לרענן את הדף.')
+        }
+      })()
     }
   }
 

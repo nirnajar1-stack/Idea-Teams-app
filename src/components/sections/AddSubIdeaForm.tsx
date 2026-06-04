@@ -48,7 +48,7 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
     setSubmitState('loading')
     await new Promise((r) => setTimeout(r, 600))
 
-    addIdea({
+    await addIdea({
       title,
       description,
       category,

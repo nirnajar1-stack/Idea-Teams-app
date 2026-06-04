@@ -51,7 +51,7 @@ export function AddIdeaForm() {
     setSubmitState('loading')
     await new Promise((r) => setTimeout(r, 800))
 
-    const idea = addIdea({
+    const idea = await addIdea({
       title,
       description,
       category,
