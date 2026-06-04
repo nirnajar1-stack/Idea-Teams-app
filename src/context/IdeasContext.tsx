@@ -10,13 +10,12 @@ import {
 import {
   deleteIdeaFromDb,
   fetchIdeasFromDb,
-  ideasApiAvailable,
   insertIdeaToDb,
   updateIdeaInDb,
-  upsertIdeasToDb,
 } from '../api/ideasApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
-import { CLOUD_MIGRATED_KEY, STORAGE_KEY } from '../constants/app'
+import { STORAGE_KEY } from '../constants/app'
+import { isSupabaseEnabled } from '../lib/supabaseClient'
 import {
   computeStats,
   filterIdeas,
@@ -45,6 +44,8 @@ interface IdeasContextValue {
   stats: IdeasStats
   isReady: boolean
   usingCloud: boolean
+  cloudConfigured: boolean
+  loadError: string | null
   addIdea: (input: IdeaFormInput) => Promise<Idea>
   updateIdea: (id: string, patch: Partial<Idea>) => Promise<boolean>
   deleteIdea: (id: string) => Promise<boolean>
@@ -83,15 +84,12 @@ function readLocalStorageIdeas(): Idea[] | null {
   }
 }
 
-function isSeedOnlyData(ideas: Idea[]): boolean {
-  const seed = SEED_IDEAS.map(normalizeIdea)
-  if (ideas.length !== seed.length) return false
-  const seedIds = new Set(seed.map((i) => i.id))
-  return ideas.every((i) => seedIds.has(i.id))
-}
-
-function loadIdeasLocalFallback(): Idea[] {
-  return readLocalStorageIdeas() ?? SEED_IDEAS.map(normalizeIdea)
+/** מצב מקומי בלבד (ללא Supabase) — בפרודקשן ללא דמו */
+function loadOfflineIdeas(): Idea[] {
+  const local = readLocalStorageIdeas()
+  if (local) return local
+  if (import.meta.env.DEV) return SEED_IDEAS.map(normalizeIdea)
+  return []
 }
 
 function saveIdeasLocal(ideas: Idea[]) {
@@ -108,45 +106,50 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [isReady, setIsReady] = useState(false)
   const [usingCloud, setUsingCloud] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const cloudConfigured = isSupabaseEnabled()
 
   useEffect(() => {
     if (!usersReady) return
     let cancelled = false
 
     ;(async () => {
-      if (ideasApiAvailable()) {
+      if (cloudConfigured) {
         try {
-          let fromDb = await fetchIdeasFromDb()
-          const alreadyMigrated =
-            localStorage.getItem(CLOUD_MIGRATED_KEY) === '1'
-          const localOnly = readLocalStorageIdeas()
-
-          if (
-            fromDb.length === 0 &&
-            !alreadyMigrated &&
-            localOnly &&
-            !isSeedOnlyData(localOnly)
-          ) {
-            await upsertIdeasToDb(localOnly)
-            fromDb = await fetchIdeasFromDb()
-          }
-
-          localStorage.setItem(CLOUD_MIGRATED_KEY, '1')
+          const fromDb = await fetchIdeasFromDb()
+          localStorage.removeItem(STORAGE_KEY)
 
           if (!cancelled) {
             setIdeas(fromDb.map(normalizeIdea))
             setUsingCloud(true)
+            setLoadError(null)
             setIsReady(true)
           }
           return
         } catch (err) {
           console.error('Supabase ideas load failed', err)
+          const message =
+            err instanceof Error ? err.message : 'שגיאה לא ידועה'
+          if (!cancelled) {
+            setIdeas([])
+            setUsingCloud(true)
+            setLoadError(
+              `לא ניתן לטעון רעיונות מ-Supabase: ${message}. בדוק משתני Vercel ו-Redeploy.`,
+            )
+            setIsReady(true)
+          }
+          return
         }
       }
 
       if (!cancelled) {
-        setIdeas(loadIdeasLocalFallback())
+        setIdeas(loadOfflineIdeas())
         setUsingCloud(false)
+        setLoadError(
+          import.meta.env.PROD
+            ? 'Supabase לא מוגדר בבנייה — הוסף VITE_SUPABASE_URL ו-VITE_SUPABASE_ANON_KEY ב-Vercel ועשה Redeploy.'
+            : null,
+        )
         setIsReady(true)
       }
     })()
@@ -154,7 +157,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [usersReady])
+  }, [usersReady, cloudConfigured])
 
   const applyLocalIdeas = useCallback(
     (updater: (prev: Idea[]) => Idea[]) => {
@@ -350,6 +353,8 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       stats,
       isReady,
       usingCloud,
+      cloudConfigured,
+      loadError,
       addIdea,
       updateIdea,
       deleteIdea,
@@ -368,6 +373,8 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       stats,
       isReady,
       usingCloud,
+      cloudConfigured,
+      loadError,
       addIdea,
       updateIdea,
       deleteIdea,
@@ -390,7 +397,19 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  return <IdeasContext.Provider value={value}>{children}</IdeasContext.Provider>
+  return (
+    <IdeasContext.Provider value={value}>
+      {loadError && (
+        <div
+          role="alert"
+          className="border-b border-error/30 bg-error-container/80 px-4 py-3 text-center font-label-md text-on-error-container"
+        >
+          {loadError}
+        </div>
+      )}
+      {children}
+    </IdeasContext.Provider>
+  )
 }
 
 export function useIdeas(): IdeasContextValue {
