@@ -12,7 +12,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'btn-boutique',
   secondary:
-    'border border-border-light/80 bg-white/70 text-secondary shadow-sm backdrop-blur-sm hover:bg-white hover:text-on-surface active:scale-95',
+    'border border-border-light bg-surface-container-low/80 text-secondary shadow-sm backdrop-blur-md hover:border-primary/30 hover:bg-primary/10 hover:text-on-surface active:scale-95',
   ghost:
     'text-primary hover:bg-primary/5 active:scale-95',
 }

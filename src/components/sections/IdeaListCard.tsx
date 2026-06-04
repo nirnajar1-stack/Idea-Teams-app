@@ -60,7 +60,7 @@ export function IdeaListCard({ idea }: IdeaListCardProps) {
           </p>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/80 bg-gradient-to-br from-primary-fixed to-surface-container-high text-[10px] font-bold text-primary shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-border-light bg-gradient-to-br from-primary-fixed to-surface-container-high text-[10px] font-bold text-primary-container shadow-sm">
                 {idea.authorInitials}
               </div>
               <span className="font-label-sm text-secondary">

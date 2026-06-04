@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
@@ -17,6 +18,7 @@ import { AddSubIdeaPage } from './pages/AddSubIdeaPage'
 
 function App() {
   return (
+    <ThemeProvider>
     <BrowserRouter>
       <UsersProvider>
         <AuthProvider>
@@ -42,6 +44,7 @@ function App() {
         </AuthProvider>
       </UsersProvider>
     </BrowserRouter>
+    </ThemeProvider>
   )
 }
 

@@ -5,6 +5,7 @@ import { APP_NAME, ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { ACCESS_LEVEL_LABELS } from '../types/user'
 import { cn } from '../lib/cn'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -38,6 +39,9 @@ export function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-margin-mobile py-12 md:px-margin-desktop">
+      <div className="fixed top-4 start-4 z-50">
+        <ThemeToggle />
+      </div>
       <div className="ambient-orb right-[10%] top-16 h-80 w-80 bg-primary/15" />
       <div className="ambient-orb bottom-16 left-[5%] h-96 w-96 bg-inbox/10" />
 
@@ -49,7 +53,7 @@ export function LoginPage() {
           <Sparkles className="h-3.5 w-3.5" />
           FacilPay Studio
         </span>
-        <h1 className="mb-3 font-display text-headline-lg text-on-surface">
+        <h1 className="mb-3 font-display text-headline-lg text-gradient">
           {APP_NAME}
         </h1>
         <p className="font-body-md text-secondary">
@@ -60,7 +64,7 @@ export function LoginPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-md animate-fade-up glass-card p-8"
+        className="tech-surface relative w-full max-w-md animate-fade-up glass-card p-8"
         style={{ animationDelay: '80ms' }}
       >
         <div className="mb-6">
@@ -113,9 +117,9 @@ export function LoginPage() {
           type="button"
           onClick={handleGuest}
           className={cn(
-            'flex w-full items-center justify-center gap-2 rounded-xl border border-border-light/80',
-            'bg-white/60 py-3.5 font-label-md text-on-surface transition-all',
-            'hover:border-inbox/30 hover:bg-inbox-soft/50 active:scale-[0.98]',
+            'flex w-full items-center justify-center gap-2 rounded-xl border border-border-light',
+            'bg-surface-container-low/80 py-3.5 font-label-md text-on-surface backdrop-blur-md transition-all',
+            'hover:border-inbox/30 hover:bg-inbox-soft/60 active:scale-[0.98]',
           )}
         >
           <UserRound className="h-5 w-5 text-inbox" />

@@ -25,7 +25,7 @@ export function StatCard({
     >
       <div className="relative z-10">
         <p className="mb-1 font-label-md text-secondary">{label}</p>
-        <h2 className="bg-gradient-to-l from-primary-deep via-primary to-primary-container bg-clip-text font-display text-display-lg leading-none text-transparent">
+        <h2 className="stat-value bg-gradient-to-l from-primary-deep via-primary to-glow bg-clip-text font-display text-display-lg leading-none text-transparent">
           {value}
         </h2>
       </div>

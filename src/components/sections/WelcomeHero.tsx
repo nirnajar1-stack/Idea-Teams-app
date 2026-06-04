@@ -18,8 +18,8 @@ export function WelcomeHero() {
             <Sparkles className="h-3.5 w-3.5" />
             לוח בקרה
           </span>
-          <h1 className="mb-2 font-display text-headline-lg-mobile text-on-surface md:text-headline-lg">
-            שלום, {user?.name}
+          <h1 className="mb-2 font-display text-headline-lg-mobile md:text-headline-lg">
+            שלום, <span className="text-gradient">{user?.name}</span>
           </h1>
           <p className="max-w-lg font-body-md text-secondary">
             ברוכים הבאים ל-IdeaFlow

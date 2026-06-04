@@ -26,7 +26,7 @@ export function StatsBentoSection() {
       >
         <div>
           <p className="mb-1 font-label-md text-inbox">Inbox · אולי בהמשך</p>
-          <p className="font-display text-display-lg leading-none text-inbox">
+          <p className="stat-value font-display text-display-lg leading-none text-inbox">
             {stats.inboxCount}
           </p>
         </div>

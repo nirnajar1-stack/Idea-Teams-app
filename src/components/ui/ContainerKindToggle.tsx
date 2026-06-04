@@ -13,7 +13,7 @@ export function ContainerKindToggle({ checked, onChange }: ContainerKindTogglePr
         'flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all',
         checked
           ? 'border-primary/35 bg-primary/5 shadow-glow'
-          : 'border-border-light/80 bg-white/50 hover:border-primary/20',
+          : 'border-border-light bg-surface-container-low/80 hover:border-primary/30',
       )}
     >
       <input

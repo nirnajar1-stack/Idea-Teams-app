@@ -165,7 +165,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-border-light/80 py-3.5 font-label-md text-secondary hover:bg-white/80"
+              className="flex-1 rounded-xl border border-border-light py-3.5 font-label-md text-secondary hover:bg-surface-container"
             >
               ביטול
             </button>

@@ -17,7 +17,7 @@ export function InboxToggle({ checked, onChange }: InboxToggleProps) {
         'group w-full rounded-2xl border-2 p-5 text-right transition-all duration-300',
         checked
           ? 'border-inbox/40 bg-inbox-soft shadow-glow'
-          : 'border-border-light/80 bg-white/60 hover:border-primary/25 hover:bg-white/90',
+          : 'border-border-light bg-surface-container-low/80 hover:border-primary/30 hover:bg-surface-container',
       )}
     >
       <div className="flex items-start justify-between gap-4">
@@ -49,7 +49,7 @@ export function InboxToggle({ checked, onChange }: InboxToggleProps) {
         >
           <div
             className={cn(
-              'h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200',
+              'h-5 w-5 rounded-full bg-on-surface shadow-sm transition-all duration-200',
               checked && 'ms-auto',
             )}
           />

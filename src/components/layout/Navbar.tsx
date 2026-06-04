@@ -14,6 +14,7 @@ import { useIdeas } from '../../context/IdeasContext'
 import { canManageUsers } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
+import { ThemeToggle } from '../ui/ThemeToggle'
 
 export type NavbarVariant = 'main' | 'back' | 'ideas'
 
@@ -62,7 +63,7 @@ export function Navbar({
   }
 
   return (
-    <header className="fixed top-0 z-50 flex h-16 w-full items-center justify-between border-b border-white/50 bg-white/70 px-margin-mobile shadow-sm backdrop-blur-2xl md:px-margin-desktop">
+    <header className="nav-glass fixed top-0 z-50 flex h-16 w-full items-center justify-between px-margin-mobile md:px-margin-desktop">
       <div className="flex min-w-0 items-center gap-3">
         {variant === 'back' && (
           <button
@@ -111,7 +112,7 @@ export function Navbar({
                 'relative flex items-center gap-1.5 rounded-xl px-3 py-2 font-label-md transition-colors duration-200',
                 pathname === ROUTES.users
                   ? 'bg-primary/10 text-primary'
-                  : 'text-secondary hover:bg-white/60 hover:text-on-surface',
+                  : 'text-secondary hover:bg-primary/5 hover:text-on-surface',
               )}
             >
               <UserCog className="h-4 w-4" />
@@ -126,7 +127,7 @@ export function Navbar({
                 'relative rounded-xl px-3 py-2 font-label-md transition-colors duration-200',
                 link.match(pathname)
                   ? 'bg-primary/10 text-primary'
-                  : 'text-secondary hover:bg-white/60 hover:text-on-surface',
+                  : 'text-secondary hover:bg-primary/5 hover:text-on-surface',
               )}
             >
               {link.label}
@@ -149,12 +150,13 @@ export function Navbar({
         {showShare && (
           <button
             type="button"
-            className="hidden items-center gap-2 rounded-xl border border-border-light/80 bg-white/50 px-4 py-2 font-label-md text-primary transition-colors hover:bg-white md:flex"
+            className="hidden items-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-2 font-label-md text-primary transition-colors hover:border-primary/30 hover:bg-primary/10 md:flex"
           >
             <Share2 className="h-5 w-5" />
             שיתוף
           </button>
         )}
+        <ThemeToggle />
         <button
           type="button"
           className="rounded-full p-2 transition-all duration-200 hover:bg-primary/5 active:scale-95"

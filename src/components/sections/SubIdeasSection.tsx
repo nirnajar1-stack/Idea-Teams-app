@@ -68,8 +68,8 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
               <Link
                 to={ROUTES.ideaDetail(sub.id)}
                 className={cn(
-                  'block rounded-xl border border-border-light/80 bg-white/60 p-4 transition-all',
-                  'hover:border-primary/25 hover:bg-white hover:shadow-card',
+                  'block rounded-xl border border-border-light bg-surface-container-low/80 p-4 transition-all',
+                  'hover:border-primary/30 hover:bg-surface-container hover:shadow-card',
                 )}
               >
                 <div className="mb-2 flex flex-wrap items-center gap-2">

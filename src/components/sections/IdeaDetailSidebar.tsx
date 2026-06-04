@@ -74,7 +74,7 @@ export function IdeaDetailSidebar({
             <button
               type="button"
               onClick={() => navigate(ROUTES.addIdea)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light/80 bg-white/50 py-4 font-label-md text-secondary transition-all hover:bg-white active:scale-95"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light bg-surface-container-low/80 py-4 font-label-md text-secondary transition-all hover:bg-surface-container active:scale-95"
             >
               <Pencil className="h-5 w-5" />
               עריכת רעיון
@@ -127,7 +127,7 @@ export function IdeaDetailSidebar({
       </div>
 
       {idea.conceptImageUrl && (
-        <div className="overflow-hidden rounded-2xl border border-white/60 bg-white/50 shadow-card backdrop-blur-sm">
+        <div className="overflow-hidden rounded-2xl border border-border-light bg-surface-container-low/80 shadow-card backdrop-blur-sm">
           <div className="relative h-48">
             <img
               src={idea.conceptImageUrl}

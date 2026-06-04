@@ -4,7 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f0f4fa" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>IdeaFlow — לוח בקרה</title>
+    <script>
+      ;(function () {
+        var k = 'ideaflow-theme-v1'
+        var s = localStorage.getItem(k)
+        var dark =
+          s === 'dark' ||
+          (s !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        var root = document.documentElement
+        if (dark) root.classList.add('dark')
+        root.dataset.theme = dark ? 'dark' : 'light'
+        root.style.colorScheme = dark ? 'dark' : 'light'
+        var meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.setAttribute('content', dark ? '#060a12' : '#f0f4fa')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

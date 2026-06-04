@@ -32,7 +32,7 @@ export function Footer() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 z-50 flex h-[4.5rem] w-full items-center justify-around border-t border-white/60 bg-white/75 px-2 shadow-nav backdrop-blur-2xl md:hidden"
+      className="nav-glass fixed bottom-0 left-0 z-50 flex h-[4.5rem] w-full items-center justify-around border-t px-2 md:hidden"
       aria-label="ניווט תחתון"
     >
       {navItems.map((item) => {

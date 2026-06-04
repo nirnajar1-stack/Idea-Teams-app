@@ -18,7 +18,7 @@ export function UserLoginCard({ user, onSelect }: UserLoginCardProps) {
       type="button"
       onClick={onSelect}
       className={cn(
-        'group w-full rounded-2xl border border-white/70 bg-white/70 p-8 text-center shadow-card backdrop-blur-xl transition-all duration-300 active:scale-[0.98]',
+        'group w-full rounded-2xl border border-border-light bg-surface-container-lowest/90 p-8 text-center shadow-card backdrop-blur-xl transition-all duration-300 active:scale-[0.98]',
         accentByUser[user.id] ?? 'hover:border-primary/30 hover:shadow-card-hover',
       )}
     >

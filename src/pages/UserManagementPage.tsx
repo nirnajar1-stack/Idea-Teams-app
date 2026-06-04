@@ -94,7 +94,7 @@ export function UserManagementPage() {
               {users.map((u) => (
                 <tr
                   key={u.id}
-                  className="border-b border-border-light/50 transition-colors hover:bg-white/40"
+                  className="border-b border-border-light transition-colors hover:bg-surface-container-low/60"
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
