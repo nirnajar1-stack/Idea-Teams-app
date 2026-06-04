@@ -16,7 +16,7 @@ import {
   upsertIdeasToDb,
 } from '../api/ideasApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
-import { STORAGE_KEY } from '../constants/app'
+import { CLOUD_MIGRATED_KEY, STORAGE_KEY } from '../constants/app'
 import {
   computeStats,
   filterIdeas,
@@ -70,17 +70,28 @@ function syncContainerProgress(all: Idea[], containerId: string): Idea[] {
   )
 }
 
-function loadIdeasLocal(): Idea[] {
+/** קורא localStorage בלבד — בלי להחזיר seed אם ריק */
+function readLocalStorageIdeas(): Idea[] | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw != null) {
-      const parsed = JSON.parse(raw) as Idea[]
-      if (Array.isArray(parsed)) return parsed.map(normalizeIdea)
-    }
+    if (raw == null) return null
+    const parsed = JSON.parse(raw) as Idea[]
+    if (!Array.isArray(parsed) || parsed.length === 0) return null
+    return parsed.map(normalizeIdea)
   } catch {
-    /* ignore */
+    return null
   }
-  return SEED_IDEAS.map(normalizeIdea)
+}
+
+function isSeedOnlyData(ideas: Idea[]): boolean {
+  const seed = SEED_IDEAS.map(normalizeIdea)
+  if (ideas.length !== seed.length) return false
+  const seedIds = new Set(seed.map((i) => i.id))
+  return ideas.every((i) => seedIds.has(i.id))
+}
+
+function loadIdeasLocalFallback(): Idea[] {
+  return readLocalStorageIdeas() ?? SEED_IDEAS.map(normalizeIdea)
 }
 
 function saveIdeasLocal(ideas: Idea[]) {
@@ -106,15 +117,21 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       if (ideasApiAvailable()) {
         try {
           let fromDb = await fetchIdeasFromDb()
-          const local = loadIdeasLocal()
-          const hasLocalData =
-            local.length > 0 &&
-            JSON.stringify(local) !== JSON.stringify(SEED_IDEAS.map(normalizeIdea))
+          const alreadyMigrated =
+            localStorage.getItem(CLOUD_MIGRATED_KEY) === '1'
+          const localOnly = readLocalStorageIdeas()
 
-          if (fromDb.length === 0 && hasLocalData) {
-            await upsertIdeasToDb(local.map(normalizeIdea))
+          if (
+            fromDb.length === 0 &&
+            !alreadyMigrated &&
+            localOnly &&
+            !isSeedOnlyData(localOnly)
+          ) {
+            await upsertIdeasToDb(localOnly)
             fromDb = await fetchIdeasFromDb()
           }
+
+          localStorage.setItem(CLOUD_MIGRATED_KEY, '1')
 
           if (!cancelled) {
             setIdeas(fromDb.map(normalizeIdea))
@@ -128,8 +145,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       }
 
       if (!cancelled) {
-        const local = loadIdeasLocal()
-        setIdeas(local)
+        setIdeas(loadIdeasLocalFallback())
         setUsingCloud(false)
         setIsReady(true)
       }
