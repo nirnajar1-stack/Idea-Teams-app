@@ -36,12 +36,7 @@ begin
   v_uid := public.current_app_user_id();
   v_level := public.current_access_level();
 
-  -- אורח anon ללא JWT
-  if v_uid is null then
-    return p_idea.guest_session_id is not null;
-  end if;
-
-  -- יוצר / מוקצה תמיד רואים
+  -- יוצר / מוקצה תמיד רואים (גם master_private)
   if p_idea.created_by_user_id = v_uid then
     return true;
   end if;
@@ -49,9 +44,16 @@ begin
     return true;
   end if;
 
-  -- רעיון פרטי מאסטר — רק היוצר (כבר נבדק למעלה)
   if p_idea.visibility = 'master_private' then
     return false;
+  end if;
+
+  -- ללא JWT (התחברות בסיסמה בלבד) — גיבוי
+  if v_uid is null then
+    return p_idea.guest_session_id is not null
+      or p_idea.created_by_user_id in (
+        select id from public.app_users where active = true
+      );
   end if;
 
   -- מנהל / מאסטר — רואים הכל חוץ מ-master_private של אחרים

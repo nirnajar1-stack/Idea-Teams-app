@@ -135,7 +135,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
             setUsingCloud(true)
             setLoadError(
               fromDb.length === 0 && !readLocalStorageIdeas()
-                ? 'לא נמצאו רעיונות. אם היו רעיונות בעבר — הרץ מיגרציה 009 ובדוק קישור Auth (ראה supabase/README).'
+                ? 'לא נמצאו רעיונות. וודא Auth user + auth_user_id, והרץ מיגרציות 009–011.'
                 : null,
             )
             setIsReady(true)
@@ -172,7 +172,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [usersReady, cloudConfigured])
+  }, [usersReady, cloudConfigured, user?.id])
 
   const applyLocalIdeas = useCallback(
     (updater: (prev: Idea[]) => Idea[]) => {
