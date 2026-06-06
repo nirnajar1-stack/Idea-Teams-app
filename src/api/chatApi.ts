@@ -100,6 +100,28 @@ export async function sendChatMessage(
     authorInitials: user.initials,
   }
 
+  const { data, error } = await getSupabase().rpc('send_chat_message_for_session', {
+    p_user_id: user.id,
+    p_scope: scope,
+    p_body: body,
+    p_idea_id: ideaId ?? null,
+    p_guest_session_id: user.guestSessionId ?? null,
+    p_author_name: user.name,
+    p_author_initials: user.initials,
+    p_reply_to_user_id: meta?.replyToUserId ?? null,
+    p_mentioned_user_ids: meta?.mentionedUserIds ?? [],
+  })
+
+  if (!error && data) {
+    return chatRowToMessage(data as ChatMessageRow)
+  }
+
+  const rpcMissing =
+    error?.code === 'PGRST202' ||
+    (error?.message ?? '').includes('send_chat_message_for_session')
+
+  if (!rpcMissing) throw error
+
   const fullRow = sendInputToRow({
     ...baseInput,
     replyToUserId: meta?.replyToUserId,

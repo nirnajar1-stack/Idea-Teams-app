@@ -6,10 +6,25 @@ export function formatChatSendError(error: unknown): string {
 
   if (
     code === '42P01' ||
-    msg.includes("Could not find the table") ||
-    msg.includes('chat_messages')
+    msg.includes('Could not find the table') ||
+    (msg.includes('relation') && msg.includes('does not exist'))
   ) {
     return 'טבלת הצ\'אט לא קיימת — הרץ ב-Supabase את migrations/003_chat_messages.sql'
+  }
+
+  if (
+    code === '42501' ||
+    msg.includes('row-level security') ||
+    msg.includes('Row level security')
+  ) {
+    return 'אין הרשאה לשלוח הודעה — הרץ ב-Supabase את migrations/014_send_chat_rpc.sql'
+  }
+
+  if (
+    code === 'PGRST202' ||
+    msg.includes('send_chat_message_for_session')
+  ) {
+    return 'פונקציית שליחת צ\'אט חסרה — הרץ ב-Supabase את migrations/014_send_chat_rpc.sql'
   }
 
   if (

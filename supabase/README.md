@@ -19,6 +19,7 @@
 | 11 | `011_fix_master_anon_read.sql` | תיקון RLS לקריאת רעיונות בלי JWT |
 | 12 | `012_list_ideas_rpc.sql` | **RPC `list_ideas_for_session`** — טעינת רעיונות |
 | 13 | `013_chat_read_rpc.sql` | **RPC קריאה/סימון נקרא** — התראות צ'אט |
+| 14 | `014_send_chat_rpc.sql` | **RPC שליחת הודעות** — תיקון שליחה בצ'אט |
 
 > אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.  
 > אם רעיונות/התראות לא מתעדכנים — הרץ גם **011 → 012 → 013**.
@@ -138,6 +139,7 @@ select * from storage.buckets where id = 'idea-attachments';
 | `app_users_public` not found | הרץ 007 |
 | רעיונות לא מוצגים | הרץ 009, 011, 012 |
 | התראות צ'אט נשארות "לא נקראו" | הרץ `013_chat_read_rpc.sql` |
+| שליחת הודעה בצ'אט נכשלת | הרץ `003` (אם חסרה טבלה) או `014_send_chat_rpc.sql` |
 
 ---
 
