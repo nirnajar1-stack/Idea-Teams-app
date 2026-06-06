@@ -122,22 +122,23 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
           if (isSupabaseEnabled()) {
             await restoreSupabaseSession()
           }
-          const fromDb = await fetchIdeasFromDb()
+          const fromDb = await fetchIdeasFromDb(user?.id)
 
           if (!cancelled) {
             if (fromDb.length > 0) {
               localStorage.removeItem(STORAGE_KEY)
               setIdeas(fromDb.map(normalizeIdea))
+              setLoadError(null)
             } else {
               const local = readLocalStorageIdeas()
               setIdeas(local ?? [])
+              setLoadError(
+                !local?.length
+                  ? 'לא נמצאו רעיונות ב-Supabase. הרץ מיגרציה 012 ובדוק: SELECT count(*) FROM ideas;'
+                  : null,
+              )
             }
             setUsingCloud(true)
-            setLoadError(
-              fromDb.length === 0 && !readLocalStorageIdeas()
-                ? 'לא נמצאו רעיונות. וודא Auth user + auth_user_id, והרץ מיגרציות 009–011.'
-                : null,
-            )
             setIsReady(true)
           }
           return
@@ -146,10 +147,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
           const message =
             err instanceof Error ? err.message : 'שגיאה לא ידועה'
           if (!cancelled) {
-            setIdeas([])
+            const local = readLocalStorageIdeas()
+            setIdeas(local ?? [])
             setUsingCloud(true)
             setLoadError(
-              `לא ניתן לטעון רעיונות מ-Supabase: ${message}. בדוק משתני Vercel ו-Redeploy.`,
+              `לא ניתן לטעון רעיונות: ${message}. הרץ מיגרציה 012 ב-Supabase SQL Editor.`,
             )
             setIsReady(true)
           }

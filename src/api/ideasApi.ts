@@ -7,8 +7,23 @@ import {
 } from '../lib/dbMappers'
 import type { Idea } from '../types/idea'
 
-export async function fetchIdeasFromDb(): Promise<Idea[]> {
-  const { data, error } = await getSupabase()
+export async function fetchIdeasFromDb(appUserId?: string): Promise<Idea[]> {
+  const supabase = getSupabase()
+
+  const { data: rpcData, error: rpcError } = await supabase.rpc(
+    'list_ideas_for_session',
+    { p_user_id: appUserId ?? null },
+  )
+
+  if (!rpcError && rpcData) {
+    return (rpcData as IdeaRow[]).map(ideaRowToIdea)
+  }
+
+  if (rpcError) {
+    console.warn('list_ideas_for_session RPC failed, fallback to direct select', rpcError.message)
+  }
+
+  const { data, error } = await supabase
     .from('ideas')
     .select('*')
     .order('created_at', { ascending: false })
