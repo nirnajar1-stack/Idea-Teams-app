@@ -20,6 +20,7 @@ import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
+import { IdeaChatSection } from '../chat/IdeaChatSection'
 import { SubIdeasSection } from './SubIdeasSection'
 
 export interface IdeaDetailContentProps {
@@ -163,6 +164,8 @@ export function IdeaDetailContent({
           </div>
         </div>
       </section>
+
+      <IdeaChatSection idea={idea} />
     </div>
   )
 }

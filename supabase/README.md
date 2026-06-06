@@ -87,3 +87,28 @@
 3. `npm run dev` — טעינה ושמירה מהענן.
 
 אם Supabase ריק ויש נתונים ב-localStorage, בכניסה הראשונה מתבצעת העברה אוטומטית לטבלת `ideas`.
+
+## צ'אט (ווידג'ט)
+
+טבלה אחת `chat_messages` משרתת **שני סוגי צ'אט**:
+
+| `scope` | `idea_id` | משמעות |
+|---------|-----------|--------|
+| `general` | `NULL` | צ'אט כללי באפליקציה (כפתור צף) |
+| `idea` | מזהה רעיון | צ'אט בתוך דף רעיון |
+
+**הרצה:** SQL Editor → העתק את `migrations/003_chat_messages.sql` → **Run**.
+
+**בדיקה מהירה:**
+
+```sql
+-- הודעה כללית
+insert into public.chat_messages (scope, sender_user_id, author_name, author_initials, body)
+values ('general', 'nir', 'ניר', 'ניר', 'שלום לכולם');
+
+-- הודעה בתוך רעיון (החלף IDEA_ID)
+insert into public.chat_messages (scope, idea_id, sender_user_id, author_name, author_initials, body)
+values ('idea', 'IDEA_ID', 'golan', 'גולן', 'גול', 'עדכון על הרעיון');
+```
+
+**Realtime:** המיגרציה מוסיפה את הטבלה ל-`supabase_realtime` — הודעות חדשות יגיעו לווידג'ט בלי רענון.

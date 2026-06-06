@@ -1,4 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { ChatWidget } from '../chat/ChatWidget'
 import { ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 
@@ -9,5 +10,10 @@ export function ProtectedRoute() {
     return <Navigate to={ROUTES.login} replace />
   }
 
-  return <Outlet />
+  return (
+    <>
+      <Outlet />
+      <ChatWidget />
+    </>
+  )
 }
