@@ -123,11 +123,14 @@ create policy "app_users_delete_manager"
   using (public.is_manager());
 
 -- RPC התחברות — בודק hash בצד השרver (לא חושף password_hash ללקוח)
+-- digest/encode מ-pgcrypto (ב-Supabase: schema extensions)
+create extension if not exists pgcrypto with schema extensions;
+
 create or replace function public.login_with_password(p_password text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_hash text;
@@ -137,7 +140,7 @@ begin
   if p_password is null or length(trim(p_password)) = 0 then
     return jsonb_build_object('ok', false, 'error', 'empty_password');
   end if;
-  v_hash := encode(digest(trim(p_password) || ':ideaflow-local-v1', 'sha256'), 'hex');
+  v_hash := encode(digest(trim(p_password) || ':ideaflow-local-v1', 'sha256'::text), 'hex');
   select count(*) into v_matches
   from public.app_users
   where password_hash = v_hash and active = true and access_level != 'guest';

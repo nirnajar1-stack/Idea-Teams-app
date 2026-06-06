@@ -123,6 +123,7 @@ select * from storage.buckets where id = 'idea-attachments';
 
 | בעיה | פתרון |
 |------|--------|
+| `digest does not exist` ב-login | הרץ `008_fix_login_pgcrypto.sql` |
 | "שליחת הודעה נכשלה" | הרץ 004 |
 | "login_with_password does not exist" | הרץ 007 |
 | העלאת קבצים נכשלת | הרץ 006, בדוק bucket |
