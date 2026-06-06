@@ -20,8 +20,12 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
   const [email, setEmail] = useState(user?.email ?? '')
   const [username, setUsername] = useState(user?.username ?? '')
   const [password, setPassword] = useState('')
-  const [accessLevel, setAccessLevel] = useState<'manager' | 'member'>(
-    user?.accessLevel === 'manager' ? 'manager' : 'member',
+  const [accessLevel, setAccessLevel] = useState<'manager' | 'member' | 'master'>(
+    user?.accessLevel === 'manager'
+      ? 'manager'
+      : user?.accessLevel === 'master'
+        ? 'master'
+        : 'member',
   )
   const [active, setActive] = useState(user?.active ?? true)
   const [saving, setSaving] = useState(false)
@@ -139,12 +143,13 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
             <select
               value={accessLevel}
               onChange={(e) =>
-                setAccessLevel(e.target.value as 'manager' | 'member')
+                setAccessLevel(e.target.value as 'manager' | 'member' | 'master')
               }
               className="boutique-input"
             >
               <option value="manager">{ACCESS_LEVEL_LABELS.manager}</option>
               <option value="member">{ACCESS_LEVEL_LABELS.member}</option>
+              <option value="master">{ACCESS_LEVEL_LABELS.master}</option>
             </select>
           </div>
           {isEdit && (

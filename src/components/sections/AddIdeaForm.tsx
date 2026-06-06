@@ -12,7 +12,8 @@ import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { canCreateContainerIdea } from '../../lib/permissions'
-import type { IdeaCategory, IdeaPriority } from '../../types/idea'
+import { resolveVisibilityOnCreate } from '../../lib/ideaVisibility'
+import type { IdeaCategory, IdeaPriority, IdeaVisibility } from '../../types/idea'
 import { ContainerKindToggle } from '../ui/ContainerKindToggle'
 import { CategoryCard } from '../ui/CategoryCard'
 import { DateInput } from '../ui/DateInput'
@@ -20,6 +21,7 @@ import { InboxToggle } from '../ui/InboxToggle'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
 import { Textarea } from '../ui/Textarea'
+import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
 import { cn } from '../../lib/cn'
 
 type SubmitState = 'idle' | 'loading' | 'success'
@@ -41,6 +43,7 @@ export function AddIdeaForm() {
   const [targetStartDate, setTargetStartDate] = useState(defaultTargetDate)
   const [sendToMaybeInbox, setSendToMaybeInbox] = useState(false)
   const [isContainer, setIsContainer] = useState(false)
+  const [visibility, setVisibility] = useState<IdeaVisibility>('team')
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
   const allowContainer = canCreateContainerIdea(user)
 
@@ -59,6 +62,7 @@ export function AddIdeaForm() {
       targetStartDate,
       sendToMaybeInbox: isContainer ? false : sendToMaybeInbox,
       ideaKind: isContainer ? 'container' : 'standard',
+      visibility: user ? resolveVisibilityOnCreate(user, visibility) : 'team',
     })
     setSubmitState('success')
     await new Promise((r) => setTimeout(r, 1200))
@@ -156,6 +160,14 @@ export function AddIdeaForm() {
 
           {!isContainer && (
             <InboxToggle checked={sendToMaybeInbox} onChange={setSendToMaybeInbox} />
+          )}
+
+          {user && !isContainer && (
+            <IdeaVisibilitySelect
+              user={user}
+              value={visibility}
+              onChange={setVisibility}
+            />
           )}
 
           <div className="pt-4">

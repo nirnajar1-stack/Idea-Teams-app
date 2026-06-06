@@ -13,6 +13,9 @@
 | 5 | `005_assignee_audit_preferences.sql` | assignee, audit log, העדפות, עריכת צ'אט |
 | 6 | `006_storage_attachments.sql` | bucket לקבצים |
 | 7 | `007_auth_and_rls.sql` | **Auth + RLS production** |
+| 8 | `008_fix_login_pgcrypto.sql` | תיקון digest/pgcrypto |
+| 9 | `009_fix_ideas_rls_select.sql` | תיקון תצוגת רעיונות |
+| 10 | `010_master_visibility.sql` | **מאסטר + visibility לרעיונות** |
 
 > אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.
 

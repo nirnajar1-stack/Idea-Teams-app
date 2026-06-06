@@ -9,6 +9,9 @@ export type IdeaPipeline = 'active' | 'inbox' | 'all'
 /** standard — רעיון רגיל; container — רעיון שמכיל תת-רעיונות (יצירה למנהל בלבד) */
 export type IdeaKind = 'standard' | 'container'
 
+/** team — כולם | managers_only — מנהלים+מאסטר | master_private — מאסטר יוצר בלבד */
+export type IdeaVisibility = 'team' | 'managers_only' | 'master_private'
+
 export interface IdeaAttachment {
   id: string
   name: string
@@ -45,6 +48,8 @@ export interface Idea {
   parentId?: string
   /** משתמש מוקצה לביצוע הרעיון */
   assigneeUserId?: string
+  /** מי רואה את הרעיון — ברירת מחדל team */
+  visibility?: IdeaVisibility
 }
 
 export interface IdeaFormInput {
@@ -56,6 +61,7 @@ export interface IdeaFormInput {
   sendToMaybeInbox: boolean
   ideaKind?: IdeaKind
   parentId?: string
+  visibility?: IdeaVisibility
 }
 
 export interface IdeaFilters {

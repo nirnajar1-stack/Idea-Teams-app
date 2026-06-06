@@ -1,4 +1,4 @@
-import type { Idea, IdeaAttachment, IdeaKind } from '../types/idea'
+import type { Idea, IdeaAttachment, IdeaKind, IdeaVisibility } from '../types/idea'
 import type { AccessLevel, StoredUser } from '../types/user'
 
 export interface AppUserRow {
@@ -39,6 +39,7 @@ export interface IdeaRow {
   idea_kind: IdeaKind
   parent_id: string | null
   assignee_user_id: string | null
+  visibility: IdeaVisibility
 }
 
 export function userRowToStored(row: AppUserRow): StoredUser {
@@ -96,6 +97,7 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     ideaKind: row.idea_kind,
     parentId: row.parent_id ?? undefined,
     assigneeUserId: row.assignee_user_id ?? undefined,
+    visibility: row.visibility ?? 'team',
   }
 }
 
@@ -126,6 +128,7 @@ export function ideaToRow(idea: Idea): IdeaRow {
     idea_kind: idea.ideaKind ?? 'standard',
     parent_id: idea.parentId ?? null,
     assignee_user_id: idea.assigneeUserId ?? null,
+    visibility: idea.visibility ?? 'team',
   }
 }
 
@@ -155,5 +158,6 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.ideaKind !== undefined) row.idea_kind = patch.ideaKind
   if (patch.parentId !== undefined) row.parent_id = patch.parentId ?? null
   if (patch.assigneeUserId !== undefined) row.assignee_user_id = patch.assigneeUserId ?? null
+  if (patch.visibility !== undefined) row.visibility = patch.visibility
   return row
 }

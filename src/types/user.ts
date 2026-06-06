@@ -1,10 +1,11 @@
-export type AccessLevel = 'manager' | 'member' | 'guest'
+export type AccessLevel = 'manager' | 'member' | 'guest' | 'master'
 
 /** תווית תפקיד במערכת — ללא מינוח "מנהל מערכת" */
 export const ACCESS_LEVEL_LABELS: Record<AccessLevel, string> = {
   manager: 'מנהל',
   member: 'משתמש',
   guest: 'אורח',
+  master: 'מאסטר',
 }
 
 export interface AppUser {

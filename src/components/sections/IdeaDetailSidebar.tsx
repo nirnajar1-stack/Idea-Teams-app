@@ -6,7 +6,10 @@ import type { Idea } from '../../types/idea'
 import { DateInput } from '../ui/DateInput'
 import { ProgressBar } from '../ui/ProgressBar'
 import { AssigneeSelect } from './AssigneeSelect'
+import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
 import { useUsers } from '../../context/UsersContext'
+import { useAuth } from '../../context/AuthContext'
+import { canChangeIdeaVisibility } from '../../lib/ideaVisibility'
 import { cn } from '../../lib/cn'
 
 export interface IdeaDetailSidebarProps {
@@ -29,6 +32,7 @@ export function IdeaDetailSidebar({
   onUpdate,
 }: IdeaDetailSidebarProps) {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const { listManageableUsers } = useUsers()
 
   return (
@@ -103,6 +107,17 @@ export function IdeaDetailSidebar({
           disabled={!canEdit}
           onChange={(assigneeUserId) => onUpdate({ assigneeUserId })}
         />
+
+        {user && canChangeIdeaVisibility(user, idea) && (
+          <div className="mt-6">
+            <IdeaVisibilitySelect
+              user={user}
+              value={idea.visibility ?? 'team'}
+              disabled={!canEdit}
+              onChange={(visibility) => onUpdate({ visibility })}
+            />
+          </div>
+        )}
 
         <hr className="my-6 border-border-light/80" />
 

@@ -117,10 +117,15 @@ export function UserManagementPage() {
                         'inline-flex items-center gap-1 rounded-full px-3 py-1 font-label-sm',
                         u.accessLevel === 'manager'
                           ? 'bg-primary/10 text-primary'
-                          : 'bg-surface-container text-on-surface-variant',
+                          : u.accessLevel === 'master'
+                            ? 'bg-inbox/10 text-inbox'
+                            : 'bg-surface-container text-on-surface-variant',
                       )}
                     >
                       {u.accessLevel === 'manager' && (
+                        <Shield className="h-3.5 w-3.5" />
+                      )}
+                      {u.accessLevel === 'master' && (
                         <Shield className="h-3.5 w-3.5" />
                       )}
                       {ACCESS_LEVEL_LABELS[u.accessLevel]}

@@ -14,6 +14,7 @@ import {
   updateIdeaInDb,
 } from '../api/ideasApi'
 import { insertAuditEntry } from '../api/auditApi'
+import { restoreSupabaseSession } from '../api/authApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
 import { STORAGE_KEY } from '../constants/app'
 import { isSupabaseEnabled } from '../lib/supabaseClient'
@@ -35,6 +36,7 @@ import {
   filterVisibleIdeas,
 } from '../lib/permissions'
 import { authorFieldsFromUser } from '../lib/userUtils'
+import { resolveVisibilityOnCreate } from '../lib/ideaVisibility'
 import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats } from '../types/idea'
 import { useAuth } from './AuthContext'
 import { useUsers } from './UsersContext'
@@ -117,13 +119,25 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     ;(async () => {
       if (cloudConfigured) {
         try {
+          if (isSupabaseEnabled()) {
+            await restoreSupabaseSession()
+          }
           const fromDb = await fetchIdeasFromDb()
-          localStorage.removeItem(STORAGE_KEY)
 
           if (!cancelled) {
-            setIdeas(fromDb.map(normalizeIdea))
+            if (fromDb.length > 0) {
+              localStorage.removeItem(STORAGE_KEY)
+              setIdeas(fromDb.map(normalizeIdea))
+            } else {
+              const local = readLocalStorageIdeas()
+              setIdeas(local ?? [])
+            }
             setUsingCloud(true)
-            setLoadError(null)
+            setLoadError(
+              fromDb.length === 0 && !readLocalStorageIdeas()
+                ? 'לא נמצאו רעיונות. אם היו רעיונות בעבר — הרץ מיגרציה 009 ובדוק קישור Auth (ראה supabase/README).'
+                : null,
+            )
             setIsReady(true)
           }
           return
@@ -259,6 +273,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         attachments: [],
         progress: 0,
         progressStep: isContainer ? 'ממתין לתת-רעיונות' : 'שלב 1 מתוך 5',
+        visibility: resolveVisibilityOnCreate(user, input.visibility),
       }
 
       if (usingCloud) await insertIdeaToDb(newIdea)

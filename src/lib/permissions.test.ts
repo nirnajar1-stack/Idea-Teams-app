@@ -25,6 +25,17 @@ const member: AppUser = {
   active: true,
 }
 
+const master: AppUser = {
+  id: 'master1',
+  name: 'מאסטר',
+  jobTitle: 'מאסטר',
+  initials: 'מ',
+  email: 'master@test.io',
+  username: 'master1',
+  accessLevel: 'master',
+  active: true,
+}
+
 const baseIdea: Idea = {
   id: 'i1',
   externalId: 'if-1',
@@ -46,35 +57,83 @@ const baseIdea: Idea = {
   attachments: [],
   progress: 0,
   progressStep: '',
+  visibility: 'team',
 }
 
 const usersById = new Map<string, StoredUser>([
   ['nir', { ...manager, passwordHash: '' }],
   ['golan', { ...member, passwordHash: '' }],
+  ['master1', { ...master, passwordHash: '' }],
 ])
 
 describe('permissions', () => {
-  it('manager can edit any idea', () => {
-    expect(canEditIdea(manager, baseIdea)).toBe(true)
+  it('manager sees all non-private ideas', () => {
+    expect(canViewIdea(manager, baseIdea, usersById)).toBe(true)
+    expect(
+      canViewIdea(manager, { ...baseIdea, visibility: 'managers_only' }, usersById),
+    ).toBe(true)
   })
 
-  it('assignee can edit idea', () => {
+  it('manager cannot see others master_private', () => {
+    expect(
+      canViewIdea(
+        manager,
+        { ...baseIdea, visibility: 'master_private', createdByUserId: 'master1' },
+        usersById,
+      ),
+    ).toBe(false)
+  })
+
+  it('master sees own private idea', () => {
+    expect(
+      canViewIdea(
+        master,
+        { ...baseIdea, visibility: 'master_private', createdByUserId: 'master1' },
+        usersById,
+      ),
+    ).toBe(true)
+  })
+
+  it('member sees team ideas from others', () => {
+    expect(canViewIdea(member, baseIdea, usersById)).toBe(true)
+  })
+
+  it('member cannot see others managers_only', () => {
+    expect(
+      canViewIdea(
+        member,
+        { ...baseIdea, visibility: 'managers_only', createdByUserId: 'nir' },
+        usersById,
+      ),
+    ).toBe(false)
+  })
+
+  it('manager cannot edit others master_private', () => {
+    expect(
+      canEditIdea(
+        manager,
+        { ...baseIdea, visibility: 'master_private', createdByUserId: 'master1' },
+      ),
+    ).toBe(false)
+  })
+
+  it('assignee can edit', () => {
     const assigned = { ...baseIdea, createdByUserId: 'nir', assigneeUserId: 'golan' }
     expect(canEditIdea(member, assigned)).toBe(true)
   })
 
-  it('member cannot edit others idea without assignee', () => {
-    expect(canEditIdea(member, { ...baseIdea, createdByUserId: 'nir' })).toBe(false)
-  })
-
-  it('assignee can view idea', () => {
-    const assigned = { ...baseIdea, createdByUserId: 'nir', assigneeUserId: 'golan' }
-    expect(canViewIdea(member, assigned, usersById)).toBe(true)
-  })
-
-  it('member sees ideas from manager and members', () => {
-    const ideas = [baseIdea, { ...baseIdea, id: 'i2', createdByUserId: 'nir' }]
+  it('members see team ideas in filter', () => {
+    const ideas = [
+      baseIdea,
+      {
+        ...baseIdea,
+        id: 'i2',
+        visibility: 'managers_only' as const,
+        createdByUserId: 'nir',
+      },
+    ]
     const visible = filterVisibleIdeas(ideas, member, usersById)
-    expect(visible).toHaveLength(2)
+    expect(visible).toHaveLength(1)
+    expect(visible[0].id).toBe('i1')
   })
 })

@@ -1,5 +1,17 @@
 import type { Idea } from '../types/idea'
-import type { AccessLevel, AppUser, StoredUser } from '../types/user'
+import type { AppUser, StoredUser } from '../types/user'
+
+export function isMaster(user: AppUser | null): boolean {
+  return user?.accessLevel === 'master'
+}
+
+export function isManager(user: AppUser | null): boolean {
+  return user?.accessLevel === 'manager'
+}
+
+export function isManagerOrMaster(user: AppUser | null): boolean {
+  return user?.accessLevel === 'manager' || user?.accessLevel === 'master'
+}
 
 export function canManageUsers(user: AppUser | null): boolean {
   return user?.accessLevel === 'manager'
@@ -8,6 +20,10 @@ export function canManageUsers(user: AppUser | null): boolean {
 /** רעיון-מארז עם תת-רעיונות — יצירה למנהל בלבד */
 export function canCreateContainerIdea(user: AppUser | null): boolean {
   return user?.accessLevel === 'manager'
+}
+
+function isOthersMasterPrivate(user: AppUser, idea: Idea): boolean {
+  return idea.visibility === 'master_private' && idea.createdByUserId !== user.id
 }
 
 export function canAddSubIdea(
@@ -20,6 +36,7 @@ export function canAddSubIdea(
 
 export function canDeleteIdea(user: AppUser | null, idea: Idea): boolean {
   if (!user) return false
+  if (isOthersMasterPrivate(user, idea) && user.accessLevel === 'manager') return false
   if (user.accessLevel === 'manager') return true
   if (user.accessLevel === 'guest') return false
   return idea.createdByUserId === user.id
@@ -27,7 +44,11 @@ export function canDeleteIdea(user: AppUser | null, idea: Idea): boolean {
 
 export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
   if (!user) return false
+  if (isOthersMasterPrivate(user, idea) && user.accessLevel === 'manager') return false
   if (user.accessLevel === 'manager') return true
+  if (user.accessLevel === 'master') {
+    return idea.createdByUserId === user.id || idea.assigneeUserId === user.id
+  }
   if (user.accessLevel === 'guest') {
     return (
       idea.createdByUserId === user.id &&
@@ -38,24 +59,21 @@ export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
   return idea.createdByUserId === user.id || idea.assigneeUserId === user.id
 }
 
-function creatorAccessLevel(
-  idea: Idea,
-  usersById: Map<string, StoredUser>,
-): AccessLevel | null {
-  const creator = usersById.get(idea.createdByUserId)
-  if (creator) return creator.accessLevel
-  if (idea.guestSessionId) return 'guest'
-  return 'member'
-}
-
 export function canViewIdea(
   viewer: AppUser | null,
   idea: Idea,
-  usersById: Map<string, StoredUser>,
+  _usersById: Map<string, StoredUser>,
 ): boolean {
   if (!viewer) return false
-  if (viewer.accessLevel === 'manager') return true
+
+  if (idea.createdByUserId === viewer.id) return true
   if (idea.assigneeUserId === viewer.id) return true
+
+  if (idea.visibility === 'master_private') return false
+
+  if (viewer.accessLevel === 'manager' || viewer.accessLevel === 'master') {
+    return true
+  }
 
   if (viewer.accessLevel === 'guest') {
     return (
@@ -65,8 +83,11 @@ export function canViewIdea(
     )
   }
 
-  const level = creatorAccessLevel(idea, usersById)
-  return level === 'manager' || level === 'member'
+  // member — רק רעיונות team (כולל מנהל שפתח ל"כל המשתמשים")
+  if (idea.visibility === 'managers_only') return false
+  if (idea.visibility === 'team') return true
+
+  return false
 }
 
 export function filterVisibleIdeas(

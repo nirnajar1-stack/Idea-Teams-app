@@ -56,6 +56,7 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
       targetStartDate,
       sendToMaybeInbox: false,
       parentId: parent.id,
+      visibility: parent.visibility ?? 'team',
     })
     setSubmitState('success')
     await new Promise((r) => setTimeout(r, 800))

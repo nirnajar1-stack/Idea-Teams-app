@@ -19,6 +19,7 @@ import type { Idea } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
+import { IdeaVisibilityBadge } from '../ui/IdeaVisibilityBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 import { IdeaChatSection } from '../chat/IdeaChatSection'
 import { SubIdeasSection } from './SubIdeasSection'
@@ -62,6 +63,7 @@ export function IdeaDetailContent({
             <Badge variant="surface">תת-רעיון</Badge>
           )}
           {idea.sendToMaybeInbox && <InboxBadge />}
+          <IdeaVisibilityBadge visibility={idea.visibility ?? 'team'} />
           <TargetDateBadge targetStartDate={idea.targetStartDate} />
           <span className="mr-auto font-label-sm text-secondary">
             ID: #{idea.externalId}

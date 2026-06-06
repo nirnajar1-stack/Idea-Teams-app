@@ -21,6 +21,7 @@ export function normalizeIdea(idea: Idea): Idea {
     sendToMaybeInbox: idea.sendToMaybeInbox ?? false,
     ideaKind: idea.ideaKind ?? (idea.parentId ? 'standard' : 'standard'),
     parentId: idea.parentId,
+    visibility: idea.visibility ?? 'team',
   }
 }
 
