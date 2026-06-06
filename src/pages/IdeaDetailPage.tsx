@@ -70,6 +70,8 @@ export function IdeaDetailPage() {
           parent={parent}
           subIdeas={subIdeas}
           canAddSub={canAddSub}
+          canEdit={canEdit(idea)}
+          onUpdate={(patch) => updateIdea(idea.id, patch)}
         />
         <IdeaDetailSidebar
           idea={idea}

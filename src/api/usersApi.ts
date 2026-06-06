@@ -10,12 +10,21 @@ function initialsFromName(name: string): string {
 }
 
 export async function fetchUsersFromDb(): Promise<StoredUser[]> {
-  const { data, error } = await getSupabase()
-    .from('app_users')
+  const supabase = getSupabase()
+  const { data, error } = await supabase
+    .from('app_users_public')
     .select('*')
     .order('name')
-  if (error) throw error
-  return (data as AppUserRow[]).map(userRowToStored)
+
+  if (!error && data) {
+    return (data as Omit<AppUserRow, 'password_hash'>[]).map((row) =>
+      userRowToStored({ ...row, password_hash: '' }),
+    )
+  }
+
+  const fallback = await supabase.from('app_users').select('*').order('name')
+  if (fallback.error) throw fallback.error
+  return (fallback.data as AppUserRow[]).map(userRowToStored)
 }
 
 export async function insertUserToDb(input: UserFormInput): Promise<StoredUser> {

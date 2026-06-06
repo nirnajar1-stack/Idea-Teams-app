@@ -38,6 +38,7 @@ export interface IdeaRow {
   concept_image_url: string | null
   idea_kind: IdeaKind
   parent_id: string | null
+  assignee_user_id: string | null
 }
 
 export function userRowToStored(row: AppUserRow): StoredUser {
@@ -94,6 +95,7 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     conceptImageUrl: row.concept_image_url ?? undefined,
     ideaKind: row.idea_kind,
     parentId: row.parent_id ?? undefined,
+    assigneeUserId: row.assignee_user_id ?? undefined,
   }
 }
 
@@ -123,6 +125,7 @@ export function ideaToRow(idea: Idea): IdeaRow {
     concept_image_url: idea.conceptImageUrl ?? null,
     idea_kind: idea.ideaKind ?? 'standard',
     parent_id: idea.parentId ?? null,
+    assignee_user_id: idea.assigneeUserId ?? null,
   }
 }
 
@@ -151,5 +154,6 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.conceptImageUrl !== undefined) row.concept_image_url = patch.conceptImageUrl ?? null
   if (patch.ideaKind !== undefined) row.idea_kind = patch.ideaKind
   if (patch.parentId !== undefined) row.parent_id = patch.parentId ?? null
+  if (patch.assigneeUserId !== undefined) row.assignee_user_id = patch.assigneeUserId ?? null
   return row
 }

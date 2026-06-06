@@ -13,6 +13,8 @@ export interface IdeaAttachment {
   id: string
   name: string
   type: 'pdf' | 'image'
+  /** URL ב-Supabase Storage (אופציונלי) */
+  url?: string
 }
 
 export interface Idea {
@@ -41,6 +43,8 @@ export interface Idea {
   ideaKind?: IdeaKind
   /** מזהה רעיון-אב (תת-רעיון בלבד) */
   parentId?: string
+  /** משתמש מוקצה לביצוע הרעיון */
+  assigneeUserId?: string
 }
 
 export interface IdeaFormInput {

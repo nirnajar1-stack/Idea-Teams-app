@@ -19,20 +19,24 @@ import {
 import { useAuth } from './AuthContext'
 import { useIdeas } from './IdeasContext'
 import {
+  buildBellNotifications,
   buildCursorMap,
-  buildIdeaNotifications,
   countUnreadGeneral,
   cursorKey,
 } from '../lib/chatNotifications'
-import type { ChatMessage, IdeaChatNotification } from '../types/chat'
+import type { ChatBellNotification, ChatMessage } from '../types/chat'
 
 interface ChatNotificationsContextValue {
   generalUnread: number
-  ideaNotifications: IdeaChatNotification[]
+  bellNotifications: ChatBellNotification[]
+  bellUnreadTotal: number
+  ideaNotifications: ChatBellNotification[]
   ideaUnreadTotal: number
   refresh: () => Promise<void>
   markGeneralRead: () => Promise<void>
   markIdeaRead: (ideaId: string) => Promise<void>
+  requestOpenGeneralChat: () => void
+  openGeneralChatTick: number
   ready: boolean
 }
 
@@ -44,6 +48,7 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
   const [generalMessages, setGeneralMessages] = useState<ChatMessage[]>([])
   const [ideaMessages, setIdeaMessages] = useState<ChatMessage[]>([])
   const [cursorMap, setCursorMap] = useState<Map<string, string>>(new Map())
+  const [openGeneralChatTick, setOpenGeneralChatTick] = useState(0)
   const [ready, setReady] = useState(false)
 
   const ideasById = useMemo(() => new Map(ideas.map((i) => [i.id, i])), [ideas])
@@ -54,14 +59,18 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
       return
     }
     try {
-      const [general, idea, cursors] = await Promise.all([
+      const [general, idea] = await Promise.all([
         fetchGeneralMessages(),
         fetchAllIdeaMessages(),
-        fetchReadCursors(user.id),
       ])
       setGeneralMessages(general)
       setIdeaMessages(idea)
-      setCursorMap(buildCursorMap(cursors))
+      try {
+        const cursors = await fetchReadCursors(user.id)
+        setCursorMap(buildCursorMap(cursors))
+      } catch {
+        setCursorMap(new Map())
+      }
     } catch {
       /* keep previous */
     } finally {
@@ -99,15 +108,35 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
     return countUnreadGeneral(generalMessages, user.id, lastRead)
   }, [generalMessages, cursorMap, user])
 
-  const ideaNotifications = useMemo(() => {
+  const bellNotifications = useMemo(() => {
     if (!user) return []
-    return buildIdeaNotifications(ideaMessages, ideasById, user.id, cursorMap)
-  }, [ideaMessages, ideasById, user, cursorMap])
+    return buildBellNotifications(
+      generalMessages,
+      ideaMessages,
+      ideasById,
+      user.id,
+      cursorMap,
+    )
+  }, [generalMessages, ideaMessages, ideasById, user, cursorMap])
+
+  const ideaNotifications = useMemo(
+    () => bellNotifications.filter((n) => n.kind === 'idea'),
+    [bellNotifications],
+  )
 
   const ideaUnreadTotal = useMemo(
     () => ideaNotifications.reduce((sum, n) => sum + n.unreadCount, 0),
     [ideaNotifications],
   )
+
+  const bellUnreadTotal = useMemo(
+    () => bellNotifications.reduce((sum, n) => sum + n.unreadCount, 0),
+    [bellNotifications],
+  )
+
+  const requestOpenGeneralChat = useCallback(() => {
+    setOpenGeneralChatTick((t) => t + 1)
+  }, [])
 
   const markGeneralRead = useCallback(async () => {
     if (!user) return
@@ -137,20 +166,28 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
   const value = useMemo(
     () => ({
       generalUnread,
+      bellNotifications,
+      bellUnreadTotal,
       ideaNotifications,
       ideaUnreadTotal,
       refresh,
       markGeneralRead,
       markIdeaRead,
+      requestOpenGeneralChat,
+      openGeneralChatTick,
       ready,
     }),
     [
       generalUnread,
+      bellNotifications,
+      bellUnreadTotal,
       ideaNotifications,
       ideaUnreadTotal,
       refresh,
       markGeneralRead,
       markIdeaRead,
+      requestOpenGeneralChat,
+      openGeneralChatTick,
       ready,
     ],
   )

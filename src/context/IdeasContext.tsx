@@ -13,6 +13,7 @@ import {
   insertIdeaToDb,
   updateIdeaInDb,
 } from '../api/ideasApi'
+import { insertAuditEntry } from '../api/auditApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
 import { STORAGE_KEY } from '../constants/app'
 import { isSupabaseEnabled } from '../lib/supabaseClient'
@@ -262,6 +263,15 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       if (usingCloud) await insertIdeaToDb(newIdea)
 
+      void insertAuditEntry({
+        entityType: 'idea',
+        entityId: newIdea.id,
+        action: 'created',
+        actorUserId: user.id,
+        actorName: user.name,
+        details: { title: newIdea.title },
+      })
+
       const next = applyLocalIdeas((prev) => {
         let list = [newIdea, ...prev]
         if (input.parentId) list = syncContainerProgress(list, input.parentId)
@@ -289,6 +299,23 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       if (!idea || !canEditIdea(user, idea)) return false
 
       if (usingCloud) await updateIdeaInDb(id, patch)
+
+      if (user) {
+        const action =
+          patch.assigneeUserId !== undefined
+            ? 'assignee_changed'
+            : patch.workflowStatus !== undefined
+              ? 'status_changed'
+              : 'updated'
+        void insertAuditEntry({
+          entityType: 'idea',
+          entityId: id,
+          action,
+          actorUserId: user.id,
+          actorName: user.name,
+          details: patch as Record<string, unknown>,
+        })
+      }
 
       const toSync: Idea[] = []
       applyLocalIdeas((prev) => {
@@ -321,6 +348,17 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       if (!idea || !canDeleteIdea(user, idea)) return false
 
       if (usingCloud) await deleteIdeaFromDb(id)
+
+      if (user) {
+        void insertAuditEntry({
+          entityType: 'idea',
+          entityId: id,
+          action: 'deleted',
+          actorUserId: user.id,
+          actorName: user.name,
+          details: { title: idea.title },
+        })
+      }
 
       applyLocalIdeas((prev) => {
         const toRemove = new Set<string>([id])

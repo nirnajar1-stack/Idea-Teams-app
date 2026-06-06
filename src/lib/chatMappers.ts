@@ -12,6 +12,8 @@ export interface ChatMessageRow {
   created_at: string
   reply_to_user_id?: string | null
   mentioned_user_ids?: string[] | null
+  edited_at?: string | null
+  deleted_at?: string | null
 }
 
 export interface ChatReadCursorRow {
@@ -33,6 +35,28 @@ export function chatRowToMessage(row: ChatMessageRow): ChatMessage {
     createdAt: row.created_at,
     replyToUserId: row.reply_to_user_id ?? undefined,
     mentionedUserIds: row.mentioned_user_ids ?? [],
+    editedAt: row.edited_at ?? undefined,
+    deletedAt: row.deleted_at ?? undefined,
+  }
+}
+
+export function sendInputToBaseRow(input: {
+  scope: ChatScope
+  ideaId?: string
+  body: string
+  senderUserId: string
+  guestSessionId?: string
+  authorName: string
+  authorInitials: string
+}): Record<string, unknown> {
+  return {
+    scope: input.scope,
+    idea_id: input.scope === 'idea' ? (input.ideaId ?? null) : null,
+    sender_user_id: input.senderUserId,
+    guest_session_id: input.guestSessionId ?? null,
+    author_name: input.authorName,
+    author_initials: input.authorInitials,
+    body: input.body.trim(),
   }
 }
 
@@ -48,13 +72,7 @@ export function sendInputToRow(input: {
   mentionedUserIds?: string[]
 }): Record<string, unknown> {
   return {
-    scope: input.scope,
-    idea_id: input.scope === 'idea' ? (input.ideaId ?? null) : null,
-    sender_user_id: input.senderUserId,
-    guest_session_id: input.guestSessionId ?? null,
-    author_name: input.authorName,
-    author_initials: input.authorInitials,
-    body: input.body.trim(),
+    ...sendInputToBaseRow(input),
     reply_to_user_id: input.replyToUserId ?? null,
     mentioned_user_ids: input.mentionedUserIds ?? [],
   }

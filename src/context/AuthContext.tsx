@@ -2,12 +2,20 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
-import { SESSION_STORAGE_KEY } from '../constants/app'
+import {
+  loginWithPasswordCloud,
+  restoreSupabaseSession,
+  signInSupabaseAuth,
+  signOutSupabaseAuth,
+} from '../api/authApi'
+import { isSupabaseEnabled } from '../lib/supabaseClient'
 import { GUEST_USER_ID } from '../data/defaultUsers'
+import { SESSION_STORAGE_KEY } from '../constants/app'
 import { storedToAppUser, useUsers } from './UsersContext'
 import type { AppUser, AuthSession } from '../types/user'
 
@@ -52,6 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { getUserById, findUserByPassword } = useUsers()
   const [session, setSession] = useState<AuthSession | null>(loadSession)
 
+  useEffect(() => {
+    if (isSupabaseEnabled()) void restoreSupabaseSession()
+  }, [])
+
   const user = useMemo((): AppUser | null => {
     if (!session) return null
     const stored = getUserById(session.userId)
@@ -65,6 +77,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!trimmed) {
         return { ok: false, error: 'יש להזין סיסמה' }
       }
+
+      if (isSupabaseEnabled()) {
+        const cloud = await loginWithPasswordCloud(trimmed)
+        if (cloud.error === 'ambiguous') {
+          return {
+            ok: false,
+            error: 'סיסמה זו משויכת ליותר ממשתמש אחד. פנו למנהל.',
+          }
+        }
+        if (cloud.ok && cloud.userId) {
+          if (cloud.email) {
+            await signInSupabaseAuth(cloud.email, trimmed)
+          }
+          const next: AuthSession = { userId: cloud.userId }
+          saveSession(next)
+          setSession(next)
+          return { ok: true }
+        }
+        if (cloud.error === 'invalid') {
+          return { ok: false, error: 'סיסמה שגויה' }
+        }
+      }
+
       const account = await findUserByPassword(trimmed)
       if (account === 'ambiguous') {
         return {
@@ -94,6 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const logout = useCallback(() => {
+    void signOutSupabaseAuth()
     saveSession(null)
     setSession(null)
   }, [])

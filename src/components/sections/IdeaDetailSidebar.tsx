@@ -5,6 +5,8 @@ import { formatIdeaDateLong } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
 import { DateInput } from '../ui/DateInput'
 import { ProgressBar } from '../ui/ProgressBar'
+import { AssigneeSelect } from './AssigneeSelect'
+import { useUsers } from '../../context/UsersContext'
 import { cn } from '../../lib/cn'
 
 export interface IdeaDetailSidebarProps {
@@ -27,6 +29,7 @@ export function IdeaDetailSidebar({
   onUpdate,
 }: IdeaDetailSidebarProps) {
   const navigate = useNavigate()
+  const { listManageableUsers } = useUsers()
 
   return (
     <aside className="space-y-6 lg:col-span-4">
@@ -91,6 +94,15 @@ export function IdeaDetailSidebar({
             </button>
           )}
         </div>
+
+        <hr className="my-6 border-border-light/80" />
+
+        <AssigneeSelect
+          users={listManageableUsers()}
+          value={idea.assigneeUserId}
+          disabled={!canEdit}
+          onChange={(assigneeUserId) => onUpdate({ assigneeUserId })}
+        />
 
         <hr className="my-6 border-border-light/80" />
 

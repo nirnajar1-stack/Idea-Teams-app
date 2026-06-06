@@ -1,5 +1,5 @@
 import { X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { chatApiAvailable } from '../../api/chatApi'
 import { useChatNotifications } from '../../context/ChatNotificationsContext'
 import { cn } from '../../lib/cn'
@@ -8,7 +8,14 @@ import { DogChatAvatar } from './DogChatAvatar'
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false)
-  const { generalUnread, markGeneralRead } = useChatNotifications()
+  const { generalUnread, markGeneralRead, openGeneralChatTick } = useChatNotifications()
+
+  useEffect(() => {
+    if (openGeneralChatTick > 0) {
+      setOpen(true)
+      void markGeneralRead()
+    }
+  }, [openGeneralChatTick, markGeneralRead])
 
   if (!chatApiAvailable()) return null
 
@@ -27,7 +34,7 @@ export function ChatWidget() {
           <ChatPanel
             scope="general"
             title="צ'אט כללי"
-            subtitle="שיחה לכל הצוות באפליקציה"
+            subtitle="שיחה לכל הצוות — הקלד @ לתיוג"
             compact
             markReadOnView={open}
           />

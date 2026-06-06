@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   chatApiAvailable,
+  canEditChatMessage,
+  deleteChatMessage,
+  editChatMessage,
   fetchGeneralMessages,
   fetchIdeaMessages,
   sendChatMessage,
@@ -9,6 +12,7 @@ import {
 } from '../api/chatApi'
 import { useAuth } from '../context/AuthContext'
 import { useUsers } from '../context/UsersContext'
+import { formatChatSendError } from '../lib/chatErrors'
 import { parseMentionedUserIds } from '../lib/chatMentions'
 import type { ChatMessage, ChatScope } from '../types/chat'
 
@@ -87,24 +91,31 @@ export function useChat({ scope, ideaId, enabled = true }: UseChatOptions) {
       if (!trimmed || !user || !cloudReady) return false
       if (scope === 'idea' && !ideaId) return false
 
+      const validUserIds = new Set(users.map((u) => u.id))
+
       const lastMsg = messages.at(-1)
-      const replyToUserId =
+      const rawReply =
         lastMsg && lastMsg.senderUserId !== user.id
           ? lastMsg.senderUserId
           : undefined
-      const mentionedUserIds = parseMentionedUserIds(trimmed, users, user.id)
+      const replyToUserId =
+        rawReply && validUserIds.has(rawReply) ? rawReply : undefined
+
+      const mentionedUserIds = parseMentionedUserIds(trimmed, users, user.id).filter(
+        (id) => validUserIds.has(id),
+      )
 
       setSending(true)
       setError(null)
       try {
         const msg = await sendChatMessage(user, scope, trimmed, ideaId, {
-          replyToUserId: scope === 'idea' ? replyToUserId : undefined,
-          mentionedUserIds: scope === 'idea' ? mentionedUserIds : [],
+          replyToUserId,
+          mentionedUserIds,
         })
         addMessage(msg)
         return true
-      } catch {
-        setError('שליחת ההודעה נכשלה.')
+      } catch (err) {
+        setError(formatChatSendError(err))
         return false
       } finally {
         setSending(false)
@@ -113,12 +124,51 @@ export function useChat({ scope, ideaId, enabled = true }: UseChatOptions) {
     [user, users, cloudReady, scope, ideaId, messages, addMessage],
   )
 
+  const edit = useCallback(
+    async (messageId: string, body: string) => {
+      if (!user || !cloudReady) return false
+      const msg = messages.find((m) => m.id === messageId)
+      if (!msg || !canEditChatMessage(msg, user.id)) return false
+      setError(null)
+      try {
+        const updated = await editChatMessage(messageId, body)
+        setMessages((prev) => prev.map((m) => (m.id === messageId ? updated : m)))
+        return true
+      } catch {
+        setError('עריכת ההודעה נכשלה.')
+        return false
+      }
+    },
+    [user, cloudReady, messages],
+  )
+
+  const remove = useCallback(
+    async (messageId: string) => {
+      if (!user || !cloudReady) return false
+      const msg = messages.find((m) => m.id === messageId)
+      if (!msg || msg.senderUserId !== user.id) return false
+      setError(null)
+      try {
+        await deleteChatMessage(messageId, user.id)
+        setMessages((prev) => prev.filter((m) => m.id !== messageId))
+        messageIds.current.delete(messageId)
+        return true
+      } catch {
+        setError('מחיקת ההודעה נכשלה.')
+        return false
+      }
+    },
+    [user, cloudReady, messages],
+  )
+
   return {
     messages,
     loading,
     error,
     sending,
     send,
+    edit,
+    remove,
     cloudReady,
     canSend: canLoad && !sending,
   }

@@ -22,12 +22,16 @@ import { InboxBadge } from '../ui/InboxBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 import { IdeaChatSection } from '../chat/IdeaChatSection'
 import { SubIdeasSection } from './SubIdeasSection'
+import { AuditLogSection } from './AuditLogSection'
+import { AttachmentUpload } from './AttachmentUpload'
 
 export interface IdeaDetailContentProps {
   idea: Idea
   parent?: Idea
   subIdeas?: Idea[]
   canAddSub?: boolean
+  canEdit?: boolean
+  onUpdate?: (patch: Partial<Idea>) => void
 }
 
 export function IdeaDetailContent({
@@ -35,6 +39,8 @@ export function IdeaDetailContent({
   parent,
   subIdeas = [],
   canAddSub = false,
+  canEdit = false,
+  onUpdate,
 }: IdeaDetailContentProps) {
   return (
     <div className="space-y-8 lg:col-span-8">
@@ -142,30 +148,58 @@ export function IdeaDetailContent({
           <div className="space-y-3">
             {idea.attachments.length > 0 ? (
               idea.attachments.map((file) => (
-                <button
-                  key={file.id}
-                  type="button"
-                  className="group flex w-full cursor-pointer items-center justify-between rounded-lg border border-border-light bg-surface-subtle p-3 transition-colors hover:bg-surface-container-low"
-                >
-                  <div className="flex items-center gap-3">
-                    {file.type === 'pdf' ? (
-                      <FileText className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Image className="h-5 w-5 text-primary" />
-                    )}
-                    <span className="font-label-md text-on-surface">{file.name}</span>
+                file.url ? (
+                  <a
+                    key={file.id}
+                    href={file.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex w-full items-center justify-between rounded-lg border border-border-light bg-surface-subtle p-3 transition-colors hover:bg-surface-container-low"
+                  >
+                    <div className="flex items-center gap-3">
+                      {file.type === 'pdf' ? (
+                        <FileText className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Image className="h-5 w-5 text-primary" />
+                      )}
+                      <span className="font-label-md text-on-surface">{file.name}</span>
+                    </div>
+                    <Download className="h-5 w-5 text-secondary transition-colors group-hover:text-primary" />
+                  </a>
+                ) : (
+                  <div
+                    key={file.id}
+                    className="flex w-full items-center justify-between rounded-lg border border-border-light bg-surface-subtle p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      {file.type === 'pdf' ? (
+                        <FileText className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Image className="h-5 w-5 text-primary" />
+                      )}
+                      <span className="font-label-md text-on-surface">{file.name}</span>
+                    </div>
                   </div>
-                  <Download className="h-5 w-5 text-secondary transition-colors group-hover:text-primary" />
-                </button>
+                )
               ))
             ) : (
               <p className="font-body-md text-secondary">אין קבצים מצורפים</p>
+            )}
+            {canEdit && onUpdate && (
+              <AttachmentUpload
+                ideaId={idea.id}
+                disabled={!canEdit}
+                onUploaded={(att) =>
+                  onUpdate({ attachments: [...idea.attachments, att] })
+                }
+              />
             )}
           </div>
         </div>
       </section>
 
       <IdeaChatSection idea={idea} />
+      <AuditLogSection entityType="idea" entityId={idea.id} />
     </div>
   )
 }

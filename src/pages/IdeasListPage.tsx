@@ -3,12 +3,12 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
+import { IdeasFiltersPanel } from '../components/sections/IdeasFiltersPanel'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
 import type { IdeaCategory, IdeaFilters, IdeaPriority } from '../types/idea'
 import { Button } from '../components/ui/Button'
-import { cn } from '../lib/cn'
 
 export function IdeasListPage() {
   const navigate = useNavigate()
@@ -80,65 +80,15 @@ export function IdeasListPage() {
 
       <div className="flex flex-col gap-8 lg:flex-row">
         <aside className="w-full shrink-0 lg:w-64">
-          <div className="sticky top-24 space-y-8">
-            <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
-              <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
-              <div className="space-y-2">
-                {(['development', 'monitoring'] as IdeaCategory[]).map((cat) => (
-                  <label
-                    key={cat}
-                    className={cn(
-                      'flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-surface-subtle',
-                      !categories.includes(cat) && 'opacity-50',
-                    )}
-                  >
-                    <span className="font-body-md">
-                      {cat === 'development' ? 'פיתוח' : 'בקרה'}
-                    </span>
-                    <input
-                      type="checkbox"
-                      checked={categories.includes(cat)}
-                      onChange={() => toggleCategory(cat)}
-                      className="h-4 w-4 rounded text-primary focus:ring-primary"
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
-              <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
-              <label className="flex cursor-pointer items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={onlyMine}
-                  onChange={(e) => setOnlyMine(e.target.checked)}
-                  className="h-4 w-4 rounded text-primary focus:ring-primary"
-                />
-                <span className="font-body-md">רק הרעיונות שלי ({user?.name})</span>
-              </label>
-            </div>
-
-            <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
-              <h3 className="mb-4 font-label-md text-on-surface">רמת חשיבות</h3>
-              <div className="space-y-3">
-                {(['high', 'medium', 'low'] as IdeaPriority[]).map((p) => (
-                  <label key={p} className="flex cursor-pointer items-center gap-3">
-                    <input
-                      type="radio"
-                      name="priority-filter"
-                      checked={priority === p}
-                      onChange={() => setPriority(priority === p ? null : p)}
-                      className="text-primary focus:ring-primary"
-                    />
-                    <span className="font-body-md transition-colors hover:text-primary">
-                      {p === 'high' ? 'גבוהה' : p === 'medium' ? 'בינונית' : 'נמוכה'}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
+          <IdeasFiltersPanel
+            categories={categories}
+            onToggleCategory={toggleCategory}
+            onlyMine={onlyMine}
+            onOnlyMineChange={setOnlyMine}
+            priority={priority}
+            onPriorityChange={setPriority}
+            userName={user?.name}
+          />
         </aside>
 
         <div className="flex-1 space-y-4">

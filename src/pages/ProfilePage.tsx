@@ -1,11 +1,17 @@
-import { LogOut, Mail, Lightbulb, RefreshCw, UserCog, Users } from 'lucide-react'
+import { LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
 import { ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
+import { fetchUserPreferences, loadLocalPreferences, upsertUserPreferences } from '../api/preferencesApi'
+import { isSupabaseEnabled } from '../lib/supabaseClient'
 import { canManageUsers } from '../lib/permissions'
 import { ACCESS_LEVEL_LABELS } from '../types/user'
+import type { UserPreferences } from '../types/preferences'
+import { DEFAULT_USER_PREFERENCES } from '../types/preferences'
 import { Avatar } from '../components/ui/Avatar'
 import { Button } from '../components/ui/Button'
 
@@ -13,6 +19,17 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { stats, getIdeasByUser } = useIdeas()
+  const [prefs, setPrefs] = useState<UserPreferences | null>(null)
+  const [savingPrefs, setSavingPrefs] = useState(false)
+
+  useEffect(() => {
+    if (!user) return
+    if (isSupabaseEnabled()) {
+      void fetchUserPreferences(user.id).then(setPrefs)
+    } else {
+      setPrefs(loadLocalPreferences(user.id))
+    }
+  }, [user])
 
   if (!user) return null
 
@@ -24,6 +41,26 @@ export function ProfilePage() {
     logout()
     navigate(ROUTES.login)
   }
+
+  const savePrefs = async (next: UserPreferences) => {
+    setPrefs(next)
+    setSavingPrefs(true)
+    try {
+      await upsertUserPreferences(next)
+      toast.success('העדפות נשמרו')
+    } catch {
+      toast.error('שמירת העדפות נכשלה')
+    } finally {
+      setSavingPrefs(false)
+    }
+  }
+
+  const togglePref = (key: keyof Omit<UserPreferences, 'userId'>) => {
+    if (!prefs) return
+    void savePrefs({ ...prefs, [key]: !prefs[key] })
+  }
+
+  const currentPrefs = prefs ?? { userId: user.id, ...DEFAULT_USER_PREFERENCES }
 
   const handleSwitchUser = () => {
     logout()
@@ -46,10 +83,6 @@ export function ProfilePage() {
             <span className="flex items-center gap-2 font-label-md text-secondary">
               <Mail className="h-4 w-4" />
               {user.email}
-            </span>
-            <span className="flex items-center gap-2 font-label-md text-secondary">
-              <Users className="h-4 w-4" />
-              צוות FacilPay
             </span>
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
@@ -103,6 +136,39 @@ export function ProfilePage() {
           </p>
         </div>
       </div>
+
+      <section className="mb-10 rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
+        <div className="mb-4 flex items-center gap-2">
+          <Bell className="h-5 w-5 text-primary" />
+          <h2 className="font-display text-headline-md text-on-surface">העדפות התראות</h2>
+        </div>
+        <ul className="space-y-3">
+          {(
+            [
+              ['notifyIdeaChat', 'התראות צ\'אט רעיון'],
+              ['notifyGeneralMentions', 'תיוגים בצ\'אט כללי'],
+              ['notifyReplies', 'תגובות ישירות'],
+              ['notifyTargetDate', 'תזכורות תאריך יעד'],
+            ] as const
+          ).map(([key, label]) => (
+            <li key={key} className="flex items-center justify-between gap-4">
+              <span className="font-body-md text-on-surface">{label}</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={currentPrefs[key]}
+                disabled={savingPrefs}
+                onClick={() => togglePref(key)}
+                className={`relative h-7 w-12 rounded-full transition-colors ${currentPrefs[key] ? 'bg-primary' : 'bg-surface-container-high'}`}
+              >
+                <span
+                  className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${currentPrefs[key] ? 'right-0.5' : 'right-5'}`}
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {myIdeas.length > 0 && (
         <section className="mb-10 rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">

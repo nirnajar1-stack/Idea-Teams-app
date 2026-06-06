@@ -1,6 +1,59 @@
 import type { StoredUser } from '../types/user'
 
 const MENTION_RE = /@([\w\u0590-\u05FF.-]+)/g
+const MENTION_CARET_RE = /@([\w\u0590-\u05FF.-]*)$/
+
+export interface MentionCaretState {
+  query: string
+  startIndex: number
+}
+
+/** מצב תיוג פעיל לפי מיקום הסמן בשדה הקלט */
+export function getMentionCaretState(
+  text: string,
+  caretIndex: number,
+): MentionCaretState | null {
+  const before = text.slice(0, caretIndex)
+  const match = before.match(MENTION_CARET_RE)
+  if (!match || match.index === undefined) return null
+  return {
+    query: match[1] ?? '',
+    startIndex: match.index,
+  }
+}
+
+/** משתמשים פעילים לתיוג (ללא אורח וללא השולח) */
+export function listMentionableUsers(
+  users: StoredUser[],
+  senderId: string,
+): StoredUser[] {
+  return users.filter((u) => u.active && u.id !== 'guest' && u.id !== senderId)
+}
+
+/** סינון לפי מה שהוקלד אחרי @ */
+export function filterMentionCandidates(
+  users: StoredUser[],
+  senderId: string,
+  query: string,
+): StoredUser[] {
+  const q = query.trim().toLowerCase()
+  const base = listMentionableUsers(users, senderId)
+  if (!q) return base
+  return base.filter(
+    (u) =>
+      u.username.toLowerCase().includes(q) ||
+      u.name.toLowerCase().includes(q) ||
+      u.name.split(/\s+/).some((part) => part.toLowerCase().startsWith(q)),
+  )
+}
+
+export function mentionDisplayLabel(user: StoredUser): string {
+  return user.name
+}
+
+export function mentionInsertToken(user: StoredUser): string {
+  return `@${user.name} `
+}
 
 /** מזהה משתמשים לפי @username או @שם (עברית) */
 export function parseMentionedUserIds(

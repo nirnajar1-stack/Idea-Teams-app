@@ -1,0 +1,121 @@
+import { ChevronDown, SlidersHorizontal } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import type { IdeaCategory, IdeaPriority } from '../../types/idea'
+import { cn } from '../../lib/cn'
+
+export interface IdeasFiltersPanelProps {
+  categories: IdeaCategory[]
+  onToggleCategory: (cat: IdeaCategory) => void
+  onlyMine: boolean
+  onOnlyMineChange: (value: boolean) => void
+  priority: IdeaPriority | null
+  onPriorityChange: (value: IdeaPriority | null) => void
+  userName?: string
+}
+
+export function IdeasFiltersPanel({
+  categories,
+  onToggleCategory,
+  onlyMine,
+  onOnlyMineChange,
+  priority,
+  onPriorityChange,
+  userName,
+}: IdeasFiltersPanelProps) {
+  const [open, setOpen] = useState(false)
+
+  const activeCount = useMemo(() => {
+    let n = 0
+    if (categories.length < 2) n += 1
+    if (onlyMine) n += 1
+    if (priority) n += 1
+    return n
+  }, [categories.length, onlyMine, priority])
+
+  return (
+    <div className="sticky top-24">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="mb-4 flex w-full items-center justify-between rounded-2xl border border-border-light bg-surface-container-lowest px-4 py-3 shadow-sm transition-colors hover:border-primary/25 lg:hidden"
+        aria-expanded={open}
+      >
+        <span className="flex items-center gap-2 font-label-md text-on-surface">
+          <SlidersHorizontal className="h-5 w-5 text-primary" />
+          פילטרים
+          {activeCount > 0 && (
+            <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-on-primary">
+              {activeCount}
+            </span>
+          )}
+        </span>
+        <ChevronDown
+          className={cn(
+            'h-5 w-5 text-secondary transition-transform duration-200',
+            open && 'rotate-180',
+          )}
+        />
+      </button>
+
+      <div className={cn('space-y-8', open ? 'block' : 'hidden', 'lg:block')}>
+        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+          <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
+          <div className="space-y-2">
+            {(['development', 'monitoring'] as IdeaCategory[]).map((cat) => (
+              <label
+                key={cat}
+                className={cn(
+                  'flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-surface-subtle',
+                  !categories.includes(cat) && 'opacity-50',
+                )}
+              >
+                <span className="font-body-md">
+                  {cat === 'development' ? 'פיתוח' : 'בקרה'}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={categories.includes(cat)}
+                  onChange={() => onToggleCategory(cat)}
+                  className="h-4 w-4 rounded text-primary focus:ring-primary"
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+          <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
+          <label className="flex cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              checked={onlyMine}
+              onChange={(e) => onOnlyMineChange(e.target.checked)}
+              className="h-4 w-4 rounded text-primary focus:ring-primary"
+            />
+            <span className="font-body-md">רק הרעיונות שלי ({userName})</span>
+          </label>
+        </div>
+
+        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+          <h3 className="mb-4 font-label-md text-on-surface">רמת חשיבות</h3>
+          <div className="space-y-3">
+            {(['high', 'medium', 'low'] as IdeaPriority[]).map((p) => (
+              <label key={p} className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="radio"
+                  name="priority-filter"
+                  checked={priority === p}
+                  onChange={() => onPriorityChange(priority === p ? null : p)}
+                  className="text-primary focus:ring-primary"
+                />
+                <span className="font-body-md transition-colors hover:text-primary">
+                  {p === 'high' ? 'גבוהה' : p === 'medium' ? 'בינונית' : 'נמוכה'}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

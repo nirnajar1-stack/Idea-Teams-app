@@ -1,4 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { Toaster } from 'sonner'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
 import { ChatNotificationsProvider } from './context/ChatNotificationsContext'
@@ -17,14 +19,22 @@ import { LoginPage } from './pages/LoginPage'
 import { UserManagementPage } from './pages/UserManagementPage'
 import { AddSubIdeaPage } from './pages/AddSubIdeaPage'
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { staleTime: 30_000, retry: 1 },
+  },
+})
+
 function App() {
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider>
     <BrowserRouter>
       <UsersProvider>
         <AuthProvider>
           <IdeasProvider>
             <ChatNotificationsProvider>
+            <Toaster position="top-center" richColors dir="rtl" />
             <Routes>
               <Route path={ROUTES.login} element={<LoginPage />} />
               <Route element={<ProtectedRoute />}>
@@ -48,6 +58,7 @@ function App() {
       </UsersProvider>
     </BrowserRouter>
     </ThemeProvider>
+    </QueryClientProvider>
   )
 }
 

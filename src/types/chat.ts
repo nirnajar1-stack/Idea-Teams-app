@@ -12,6 +12,8 @@ export interface ChatMessage {
   createdAt: string
   replyToUserId?: string
   mentionedUserIds: string[]
+  editedAt?: string
+  deletedAt?: string
 }
 
 export interface SendChatInput {
@@ -31,6 +33,17 @@ export interface ChatReadCursor {
 export interface IdeaChatNotification {
   ideaId: string
   ideaTitle: string
+  unreadCount: number
+  latestBody: string
+  latestAuthorName: string
+  latestAt: string
+}
+
+/** התראה בפעמון — צ'אט כללי (תיוג) או רעיון */
+export interface ChatBellNotification {
+  kind: 'general' | 'idea'
+  targetId: string
+  title: string
   unreadCount: number
   latestBody: string
   latestAuthorName: string

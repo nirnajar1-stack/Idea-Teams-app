@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   ArrowRight,
   Lightbulb,
@@ -14,6 +15,7 @@ import { canManageUsers } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
 import { NotificationBell } from '../chat/NotificationBell'
+import { GlobalSearchModal } from '../search/GlobalSearchModal'
 import { ThemeToggle } from '../ui/ThemeToggle'
 
 export type NavbarVariant = 'main' | 'back' | 'ideas'
@@ -55,6 +57,7 @@ export function Navbar({
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
   const { stats } = useIdeas()
+  const [searchOpen, setSearchOpen] = useState(false)
   const showUserManagement = canManageUsers(user)
 
   const handleLogout = () => {
@@ -142,6 +145,16 @@ export function Navbar({
       )}
 
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
+        {variant === 'main' && (
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="rounded-full p-2 text-secondary transition-all hover:bg-primary/5 hover:text-primary"
+            aria-label="חיפוש גלובלי"
+          >
+            <Search className="h-5 w-5" />
+          </button>
+        )}
         {connectedAs && (
           <span className="hidden font-label-md text-secondary md:block">
             מחובר כ<strong className="text-on-surface">{connectedAs}</strong>
@@ -170,6 +183,7 @@ export function Navbar({
           <LogOut className="h-5 w-5" />
         </button>
       </div>
+      <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   )
 }

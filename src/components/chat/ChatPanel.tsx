@@ -1,11 +1,13 @@
-import { Loader2, Send } from 'lucide-react'
+import { Loader2, Send, Pencil, Trash2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { useAuth } from '../../context/AuthContext'
 import { useChatNotifications } from '../../context/ChatNotificationsContext'
 import { useChat } from '../../hooks/useChat'
 import { splitBodyMentions } from '../../lib/chatMentions'
 import { cn } from '../../lib/cn'
 import type { ChatScope } from '../../types/chat'
+import { ChatMentionInput } from './ChatMentionInput'
 
 export interface ChatPanelProps {
   scope: ChatScope
@@ -58,11 +60,13 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const { user } = useAuth()
   const { markGeneralRead, markIdeaRead } = useChatNotifications()
-  const { messages, loading, error, sending, send, canSend } = useChat({
+  const { messages, loading, error, sending, send, edit, remove, canSend } = useChat({
     scope,
     ideaId,
   })
   const [draft, setDraft] = useState('')
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editDraft, setEditDraft] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -76,11 +80,15 @@ export function ChatPanel({
     if (el) el.scrollTop = el.scrollHeight
   }, [messages, loading])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const submitDraft = async () => {
     if (!draft.trim() || !canSend) return
     const ok = await send(draft)
     if (ok) setDraft('')
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    void submitDraft()
   }
 
   return (
@@ -119,13 +127,14 @@ export function ChatPanel({
         {!loading && !error && messages.length === 0 && (
           <p className="py-8 text-center font-body-md text-secondary">
             {scope === 'general'
-              ? 'אין הודעות עדיין — התחילו שיחה כללית.'
+              ? 'אין הודעות עדיין — התחילו שיחה כללית עם @תיוג.'
               : 'אין הודעות ברעיון — כתבו עדכון, תייגו עם @שם והגיבו.'}
           </p>
         )}
 
         {messages.map((msg) => {
           const isMine = msg.senderUserId === user?.id
+          const isEditing = editingId === msg.id
           return (
             <div
               key={msg.id}
@@ -142,8 +151,69 @@ export function ChatPanel({
                 <div className="mb-1 flex items-center gap-2">
                   <span className="font-label-md text-on-surface">{msg.authorName}</span>
                   <span className="font-label-sm text-secondary">{formatTime(msg.createdAt)}</span>
+                  {msg.editedAt && (
+                    <span className="font-label-sm text-secondary">(נערך)</span>
+                  )}
                 </div>
-                <MessageBody body={msg.body} />
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editDraft}
+                      onChange={(e) => setEditDraft(e.target.value)}
+                      className="w-full rounded-lg border border-border-light bg-surface-container-lowest p-2 font-body-md"
+                      rows={2}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="font-label-sm text-primary"
+                        onClick={async () => {
+                          const ok = await edit(msg.id, editDraft)
+                          if (ok) {
+                            setEditingId(null)
+                            toast.success('ההודעה עודכנה')
+                          }
+                        }}
+                      >
+                        שמירה
+                      </button>
+                      <button
+                        type="button"
+                        className="font-label-sm text-secondary"
+                        onClick={() => setEditingId(null)}
+                      >
+                        ביטול
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <MessageBody body={msg.body} />
+                )}
+                {isMine && !msg.deletedAt && !isEditing && (
+                  <div className="mt-1 flex gap-2">
+                    <button
+                      type="button"
+                      aria-label="עריכה"
+                      className="text-secondary hover:text-primary"
+                      onClick={() => {
+                        setEditingId(msg.id)
+                        setEditDraft(msg.body)
+                      }}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="מחיקה"
+                      className="text-secondary hover:text-error"
+                      onClick={async () => {
+                        if (await remove(msg.id)) toast.success('ההודעה נמחקה')
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )
@@ -154,18 +224,13 @@ export function ChatPanel({
         onSubmit={handleSubmit}
         className="flex gap-2 border-t border-border-light p-3"
       >
-        <input
-          type="text"
+        <ChatMentionInput
           value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={
-            scope === 'idea'
-              ? 'כתוב הודעה… @שם לתיוג'
-              : 'כתוב הודעה…'
-          }
+          onChange={setDraft}
+          onSubmit={() => void submitDraft()}
           disabled={!canSend}
-          maxLength={4000}
-          className="boutique-input h-11 flex-1 py-2"
+          enableMentions
+          placeholder="כתוב הודעה… הקלד @ לתיוג"
         />
         <button
           type="submit"

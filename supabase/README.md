@@ -1,124 +1,142 @@
-# Supabase — IdeaFlow
+# Supabase — IdeaFlow (מדריך עדכון מלא)
 
-סכמת מסד נתונים שתואמת לשדות באפליקציה (`src/types/idea.ts`, `src/types/user.ts`).
+## סדר הרצת מיגרציות (חובה!)
 
-## הרצה ב-Supabase
+ב-**SQL Editor** → **New query** — הרץ **לפי הסדר**:
 
-1. צור פרויקט ב-[supabase.com](https://supabase.com).
-2. **SQL Editor** → **New query**.
-3. העתק את כל התוכן מ-`migrations/001_initial_schema.sql`.
-4. לחץ **Run**.
+| # | קובץ | תוכן |
+|---|------|------|
+| 1 | `001_initial_schema.sql` | משתמשים, רעיונות, RLS dev |
+| 2 | `002_clear_demo_seed_ideas.sql` | (אופציונלי) מחיקת seed |
+| 3 | `003_chat_messages.sql` | צ'אט + Realtime |
+| 4 | `004_chat_reads_and_mentions.sql` | קריאה, @mention, תגובות |
+| 5 | `005_assignee_audit_preferences.sql` | assignee, audit log, העדפות, עריכת צ'אט |
+| 6 | `006_storage_attachments.sql` | bucket לקבצים |
+| 7 | `007_auth_and_rls.sql` | **Auth + RLS production** |
 
-אחרי ההרצה יופיעו:
+> אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.
 
-| טבלה | תוכן |
-|------|------|
-| `app_users` | ניר (מנהל), גולן (משתמש), אורח |
-| `ideas` | ריקה — תמלא מהאפליקציה או ממיגרציה |
+---
 
-## מיפוי שדות (אפליקציה ↔ מסד)
+## מה חדש במיגרציות 005–007
 
-### `app_users`
-
-| TypeScript (camelCase) | עמודה ב-PostgreSQL |
-|----------------------|---------------------|
-| `id` | `id` |
-| `name` | `name` |
-| `jobTitle` | `job_title` |
-| `initials` | `initials` |
-| `email` | `email` |
-| `username` | `username` |
-| `passwordHash` | `password_hash` |
-| `accessLevel` | `access_level` |
-| `active` | `active` |
-
-`guestSessionId` — רק בזיכרון/סשן, לא נשמר בטבלת משתמשים.
-
-### `ideas`
-
-| TypeScript | עמודה |
-|------------|--------|
-| `id` | `id` |
-| `externalId` | `external_id` |
-| `title` | `title` |
-| `description` | `description` |
-| `category` | `category` |
-| `department` | `department` |
-| `priority` | `priority` |
-| `workflowStatus` | `workflow_status` |
-| `createdAt` | `created_at` (date) |
-| `targetStartDate` | `target_start_date` |
-| `sendToMaybeInbox` | `send_to_maybe_inbox` |
-| `createdByUserId` | `created_by_user_id` |
-| `guestSessionId` | `guest_session_id` |
-| `authorName` | `author_name` |
-| `authorRole` | `author_role` |
-| `authorInitials` | `author_initials` |
-| `tags` | `tags` (jsonb) |
-| `goals` | `goals` (jsonb) |
-| `attachments` | `attachments` (jsonb) |
-| `progress` | `progress` |
-| `progressStep` | `progress_step` |
-| `conceptImageUrl` | `concept_image_url` |
-| `ideaKind` | `idea_kind` |
-| `parentId` | `parent_id` |
-| — | `updated_at` (מטא-נתונים) |
-
-## משתמשי דמו
-
-| סיסמה | משתמש | רמה |
-|--------|--------|-----|
-| `nir123` | nir | manager |
-| `golan123` | golan | member |
-
-אורח — כניסה ללא סיסמה מהאפליקציה (לא דרך טבלה).
-
-## RLS (אבטחה)
-
-בקובץ ה-SQL מופעל RLS עם מדיניות **פיתוח** שמאפשרת הכל.  
-לפני שימוש אמיתי — החלף במדיניות מבוססת הרשאות או השתמש ב-Edge Functions.
-
-## חיבור לאפליקציה (כבר מוגדר בקוד)
-
-1. קובץ `.env` בשורש הפרויקט:
-   - `VITE_SUPABASE_URL=https://PROJECT_ID.supabase.co`
-   - `VITE_SUPABASE_ANON_KEY` = מפתח **Publishable** (`sb_publishable_...`)
-2. **אל תשים** מפתח Secret (`sb_secret_...`) באפליקציה — רק בשרת.
-3. `npm run dev` — טעינה ושמירה מהענן.
-
-אם Supabase ריק ויש נתונים ב-localStorage, בכניסה הראשונה מתבצעת העברה אוטומטית לטבלת `ideas`.
-
-## צ'אט (ווידג'ט)
-
-טבלה אחת `chat_messages` משרתת **שני סוגי צ'אט**:
-
-| `scope` | `idea_id` | משמעות |
-|---------|-----------|--------|
-| `general` | `NULL` | צ'אט כללי באפליקציה (כפתור צף) |
-| `idea` | מזהה רעיון | צ'אט בתוך דף רעיון |
-
-**הרצה:** SQL Editor → העתק את `migrations/003_chat_messages.sql` → **Run**.
-
-**בדיקה מהירה:**
-
-```sql
--- הודעה כללית
-insert into public.chat_messages (scope, sender_user_id, author_name, author_initials, body)
-values ('general', 'nir', 'ניר', 'ניר', 'שלום לכולם');
-
--- הודעה בתוך רעיון (החלף IDEA_ID)
-insert into public.chat_messages (scope, idea_id, sender_user_id, author_name, author_initials, body)
-values ('idea', 'IDEA_ID', 'golan', 'גולן', 'גול', 'עדכון על הרעיון');
-```
-
-**Realtime:** המיגרציה מוסיפה את הטבלה ל-`supabase_realtime` — הודעות חדשות יגיעו לווידג'ט בלי רענון.
-
-### התראות ותיוגים (`004_chat_reads_and_mentions.sql`)
+### 005 — `assignee_user_id`, audit, preferences
 
 | טבלה / עמודה | תפקיד |
-|----------------|--------|
-| `reply_to_user_id` | מי קיבל תגובה (התראה בפעמון) |
-| `mentioned_user_ids` | מי תויג ב-`@שם` |
-| `chat_read_cursors` | עד איפה כל משתמש קרא (כללי / רעיון) |
+|--------------|--------|
+| `ideas.assignee_user_id` | משתמש מוקצה לרעיון |
+| `audit_log` | היסטוריית שינויים |
+| `user_preferences` | העדפות התראות למשתמש |
+| `chat_messages.edited_at` | עריכת הודעה |
+| `chat_messages.deleted_at` | מחיקה רכה |
 
-**הרצה:** אחרי `003` — העתק והרץ `migrations/004_chat_reads_and_mentions.sql`.
+### 006 — Storage
+
+- Bucket: **`idea-attachments`** (public, עד 10MB, PDF + תמונות)
+- מדיניות dev — יוחלפו ב-007 לפי Auth
+
+### 007 — Auth + RLS (קריטי ל-production)
+
+1. **`app_users.auth_user_id`** — קישור ל-`auth.users`
+2. **`app_users_public`** — view ללא `password_hash`
+3. **`login_with_password(text)`** — RPC לבדיקת סיסמה בשרver
+4. **RLS** — מחליף את `dev_allow_all_*`
+
+---
+
+## הגדרת Supabase Auth (חובה אחרי 007)
+
+### שלב 1 — צור משתמשי Auth
+
+**Dashboard → Authentication → Users → Add user**
+
+| Email | Password | Auto confirm |
+|-------|----------|--------------|
+| `nir@ideaflow.io` | `nir123` | ✓ |
+| `golan@ideaflow.io` | `golan123` | ✓ |
+
+הטריגר `link_app_user_on_auth_signup` יקשר אוטומטית ל-`app_users` לפי email.
+
+### שלב 2 — וודא קישור
+
+```sql
+select id, email, auth_user_id from public.app_users where access_level != 'guest';
+```
+
+כל שורה צריכה `auth_user_id` לא NULL.
+
+### שלב 3 — Realtime (אם לא פעיל)
+
+**Database → Replication** — וודא ש-`chat_messages` ב-publication.
+
+---
+
+## משתני סביבה
+
+`.env` / Vercel:
+
+```
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_...
+```
+
+**אל תשים** Secret key בלקוח.
+
+---
+
+## בדיקות מהירות אחרי עדכון
+
+```sql
+-- RPC login
+select public.login_with_password('nir123');
+
+-- assignee
+select id, title, assignee_user_id from public.ideas limit 5;
+
+-- audit
+select * from public.audit_log order by created_at desc limit 5;
+
+-- storage bucket
+select * from storage.buckets where id = 'idea-attachments';
+```
+
+---
+
+## אורח (Guest)
+
+- כניסת אורח **לא** עוברת Supabase Auth
+- RLS מאפשר insert/read לפי `guest_session_id` ב-anon
+- ל-production מלא — שקול להגביל אורח דרך Edge Function
+
+---
+
+## סיסמאות דמו
+
+| סיסמה | משתמש |
+|--------|--------|
+| `nir123` | nir (manager) |
+| `golan123` | golan (member) |
+
+---
+
+## פתרון בעיות
+
+| בעיה | פתרון |
+|------|--------|
+| "שליחת הודעה נכשלה" | הרץ 004 |
+| "login_with_password does not exist" | הרץ 007 |
+| העלאת קבצים נכשלת | הרץ 006, בדוק bucket |
+| אין הרשאות אחרי 007 | צור Auth users + בדוק `auth_user_id` |
+| `app_users_public` not found | הרץ 007 |
+
+---
+
+## מיפוי שדות חדשים
+
+| TypeScript | PostgreSQL |
+|------------|------------|
+| `assigneeUserId` | `assignee_user_id` |
+| `IdeaAttachment.url` | URL מ-Storage |
+| `UserPreferences.*` | `user_preferences` |
+| `AuditEntry.*` | `audit_log` |
+| `ChatMessage.editedAt` | `edited_at` |

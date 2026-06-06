@@ -35,7 +35,7 @@ export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
       idea.guestSessionId === user.guestSessionId
     )
   }
-  return idea.createdByUserId === user.id
+  return idea.createdByUserId === user.id || idea.assigneeUserId === user.id
 }
 
 function creatorAccessLevel(
@@ -55,6 +55,7 @@ export function canViewIdea(
 ): boolean {
   if (!viewer) return false
   if (viewer.accessLevel === 'manager') return true
+  if (idea.assigneeUserId === viewer.id) return true
 
   if (viewer.accessLevel === 'guest') {
     return (
