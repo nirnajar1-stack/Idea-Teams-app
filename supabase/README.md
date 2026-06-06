@@ -16,8 +16,12 @@
 | 8 | `008_fix_login_pgcrypto.sql` | תיקון digest/pgcrypto |
 | 9 | `009_fix_ideas_rls_select.sql` | תיקון תצוגת רעיונות |
 | 10 | `010_master_visibility.sql` | **מאסטר + visibility לרעיונות** |
+| 11 | `011_fix_master_anon_read.sql` | תיקון RLS לקריאת רעיונות בלי JWT |
+| 12 | `012_list_ideas_rpc.sql` | **RPC `list_ideas_for_session`** — טעינת רעיונות |
+| 13 | `013_chat_read_rpc.sql` | **RPC קריאה/סימון נקרא** — התראות צ'אט |
 
-> אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.
+> אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.  
+> אם רעיונות/התראות לא מתעדכנים — הרץ גם **011 → 012 → 013**.
 
 ---
 
@@ -132,6 +136,8 @@ select * from storage.buckets where id = 'idea-attachments';
 | העלאת קבצים נכשלת | הרץ 006, בדוק bucket |
 | אין הרשאות אחרי 007 | צור Auth users + בדוק `auth_user_id` |
 | `app_users_public` not found | הרץ 007 |
+| רעיונות לא מוצגים | הרץ 009, 011, 012 |
+| התראות צ'אט נשארות "לא נקראו" | הרץ `013_chat_read_rpc.sql` |
 
 ---
 

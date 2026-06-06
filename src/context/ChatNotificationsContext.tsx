@@ -145,9 +145,9 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
     try {
       await markChatRead(user.id, 'general')
     } catch {
-      void refresh()
+      /* keep optimistic cursor until next successful refresh */
     }
-  }, [user, refresh])
+  }, [user])
 
   const markIdeaRead = useCallback(
     async (ideaId: string) => {
@@ -157,10 +157,10 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
       try {
         await markChatRead(user.id, 'idea', ideaId)
       } catch {
-        void refresh()
+        /* keep optimistic cursor until next successful refresh */
       }
     },
-    [user, refresh],
+    [user],
   )
 
   const value = useMemo(

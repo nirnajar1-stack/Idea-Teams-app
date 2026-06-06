@@ -49,13 +49,12 @@ export async function fetchAllIdeaMessages(): Promise<ChatMessage[]> {
 }
 
 export async function fetchReadCursors(userId: string): Promise<ChatReadCursor[]> {
-  const { data, error } = await getSupabase()
-    .from('chat_read_cursors')
-    .select('scope, idea_id, last_read_at')
-    .eq('user_id', userId)
+  const { data, error } = await getSupabase().rpc('list_chat_read_cursors_for_session', {
+    p_user_id: userId,
+  })
   if (error) throw error
   return (data as ChatReadCursorRow[]).map((row) => ({
-    scope: row.scope,
+    scope: row.scope as ChatScope,
     ideaId: row.idea_id ?? undefined,
     lastReadAt: row.last_read_at,
   }))
@@ -66,59 +65,10 @@ export async function markChatRead(
   scope: ChatScope,
   ideaId?: string,
 ): Promise<void> {
-  const now = new Date().toISOString()
-
-  if (scope === 'general') {
-    const { data: existing } = await getSupabase()
-      .from('chat_read_cursors')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('scope', 'general')
-      .maybeSingle()
-
-    if (existing?.id) {
-      const { error } = await getSupabase()
-        .from('chat_read_cursors')
-        .update({ last_read_at: now })
-        .eq('id', existing.id)
-      if (error) throw error
-      return
-    }
-
-    const { error } = await getSupabase().from('chat_read_cursors').insert({
-      user_id: userId,
-      scope: 'general',
-      idea_id: null,
-      last_read_at: now,
-    })
-    if (error) throw error
-    return
-  }
-
-  if (!ideaId) return
-
-  const { data: existing } = await getSupabase()
-    .from('chat_read_cursors')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('scope', 'idea')
-    .eq('idea_id', ideaId)
-    .maybeSingle()
-
-  if (existing?.id) {
-    const { error } = await getSupabase()
-      .from('chat_read_cursors')
-      .update({ last_read_at: now })
-      .eq('id', existing.id)
-    if (error) throw error
-    return
-  }
-
-  const { error } = await getSupabase().from('chat_read_cursors').insert({
-    user_id: userId,
-    scope: 'idea',
-    idea_id: ideaId,
-    last_read_at: now,
+  const { error } = await getSupabase().rpc('mark_chat_read_for_session', {
+    p_user_id: userId,
+    p_scope: scope,
+    p_idea_id: ideaId ?? null,
   })
   if (error) throw error
 }
