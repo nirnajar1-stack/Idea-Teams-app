@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
+import { ChatNotificationsProvider } from './context/ChatNotificationsContext'
 import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
@@ -23,6 +24,7 @@ function App() {
       <UsersProvider>
         <AuthProvider>
           <IdeasProvider>
+            <ChatNotificationsProvider>
             <Routes>
               <Route path={ROUTES.login} element={<LoginPage />} />
               <Route element={<ProtectedRoute />}>
@@ -40,6 +42,7 @@ function App() {
               </Route>
               <Route path="*" element={<Navigate to={ROUTES.login} replace />} />
             </Routes>
+            </ChatNotificationsProvider>
           </IdeasProvider>
         </AuthProvider>
       </UsersProvider>

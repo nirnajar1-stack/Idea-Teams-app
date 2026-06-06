@@ -1,4 +1,6 @@
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useChatNotifications } from '../context/ChatNotificationsContext'
 import { AppShell } from '../components/layout/AppShell'
 import { IdeaDetailContent } from '../components/sections/IdeaDetailContent'
 import { IdeaDetailSidebar } from '../components/sections/IdeaDetailSidebar'
@@ -10,7 +12,9 @@ import { isContainerIdea, isSubIdea } from '../lib/ideaUtils'
 
 export function IdeaDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const { hash } = useLocation()
   const navigate = useNavigate()
+  const { markIdeaRead } = useChatNotifications()
   const { user } = useAuth()
   const {
     getIdeaById,
@@ -23,6 +27,15 @@ export function IdeaDetailPage() {
   } = useIdeas()
 
   const idea = id ? getIdeaById(id) : undefined
+
+  useEffect(() => {
+    if (!idea || hash !== '#idea-chat') return
+    const t = window.setTimeout(() => {
+      document.getElementById('idea-chat')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      void markIdeaRead(idea.id)
+    }, 300)
+    return () => window.clearTimeout(t)
+  }, [hash, idea, markIdeaRead])
 
   if (!idea) {
     return <Navigate to={ROUTES.ideas} replace />

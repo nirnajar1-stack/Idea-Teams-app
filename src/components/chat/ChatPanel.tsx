@@ -1,7 +1,9 @@
 import { Loader2, Send } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import { useChatNotifications } from '../../context/ChatNotificationsContext'
 import { useChat } from '../../hooks/useChat'
+import { splitBodyMentions } from '../../lib/chatMentions'
 import { cn } from '../../lib/cn'
 import type { ChatScope } from '../../types/chat'
 
@@ -12,6 +14,7 @@ export interface ChatPanelProps {
   subtitle?: string
   className?: string
   compact?: boolean
+  markReadOnView?: boolean
 }
 
 function formatTime(iso: string) {
@@ -27,6 +30,23 @@ function formatTime(iso: string) {
   }
 }
 
+function MessageBody({ body }: { body: string }) {
+  const segments = splitBodyMentions(body)
+  return (
+    <p className="whitespace-pre-wrap break-words font-body-md leading-relaxed">
+      {segments.map((seg, i) =>
+        seg.mention ? (
+          <span key={i} className="font-semibold text-primary">
+            {seg.text}
+          </span>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        ),
+      )}
+    </p>
+  )
+}
+
 export function ChatPanel({
   scope,
   ideaId,
@@ -34,14 +54,22 @@ export function ChatPanel({
   subtitle,
   className,
   compact = false,
+  markReadOnView = true,
 }: ChatPanelProps) {
   const { user } = useAuth()
+  const { markGeneralRead, markIdeaRead } = useChatNotifications()
   const { messages, loading, error, sending, send, canSend } = useChat({
     scope,
     ideaId,
   })
   const [draft, setDraft] = useState('')
   const listRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!markReadOnView || loading) return
+    if (scope === 'general') void markGeneralRead()
+    else if (ideaId) void markIdeaRead(ideaId)
+  }, [markReadOnView, scope, ideaId, loading, markGeneralRead, markIdeaRead])
 
   useEffect(() => {
     const el = listRef.current
@@ -92,7 +120,7 @@ export function ChatPanel({
           <p className="py-8 text-center font-body-md text-secondary">
             {scope === 'general'
               ? 'אין הודעות עדיין — התחילו שיחה כללית.'
-              : 'אין הודעות ברעיון — כתבו עדכון או הערה.'}
+              : 'אין הודעות ברעיון — כתבו עדכון, תייגו עם @שם והגיבו.'}
           </p>
         )}
 
@@ -115,9 +143,7 @@ export function ChatPanel({
                   <span className="font-label-md text-on-surface">{msg.authorName}</span>
                   <span className="font-label-sm text-secondary">{formatTime(msg.createdAt)}</span>
                 </div>
-                <p className="whitespace-pre-wrap break-words font-body-md leading-relaxed">
-                  {msg.body}
-                </p>
+                <MessageBody body={msg.body} />
               </div>
             </div>
           )
@@ -132,7 +158,11 @@ export function ChatPanel({
           type="text"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder="כתוב הודעה…"
+          placeholder={
+            scope === 'idea'
+              ? 'כתוב הודעה… @שם לתיוג'
+              : 'כתוב הודעה…'
+          }
           disabled={!canSend}
           maxLength={4000}
           className="boutique-input h-11 flex-1 py-2"

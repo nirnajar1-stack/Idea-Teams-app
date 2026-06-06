@@ -247,4 +247,62 @@
   .nav-glass {
     @apply border-b border-border-light bg-surface/80 shadow-nav backdrop-blur-2xl;
   }
+
+  .dog-avatar-bounce {
+    animation: dogBounce 2.2s ease-in-out infinite;
+  }
+
+  .dog-ear-left {
+    transform-origin: 18px 30px;
+    animation: dogEarLeft 2.5s ease-in-out infinite;
+  }
+
+  .dog-ear-right {
+    transform-origin: 46px 30px;
+    animation: dogEarRight 2.5s ease-in-out infinite;
+  }
+
+  .dog-tail-wag {
+    transform-origin: 48px 38px;
+    animation: dogTailWag 0.6s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes dogBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes dogEarLeft {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+
+@keyframes dogEarRight {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes dogTailWag {
+  from {
+    transform: rotate(-12deg);
+  }
+  to {
+    transform: rotate(18deg);
+  }
 }

@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  Bell,
   Lightbulb,
   LogOut,
   Search,
@@ -14,6 +13,7 @@ import { useIdeas } from '../../context/IdeasContext'
 import { canManageUsers } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
+import { NotificationBell } from '../chat/NotificationBell'
 import { ThemeToggle } from '../ui/ThemeToggle'
 
 export type NavbarVariant = 'main' | 'back' | 'ideas'
@@ -157,13 +157,7 @@ export function Navbar({
           </button>
         )}
         <ThemeToggle />
-        <button
-          type="button"
-          className="rounded-full p-2 transition-all duration-200 hover:bg-primary/5 active:scale-95"
-          aria-label="התראות"
-        >
-          <Bell className="h-6 w-6 text-on-surface" />
-        </button>
+        <NotificationBell />
         <Link to={ROUTES.profile} title={user?.name}>
           <Avatar alt={user?.name ?? 'משתמש'} size="md" />
         </Link>

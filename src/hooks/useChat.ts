@@ -8,6 +8,8 @@ import {
   unsubscribeChat,
 } from '../api/chatApi'
 import { useAuth } from '../context/AuthContext'
+import { useUsers } from '../context/UsersContext'
+import { parseMentionedUserIds } from '../lib/chatMentions'
 import type { ChatMessage, ChatScope } from '../types/chat'
 
 export interface UseChatOptions {
@@ -18,6 +20,7 @@ export interface UseChatOptions {
 
 export function useChat({ scope, ideaId, enabled = true }: UseChatOptions) {
   const { user } = useAuth()
+  const { users } = useUsers()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -50,7 +53,8 @@ export function useChat({ scope, ideaId, enabled = true }: UseChatOptions) {
     setError(null)
     messageIds.current.clear()
 
-    const load = scope === 'general' ? fetchGeneralMessages : () => fetchIdeaMessages(ideaId!)
+    const load =
+      scope === 'general' ? fetchGeneralMessages : () => fetchIdeaMessages(ideaId!)
 
     void load()
       .then((list) => {
@@ -83,10 +87,20 @@ export function useChat({ scope, ideaId, enabled = true }: UseChatOptions) {
       if (!trimmed || !user || !cloudReady) return false
       if (scope === 'idea' && !ideaId) return false
 
+      const lastMsg = messages.at(-1)
+      const replyToUserId =
+        lastMsg && lastMsg.senderUserId !== user.id
+          ? lastMsg.senderUserId
+          : undefined
+      const mentionedUserIds = parseMentionedUserIds(trimmed, users, user.id)
+
       setSending(true)
       setError(null)
       try {
-        const msg = await sendChatMessage(user, scope, trimmed, ideaId)
+        const msg = await sendChatMessage(user, scope, trimmed, ideaId, {
+          replyToUserId: scope === 'idea' ? replyToUserId : undefined,
+          mentionedUserIds: scope === 'idea' ? mentionedUserIds : [],
+        })
         addMessage(msg)
         return true
       } catch {
@@ -96,7 +110,7 @@ export function useChat({ scope, ideaId, enabled = true }: UseChatOptions) {
         setSending(false)
       }
     },
-    [user, cloudReady, scope, ideaId, addMessage],
+    [user, users, cloudReady, scope, ideaId, messages, addMessage],
   )
 
   return {

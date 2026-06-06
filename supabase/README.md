@@ -112,3 +112,13 @@ values ('idea', 'IDEA_ID', 'golan', 'גולן', 'גול', 'עדכון על הר�
 ```
 
 **Realtime:** המיגרציה מוסיפה את הטבלה ל-`supabase_realtime` — הודעות חדשות יגיעו לווידג'ט בלי רענון.
+
+### התראות ותיוגים (`004_chat_reads_and_mentions.sql`)
+
+| טבלה / עמודה | תפקיד |
+|----------------|--------|
+| `reply_to_user_id` | מי קיבל תגובה (התראה בפעמון) |
+| `mentioned_user_ids` | מי תויג ב-`@שם` |
+| `chat_read_cursors` | עד איפה כל משתמש קרא (כללי / רעיון) |
+
+**הרצה:** אחרי `003` — העתק והרץ `migrations/004_chat_reads_and_mentions.sql`.

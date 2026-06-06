@@ -11,7 +11,7 @@ export function IdeaChatSection({ idea }: IdeaChatSectionProps) {
   if (!chatApiAvailable()) return null
 
   return (
-    <section className="glass-card p-6 md:p-8">
+    <section id="idea-chat" className="glass-card scroll-mt-28 p-6 md:p-8">
       <span className="section-eyebrow">
         <MessagesSquare className="h-3.5 w-3.5" />
         צ'אט רעיון
