@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
+import { PreferencesProvider } from './context/PreferencesContext'
 import { ChatNotificationsProvider } from './context/ChatNotificationsContext'
 import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
@@ -12,6 +13,7 @@ import { ROUTES } from './constants/app'
 import { HomePage } from './pages/HomePage'
 import { IdeasListPage } from './pages/IdeasListPage'
 import { IdeaDetailPage } from './pages/IdeaDetailPage'
+import { EditIdeaPage } from './pages/EditIdeaPage'
 import { AddIdeaPage } from './pages/AddIdeaPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { InboxPage } from './pages/InboxPage'
@@ -32,6 +34,7 @@ function App() {
     <BrowserRouter>
       <UsersProvider>
         <AuthProvider>
+          <PreferencesProvider>
           <IdeasProvider>
             <ChatNotificationsProvider>
             <Toaster position="top-center" richColors dir="rtl" />
@@ -42,6 +45,7 @@ function App() {
                 <Route path={ROUTES.ideas} element={<IdeasListPage />} />
                 <Route path={ROUTES.inbox} element={<InboxPage />} />
                 <Route path="/ideas/:parentId/sub/new" element={<AddSubIdeaPage />} />
+                <Route path="/ideas/:id/edit" element={<EditIdeaPage />} />
                 <Route path="/ideas/:id" element={<IdeaDetailPage />} />
                 <Route path={ROUTES.addIdea} element={<AddIdeaPage />} />
                 <Route path={ROUTES.profile} element={<ProfilePage />} />
@@ -54,6 +58,7 @@ function App() {
             </Routes>
             </ChatNotificationsProvider>
           </IdeasProvider>
+          </PreferencesProvider>
         </AuthProvider>
       </UsersProvider>
     </BrowserRouter>

@@ -1,19 +1,23 @@
 import { Plus, Search } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
+import { CompletedIdeasSection } from '../components/sections/CompletedIdeasSection'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
 import { IdeasFiltersPanel } from '../components/sections/IdeasFiltersPanel'
+import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
-import type { IdeaCategory, IdeaFilters, IdeaPriority } from '../types/idea'
+import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
+import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
+import type { IdeaCategory, IdeaFilters, IdeaPriority, IdeasViewPrefs } from '../types/idea'
 import { Button } from '../components/ui/Button'
 
 export function IdeasListPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { getFilteredIdeas } = useIdeas()
+  const { visibleIdeas } = useIdeas()
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState<IdeaCategory[]>([
     'development',
@@ -21,9 +25,10 @@ export function IdeasListPage() {
   ])
   const [priority, setPriority] = useState<IdeaPriority | null>(null)
   const [onlyMine, setOnlyMine] = useState(false)
+  const [viewPrefs, setViewPrefs] = useState<IdeasViewPrefs>(loadIdeasViewPrefs)
 
-  const filters: IdeaFilters = useMemo(
-    () => ({
+  const baseFilters = useMemo(
+    (): Omit<IdeaFilters, 'workflow'> => ({
       search,
       categories,
       priority,
@@ -34,7 +39,31 @@ export function IdeasListPage() {
     [search, categories, priority, onlyMine, user?.id],
   )
 
-  const ideas = getFilteredIdeas(filters)
+  const activeIdeas = useMemo(
+    () =>
+      sortIdeas(
+        filterIdeas(visibleIdeas, { ...baseFilters, workflow: 'active' }),
+        viewPrefs.sort,
+      ),
+    [visibleIdeas, baseFilters, viewPrefs.sort],
+  )
+
+  const completedIdeas = useMemo(
+    () =>
+      sortIdeas(
+        filterIdeas(visibleIdeas, { ...baseFilters, workflow: 'completed' }),
+        viewPrefs.sort,
+      ),
+    [visibleIdeas, baseFilters, viewPrefs.sort],
+  )
+
+  const updateViewPrefs = useCallback((patch: Partial<IdeasViewPrefs>) => {
+    setViewPrefs((prev) => {
+      const next = { ...prev, ...patch }
+      saveIdeasViewPrefs(next)
+      return next
+    })
+  }, [])
 
   const toggleCategory = (cat: IdeaCategory) => {
     setCategories((prev) =>
@@ -91,14 +120,41 @@ export function IdeasListPage() {
           />
         </aside>
 
-        <div className="flex-1 space-y-4">
-          {ideas.length === 0 ? (
-            <p className="rounded-xl border border-border-light bg-surface-container-lowest p-8 text-center font-body-md text-secondary">
-              לא נמצאו רעיונות התואמים את החיפוש
-            </p>
-          ) : (
-            ideas.map((idea) => <IdeaListCard key={idea.id} idea={idea} />)
-          )}
+        <div className="flex-1">
+          <IdeasListToolbar
+            sort={viewPrefs.sort}
+            onSortChange={(sort) => updateViewPrefs({ sort })}
+            compact={viewPrefs.compact}
+            onCompactChange={(compact) => updateViewPrefs({ compact })}
+            activeCount={activeIdeas.length}
+            completedCount={completedIdeas.length}
+          />
+
+          <div
+            className={
+              viewPrefs.compact
+                ? 'space-y-2'
+                : 'space-y-4'
+            }
+          >
+            {activeIdeas.length === 0 ? (
+              <p className="rounded-xl border border-border-light bg-surface-container-lowest p-8 text-center font-body-md text-secondary">
+                לא נמצאו רעיונות פעילים התואמים את החיפוש
+              </p>
+            ) : (
+              activeIdeas.map((idea, i) => (
+                <div
+                  key={idea.id}
+                  className="animate-fade-up"
+                  style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
+                >
+                  <IdeaListCard idea={idea} compact={viewPrefs.compact} />
+                </div>
+              ))
+            )}
+          </div>
+
+          <CompletedIdeasSection ideas={completedIdeas} compact={viewPrefs.compact} />
         </div>
       </div>
     </AppShell>

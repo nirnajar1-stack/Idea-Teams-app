@@ -8,12 +8,14 @@ export interface AppShellProps extends Omit<NavbarProps, 'connectedAs'> {
   children: ReactNode
   maxWidth?: 'default' | 'narrow' | 'full'
   connectedAs?: string
+  shareUrl?: string
 }
 
 export function AppShell({
   children,
   maxWidth = 'default',
   connectedAs,
+  shareUrl,
   ...navbarProps
 }: AppShellProps) {
   const { user } = useAuth()
@@ -32,7 +34,7 @@ export function AppShell({
         aria-hidden
       />
 
-      <Navbar connectedAs={connectedAs ?? user?.name} {...navbarProps} />
+      <Navbar connectedAs={connectedAs ?? user?.name} shareUrl={shareUrl} {...navbarProps} />
       <main
         className={cn(
           'relative mx-auto px-margin-mobile pb-12 pt-24 md:px-margin-desktop',

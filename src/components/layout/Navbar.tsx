@@ -8,9 +8,11 @@ import {
   UserCog,
 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { APP_NAME, ROUTES } from '../../constants/app'
+import { toast } from 'sonner'
+import { APP_NAME, NAV_LABELS, ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
 import { canManageUsers } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
@@ -27,23 +29,59 @@ export interface NavbarProps {
   searchValue?: string
   onSearchChange?: (value: string) => void
   showShare?: boolean
+  shareUrl?: string
 }
 
 const mainLinks = [
-  { to: ROUTES.home, label: 'Dashboard', match: (p: string) => p === ROUTES.home },
+  { to: ROUTES.home, label: NAV_LABELS.home, match: (p: string) => p === ROUTES.home },
   {
     to: ROUTES.ideas,
-    label: 'Ideas',
+    label: NAV_LABELS.ideas,
     match: (p: string) =>
-      p.startsWith('/ideas') && p !== ROUTES.addIdea && !p.startsWith('/inbox'),
+      p.startsWith('/ideas') && p !== ROUTES.addIdea && p !== ROUTES.inbox,
   },
   {
     to: ROUTES.inbox,
-    label: 'Inbox',
+    label: NAV_LABELS.inbox,
     match: (p: string) => p === ROUTES.inbox,
   },
-  { to: ROUTES.profile, label: 'Community', match: (p: string) => p === ROUTES.profile },
+  { to: ROUTES.profile, label: NAV_LABELS.profile, match: (p: string) => p === ROUTES.profile },
 ]
+
+function NavLinks({
+  pathname,
+  inboxCount,
+  compact = false,
+}: {
+  pathname: string
+  inboxCount: number
+  compact?: boolean
+}) {
+  return (
+    <>
+      {mainLinks.map((link) => (
+        <Link
+          key={link.to}
+          to={link.to}
+          className={cn(
+            'relative rounded-xl font-label-md transition-colors duration-200',
+            compact ? 'px-2 py-1.5 text-label-sm' : 'px-3 py-2',
+            link.match(pathname)
+              ? 'bg-primary/10 text-primary'
+              : 'text-secondary hover:bg-primary/5 hover:text-on-surface',
+          )}
+        >
+          {link.label}
+          {link.to === ROUTES.inbox && inboxCount > 0 && (
+            <span className="absolute -left-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-inbox px-1 text-[10px] font-bold text-white">
+              {inboxCount}
+            </span>
+          )}
+        </Link>
+      ))}
+    </>
+  )
+}
 
 export function Navbar({
   variant = 'main',
@@ -52,6 +90,7 @@ export function Navbar({
   searchValue = '',
   onSearchChange,
   showShare = false,
+  shareUrl,
 }: NavbarProps) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -60,9 +99,25 @@ export function Navbar({
   const [searchOpen, setSearchOpen] = useState(false)
   const showUserManagement = canManageUsers(user)
 
+  useKeyboardShortcuts({ onSearchOpen: () => setSearchOpen(true) })
+
   const handleLogout = () => {
     logout()
     navigate(ROUTES.login)
+  }
+
+  const handleShare = async () => {
+    const url = shareUrl ?? window.location.href
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: APP_NAME, url })
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      toast.success('הקישור הועתק')
+    } catch {
+      toast.error('לא ניתן לשתף כרגע')
+    }
   }
 
   return (
@@ -91,24 +146,15 @@ export function Navbar({
         </Link>
       </div>
 
-      {variant === 'ideas' && (
-        <div className="mx-4 hidden max-w-xl flex-1 md:block">
-          <div className="relative w-full">
-            <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
-            <input
-              type="search"
-              value={searchValue}
-              onChange={(e) => onSearchChange?.(e.target.value)}
-              placeholder="חיפוש רעיונות, צוותים או קטגוריות..."
-              className="boutique-input h-10 rounded-full pr-12"
-            />
-          </div>
-        </div>
-      )}
-
-      {variant === 'main' && (
-        <nav className="hidden items-center gap-1 md:flex" aria-label="ניווט ראשי">
-          {showUserManagement && (
+      {(variant === 'ideas' || variant === 'main') && (
+        <nav
+          className={cn(
+            'mx-2 hidden items-center gap-0.5 md:flex',
+            variant === 'ideas' && 'max-w-none flex-1 justify-center',
+          )}
+          aria-label="ניווט ראשי"
+        >
+          {showUserManagement && variant === 'main' && (
             <Link
               to={ROUTES.users}
               className={cn(
@@ -119,50 +165,53 @@ export function Navbar({
               )}
             >
               <UserCog className="h-4 w-4" />
-              משתמשים
+              {NAV_LABELS.users}
             </Link>
           )}
-          {mainLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={cn(
-                'relative rounded-xl px-3 py-2 font-label-md transition-colors duration-200',
-                link.match(pathname)
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-secondary hover:bg-primary/5 hover:text-on-surface',
-              )}
-            >
-              {link.label}
-              {link.to === ROUTES.inbox && stats.inboxCount > 0 && (
-                <span className="absolute -left-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-inbox px-1 text-[10px] font-bold text-white">
-                  {stats.inboxCount}
-                </span>
-              )}
-            </Link>
-          ))}
+          <NavLinks
+            pathname={pathname}
+            inboxCount={stats.inboxCount}
+            compact={variant === 'ideas'}
+          />
         </nav>
       )}
 
+      {variant === 'ideas' && (
+        <div className="mx-2 hidden max-w-sm flex-1 lg:block">
+          <div className="relative w-full">
+            <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
+            <input
+              type="search"
+              value={searchValue}
+              onChange={(e) => onSearchChange?.(e.target.value)}
+              placeholder="חיפוש רעיונות..."
+              className="boutique-input h-10 rounded-full pr-12"
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex shrink-0 items-center gap-2 md:gap-3">
-        {variant === 'main' && (
+        {(variant === 'main' || variant === 'ideas') && (
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
             className="rounded-full p-2 text-secondary transition-all hover:bg-primary/5 hover:text-primary"
-            aria-label="חיפוש גלובלי"
+            aria-label="חיפוש גלובלי ( / )"
+            title="חיפוש ( / )"
           >
             <Search className="h-5 w-5" />
           </button>
         )}
         {connectedAs && (
-          <span className="hidden font-label-md text-secondary md:block">
+          <span className="hidden font-label-md text-secondary lg:block">
             מחובר כ<strong className="text-on-surface">{connectedAs}</strong>
           </span>
         )}
         {showShare && (
           <button
             type="button"
+            onClick={() => void handleShare()}
             className="hidden items-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-2 font-label-md text-primary transition-colors hover:border-primary/30 hover:bg-primary/10 md:flex"
           >
             <Share2 className="h-5 w-5" />
@@ -171,7 +220,7 @@ export function Navbar({
         )}
         <ThemeToggle />
         <NotificationBell />
-        <Link to={ROUTES.profile} title={user?.name}>
+        <Link to={ROUTES.profile} title={user?.name} className="hidden sm:block">
           <Avatar alt={user?.name ?? 'משתמש'} size="md" />
         </Link>
         <button

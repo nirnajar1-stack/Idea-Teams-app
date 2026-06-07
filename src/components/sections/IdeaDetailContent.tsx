@@ -4,7 +4,6 @@ import {
   Download,
   FileText,
   Image,
-  Target,
   AlertCircle,
 } from 'lucide-react'
 import {
@@ -15,7 +14,7 @@ import {
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
 import { isContainerIdea, isSubIdea } from '../../lib/ideaUtils'
-import type { Idea } from '../../types/idea'
+import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
@@ -25,6 +24,16 @@ import { IdeaChatSection } from '../chat/IdeaChatSection'
 import { SubIdeasSection } from './SubIdeasSection'
 import { AuditLogSection } from './AuditLogSection'
 import { AttachmentUpload } from './AttachmentUpload'
+import { GoalsTagsEditor } from './GoalsTagsEditor'
+
+const priorityVariant: Record<
+  IdeaPriority,
+  'priority-high' | 'priority-medium' | 'priority-low'
+> = {
+  high: 'priority-high',
+  medium: 'priority-medium',
+  low: 'priority-low',
+}
 
 export interface IdeaDetailContentProps {
   idea: Idea
@@ -48,7 +57,7 @@ export function IdeaDetailContent({
       <section className="glass-card p-6 md:p-8">
         <div className="mb-6 flex flex-wrap items-center gap-2">
           <Badge
-            variant="priority-high"
+            variant={priorityVariant[idea.priority]}
             icon={<AlertCircle className="h-3.5 w-3.5" />}
           >
             עדיפות {PRIORITY_LABELS[idea.priority]}
@@ -122,27 +131,17 @@ export function IdeaDetailContent({
         <SubIdeasSection parent={idea} subIdeas={subIdeas} canAdd={canAddSub} />
       )}
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="glass-card-hover p-6">
-          <div className="mb-4 flex items-center gap-3 text-primary">
-            <Target className="h-6 w-6" />
-            <h2 className="font-display text-headline-md text-on-surface">יעדים מרכזיים</h2>
-          </div>
-          <ul className="space-y-4">
-            {idea.goals.length > 0 ? (
-              idea.goals.map((goal) => (
-                <li key={goal} className="flex items-start gap-3">
-                  <CheckCircle className="mt-1 h-5 w-5 shrink-0 text-success-vibrant" />
-                  <span className="font-body-md text-on-surface-variant">{goal}</span>
-                </li>
-              ))
-            ) : (
-              <li className="font-body-md text-secondary">טרם הוגדרו יעדים</li>
-            )}
-          </ul>
-        </div>
+      <section className="glass-card-hover p-6">
+        <GoalsTagsEditor
+          goals={idea.goals}
+          tags={idea.tags}
+          disabled={!canEdit}
+          onChange={(patch) => onUpdate?.(patch)}
+        />
+      </section>
 
-        <div className="glass-card-hover p-6">
+      <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="glass-card-hover p-6 md:col-span-2">
           <div className="mb-4 flex items-center gap-3 text-primary">
             <FileText className="h-6 w-6" />
             <h2 className="font-display text-headline-md text-on-surface">קבצים מצורפים</h2>

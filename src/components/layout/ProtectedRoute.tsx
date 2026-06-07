@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { ChatWidget } from '../chat/ChatWidget'
+import { OfflineBanner } from '../ui/OfflineBanner'
 import { ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 
@@ -12,6 +13,7 @@ export function ProtectedRoute() {
 
   return (
     <>
+      <OfflineBanner />
       <Outlet />
       <ChatWidget />
     </>

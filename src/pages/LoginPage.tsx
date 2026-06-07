@@ -51,7 +51,7 @@ export function LoginPage() {
         </div>
         <span className="section-eyebrow mx-auto">
           <Sparkles className="h-3.5 w-3.5" />
-          FacilPay Studio
+          {APP_NAME}
         </span>
         <h1 className="mb-3 font-display text-headline-lg text-gradient">
           {APP_NAME}

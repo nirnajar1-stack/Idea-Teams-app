@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { useChatNotifications } from '../context/ChatNotificationsContext'
 import { AppShell } from '../components/layout/AppShell'
+import { ConfirmModal } from '../components/ui/ConfirmModal'
 import { IdeaDetailContent } from '../components/sections/IdeaDetailContent'
 import { IdeaDetailSidebar } from '../components/sections/IdeaDetailSidebar'
 import { useAuth } from '../context/AuthContext'
@@ -25,8 +27,13 @@ export function IdeaDetailPage() {
     canDelete,
     canEdit,
   } = useIdeas()
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [permissionOpen, setPermissionOpen] = useState(false)
 
   const idea = id ? getIdeaById(id) : undefined
+  const shareUrl = idea
+    ? `${window.location.origin}${ROUTES.ideaDetail(idea.id)}`
+    : undefined
 
   useEffect(() => {
     if (!idea || hash !== '#idea-chat') return
@@ -46,43 +53,76 @@ export function IdeaDetailPage() {
   const subIdeas = isContainerIdea(idea) ? getSubIdeas(idea.id) : []
   const canAddSub = canAddSubIdea(user, idea)
 
+  const handleUpdate = async (patch: Parameters<typeof updateIdea>[1]) => {
+    const ok = await updateIdea(idea.id, patch)
+    if (ok) toast.success('הרעיון עודכן')
+    else toast.error('העדכון נכשל')
+    return ok
+  }
+
   const handleDelete = () => {
     if (!canDelete(idea)) {
-      window.alert('אין לך הרשאה למחוק רעיון זה.')
+      setPermissionOpen(true)
       return
     }
-    if (window.confirm('האם למחוק את הרעיון? השינוי נשמר בענן.')) {
-      void (async () => {
-        if (await deleteIdea(idea.id)) {
-          navigate(ROUTES.ideas)
-        } else {
-          window.alert('המחיקה נכשלה. נסו לרענן את הדף.')
-        }
-      })()
-    }
+    setDeleteOpen(true)
+  }
+
+  const confirmDelete = () => {
+    setDeleteOpen(false)
+    void (async () => {
+      if (await deleteIdea(idea.id)) {
+        toast.success('הרעיון נמחק')
+        navigate(ROUTES.ideas)
+      } else {
+        toast.error('המחיקה נכשלה. נסו לרענן את הדף.')
+      }
+    })()
   }
 
   return (
-    <AppShell variant="back" showShare>
-      <div className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
-        <IdeaDetailContent
-          idea={idea}
-          parent={parent}
-          subIdeas={subIdeas}
-          canAddSub={canAddSub}
-          canEdit={canEdit(idea)}
-          onUpdate={(patch) => updateIdea(idea.id, patch)}
-        />
-        <IdeaDetailSidebar
-          idea={idea}
-          canEdit={canEdit(idea)}
-          canDelete={canDelete(idea)}
-          isContainer={isContainerIdea(idea)}
-          onComplete={() => markCompleted(idea.id)}
-          onDelete={handleDelete}
-          onUpdate={(patch) => updateIdea(idea.id, patch)}
-        />
-      </div>
-    </AppShell>
+    <>
+      <AppShell variant="back" showShare shareUrl={shareUrl}>
+        <div className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
+          <IdeaDetailContent
+            idea={idea}
+            parent={parent}
+            subIdeas={subIdeas}
+            canAddSub={canAddSub}
+            canEdit={canEdit(idea)}
+            onUpdate={(patch) => void handleUpdate(patch)}
+          />
+          <IdeaDetailSidebar
+            idea={idea}
+            canEdit={canEdit(idea)}
+            canDelete={canDelete(idea)}
+            isContainer={isContainerIdea(idea)}
+            onComplete={() => void markCompleted(idea.id).then(() => toast.success('סומן כהושלם'))}
+            onDelete={handleDelete}
+            onUpdate={(patch) => void handleUpdate(patch)}
+          />
+        </div>
+      </AppShell>
+
+      <ConfirmModal
+        open={deleteOpen}
+        title="מחיקת רעיון"
+        message="האם למחוק את הרעיון? פעולה זו אינה ניתנת לביטול."
+        confirmLabel="מחק"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
+
+      <ConfirmModal
+        open={permissionOpen}
+        title="אין הרשאה"
+        message="אין לך הרשאה למחוק רעיון זה."
+        confirmLabel="הבנתי"
+        cancelLabel="סגור"
+        onConfirm={() => setPermissionOpen(false)}
+        onCancel={() => setPermissionOpen(false)}
+      />
+    </>
   )
 }

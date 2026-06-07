@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import { AppSplashLoader } from '../components/ui/AppSplashLoader'
 import {
   deleteIdeaFromDb,
   fetchIdeasFromDb,
@@ -16,8 +17,13 @@ import {
 import { insertAuditEntry } from '../api/auditApi'
 import { restoreSupabaseSession } from '../api/authApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
-import { STORAGE_KEY } from '../constants/app'
+import { SPLASH_SHOWN_KEY, STORAGE_KEY } from '../constants/app'
 import { isSupabaseEnabled } from '../lib/supabaseClient'
+import {
+  friendlyIdeasEmptyCloudMessage,
+  friendlyIdeasLoadError,
+  friendlySupabaseConfigMessage,
+} from '../lib/userFriendlyErrors'
 import {
   computeStats,
   filterIdeas,
@@ -28,6 +34,7 @@ import {
   isContainerIdea,
   isRootIdea,
   normalizeIdea,
+  sortIdeas,
 } from '../lib/ideaUtils'
 import {
   canDeleteIdea,
@@ -37,7 +44,7 @@ import {
 } from '../lib/permissions'
 import { authorFieldsFromUser } from '../lib/userUtils'
 import { resolveVisibilityOnCreate } from '../lib/ideaVisibility'
-import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats } from '../types/idea'
+import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats, IdeaSortOption } from '../types/idea'
 import { useAuth } from './AuthContext'
 import { useUsers } from './UsersContext'
 
@@ -55,7 +62,7 @@ interface IdeasContextValue {
   markCompleted: (id: string) => Promise<void>
   getIdeaById: (id: string) => Idea | undefined
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
-  getRecentIdeas: (limit?: number) => Idea[]
+  getRecentIdeas: (limit?: number, sort?: IdeaSortOption) => Idea[]
   getIdeasByUser: (userId: string) => Idea[]
   getSubIdeas: (parentId: string) => Idea[]
   canDelete: (idea: Idea) => boolean
@@ -108,9 +115,16 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const { usersById, isReady: usersReady } = useUsers()
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [isReady, setIsReady] = useState(false)
+  const skipSplash = useMemo(
+    () => sessionStorage.getItem(SPLASH_SHOWN_KEY) === '1',
+    [],
+  )
+  const [splashExiting, setSplashExiting] = useState(false)
+  const [showSplash, setShowSplash] = useState(!skipSplash)
   const [usingCloud, setUsingCloud] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const cloudConfigured = isSupabaseEnabled()
+  const splashStartedAt = useMemo(() => Date.now(), [])
 
   useEffect(() => {
     if (!usersReady) return
@@ -133,9 +147,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
               const local = readLocalStorageIdeas()
               setIdeas(local ?? [])
               setLoadError(
-                !local?.length
-                  ? 'לא נמצאו רעיונות ב-Supabase. הרץ מיגרציה 012 ובדוק: SELECT count(*) FROM ideas;'
-                  : null,
+                !local?.length ? friendlyIdeasEmptyCloudMessage() : null,
               )
             }
             setUsingCloud(true)
@@ -144,15 +156,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
           return
         } catch (err) {
           console.error('Supabase ideas load failed', err)
-          const message =
-            err instanceof Error ? err.message : 'שגיאה לא ידועה'
           if (!cancelled) {
             const local = readLocalStorageIdeas()
             setIdeas(local ?? [])
             setUsingCloud(true)
-            setLoadError(
-              `לא ניתן לטעון רעיונות: ${message}. הרץ מיגרציה 012 ב-Supabase SQL Editor.`,
-            )
+            setLoadError(friendlyIdeasLoadError(err, !!local?.length))
             setIsReady(true)
           }
           return
@@ -163,9 +171,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         setIdeas(loadOfflineIdeas())
         setUsingCloud(false)
         setLoadError(
-          import.meta.env.PROD
-            ? 'Supabase לא מוגדר בבנייה — הוסף VITE_SUPABASE_URL ו-VITE_SUPABASE_ANON_KEY ב-Vercel ועשה Redeploy.'
-            : null,
+          import.meta.env.PROD ? friendlySupabaseConfigMessage() : null,
         )
         setIsReady(true)
       }
@@ -175,6 +181,28 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       cancelled = true
     }
   }, [usersReady, cloudConfigured, user?.id])
+
+  useEffect(() => {
+    if (!isReady) return
+    if (skipSplash) {
+      setShowSplash(false)
+      return
+    }
+    const elapsed = Date.now() - splashStartedAt
+    const minDisplay = 1200
+    const delay = Math.max(0, minDisplay - elapsed)
+
+    const startExit = window.setTimeout(() => setSplashExiting(true), delay)
+    const hide = window.setTimeout(() => {
+      sessionStorage.setItem(SPLASH_SHOWN_KEY, '1')
+      setShowSplash(false)
+    }, delay + 550)
+
+    return () => {
+      window.clearTimeout(startExit)
+      window.clearTimeout(hide)
+    }
+  }, [isReady, splashStartedAt, skipSplash])
 
   const applyLocalIdeas = useCallback(
     (updater: (prev: Idea[]) => Idea[]) => {
@@ -230,14 +258,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   )
 
   const getRecentIdeas = useCallback(
-    (limit = 3) =>
-      [...visibleIdeas]
-        .filter((i) => isRootIdea(i) && isActiveIdea(i))
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        )
-        .slice(0, limit),
+    (limit = 3, sort: IdeaSortOption = 'date_desc') =>
+      sortIdeas(
+        visibleIdeas.filter((i) => isRootIdea(i) && isActiveIdea(i)),
+        sort,
+      ).slice(0, limit),
     [visibleIdeas],
   )
 
@@ -450,26 +475,21 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     ],
   )
 
-  if (!isReady) {
+  if (!isReady || showSplash) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background font-body-md text-secondary">
-        טוען רעיונות…
-      </div>
+      <>
+        <AppSplashLoader exiting={splashExiting && isReady} />
+        {!isReady && (
+          <div className="invisible min-h-screen" aria-hidden>
+            טוען…
+          </div>
+        )}
+      </>
     )
   }
 
   return (
-    <IdeasContext.Provider value={value}>
-      {loadError && (
-        <div
-          role="alert"
-          className="border-b border-error/30 bg-error-container/80 px-4 py-3 text-center font-label-md text-on-error-container"
-        >
-          {loadError}
-        </div>
-      )}
-      {children}
-    </IdeasContext.Provider>
+    <IdeasContext.Provider value={value}>{children}</IdeasContext.Provider>
   )
 }
 

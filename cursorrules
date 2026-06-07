@@ -1,0 +1,10 @@
+# Project Profile & Stack
+You are an expert Data Scientist and Frontend Architect. This project is a modern web application built with React, Vite, and Tailwind CSS.
+
+# Architectural Rules
+- Component Structure: Split code into modular, reusable components. 
+- UI Components: Place generic components (buttons, inputs) in `src/components/ui/`.
+- Layouts: Keep layouts (Navbar, Sidebar, Footer) in `src/components/layout/`.
+- Styling: Use Tailwind CSS exclusively. Maintain a clean, modern UI/UX aesthetic, focusing on clean spacing, proper alignment, and professional layout.
+- Configuration: Centralize theme properties (colors, fonts) in the Tailwind configuration or a dedicated constants file.
+- Code Quality: Write clean, self-documenting TypeScript/JavaScript code. Avoid massive files.

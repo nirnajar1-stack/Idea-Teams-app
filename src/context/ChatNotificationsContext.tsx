@@ -18,12 +18,18 @@ import {
 } from '../api/chatApi'
 import { useAuth } from './AuthContext'
 import { useIdeas } from './IdeasContext'
+import { usePreferences } from './PreferencesContext'
 import {
   buildBellNotifications,
   buildCursorMap,
   countUnreadGeneral,
   cursorKey,
 } from '../lib/chatNotifications'
+import {
+  buildTargetDateNotifications,
+  filterNotificationsByPrefs,
+} from '../lib/notificationPrefs'
+import { DEFAULT_USER_PREFERENCES } from '../types/preferences'
 import type { ChatBellNotification, ChatMessage } from '../types/chat'
 
 interface ChatNotificationsContextValue {
@@ -44,13 +50,15 @@ const ChatNotificationsContext = createContext<ChatNotificationsContextValue | n
 
 export function ChatNotificationsProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
-  const { ideas } = useIdeas()
+  const { ideas, visibleIdeas } = useIdeas()
+  const { prefs: userPrefs } = usePreferences()
   const [generalMessages, setGeneralMessages] = useState<ChatMessage[]>([])
   const [ideaMessages, setIdeaMessages] = useState<ChatMessage[]>([])
   const [cursorMap, setCursorMap] = useState<Map<string, string>>(new Map())
   const [openGeneralChatTick, setOpenGeneralChatTick] = useState(0)
   const [ready, setReady] = useState(false)
 
+  const prefs = userPrefs ?? (user ? { userId: user.id, ...DEFAULT_USER_PREFERENCES } : null)
   const ideasById = useMemo(() => new Map(ideas.map((i) => [i.id, i])), [ideas])
 
   const refresh = useCallback(async () => {
@@ -102,22 +110,31 @@ export function ChatNotificationsProvider({ children }: { children: ReactNode })
   }, [user])
 
   const generalUnread = useMemo(() => {
-    if (!user) return 0
+    if (!user || !prefs?.notifyGeneralMentions) return 0
     const lastRead =
       cursorMap.get(cursorKey('general')) ?? '1970-01-01T00:00:00Z'
     return countUnreadGeneral(generalMessages, user.id, lastRead)
-  }, [generalMessages, cursorMap, user])
+  }, [generalMessages, cursorMap, user, prefs?.notifyGeneralMentions])
 
   const bellNotifications = useMemo(() => {
-    if (!user) return []
-    return buildBellNotifications(
+    if (!user || !prefs) return []
+    const chatNotifications = buildBellNotifications(
       generalMessages,
       ideaMessages,
       ideasById,
       user.id,
       cursorMap,
     )
-  }, [generalMessages, ideaMessages, ideasById, user, cursorMap])
+    const targetDateNotifications = buildTargetDateNotifications(
+      visibleIdeas,
+      user.id,
+      prefs,
+    )
+    return filterNotificationsByPrefs(
+      [...chatNotifications, ...targetDateNotifications],
+      prefs,
+    )
+  }, [generalMessages, ideaMessages, ideasById, user, cursorMap, prefs, visibleIdeas])
 
   const ideaNotifications = useMemo(
     () => bellNotifications.filter((n) => n.kind === 'idea'),

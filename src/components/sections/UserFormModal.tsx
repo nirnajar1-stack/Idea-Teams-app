@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   ACCESS_LEVEL_LABELS,
   type StoredUser,
@@ -33,7 +34,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isEdit && password.length < 4) {
-      window.alert('סיסמה חייבת להכיל לפחות 4 תווים')
+      toast.error('סיסמה חייבת להכיל לפחות 4 תווים')
       return
     }
     setSaving(true)

@@ -1,18 +1,48 @@
-import { Archive, ArrowLeft } from 'lucide-react'
+import { Archive, ArrowLeft, Search } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
+import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
 import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
+import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
+import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
+import type { IdeasViewPrefs } from '../types/idea'
 
 export function InboxPage() {
-  const { getFilteredIdeas } = useIdeas()
-  const inboxIdeas = getFilteredIdeas({
-    search: '',
-    categories: ['development', 'monitoring'],
-    priority: null,
-    pipeline: 'inbox',
-  })
+  const { visibleIdeas, updateIdea } = useIdeas()
+  const [search, setSearch] = useState('')
+  const [viewPrefs, setViewPrefs] = useState<IdeasViewPrefs>(loadIdeasViewPrefs)
+
+  const inboxIdeas = useMemo(
+    () =>
+      sortIdeas(
+        filterIdeas(visibleIdeas, {
+          search,
+          categories: ['development', 'monitoring'],
+          priority: null,
+          pipeline: 'inbox',
+        }),
+        viewPrefs.sort,
+      ),
+    [visibleIdeas, search, viewPrefs.sort],
+  )
+
+  const updateViewPrefs = useCallback((patch: Partial<IdeasViewPrefs>) => {
+    setViewPrefs((prev) => {
+      const next = { ...prev, ...patch }
+      saveIdeasViewPrefs(next)
+      return next
+    })
+  }, [])
+
+  const handleRestore = useCallback(
+    (ideaId: string) => {
+      void updateIdea(ideaId, { sendToMaybeInbox: false })
+    },
+    [updateIdea],
+  )
 
   return (
     <AppShell variant="main">
@@ -25,8 +55,8 @@ export function InboxPage() {
           אולי בהמשך
         </h1>
         <p className="max-w-2xl font-body-md text-secondary">
-          רעיונות ששמרתם לבחינה עתידית — בלי לחץ ביצוע. כשתהיו מוכנים, העבירו אותם
-          חזרה ללוח הפעיל ממסך הפרטים.
+          רעיונות ששמרתם לבחינה עתידית — בלי לחץ ביצוע. החזירו אותם ללוח הפעיל בלחיצה
+          אחת.
         </p>
         <Link
           to={ROUTES.ideas}
@@ -37,6 +67,28 @@ export function InboxPage() {
         </Link>
       </header>
 
+      <div className="mb-6">
+        <div className="relative w-full max-w-xl">
+          <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="חיפוש ב-Inbox..."
+            className="boutique-input h-12 w-full rounded-xl pr-12"
+          />
+        </div>
+      </div>
+
+      <IdeasListToolbar
+        sort={viewPrefs.sort}
+        onSortChange={(sort) => updateViewPrefs({ sort })}
+        compact={viewPrefs.compact}
+        onCompactChange={(compact) => updateViewPrefs({ compact })}
+        activeCount={inboxIdeas.length}
+        completedCount={0}
+      />
+
       {inboxIdeas.length === 0 ? (
         <div className="glass-card p-12 text-center">
           <Archive className="mx-auto mb-4 h-12 w-12 text-inbox/50" />
@@ -46,14 +98,19 @@ export function InboxPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className={viewPrefs.compact ? 'space-y-2' : 'space-y-4'}>
           {inboxIdeas.map((idea, i) => (
             <div
               key={idea.id}
               className="animate-fade-up"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <IdeaListCard idea={idea} />
+              <IdeaListCard
+                idea={idea}
+                compact={viewPrefs.compact}
+                showInboxActions
+                onRestoreFromInbox={handleRestore}
+              />
             </div>
           ))}
         </div>

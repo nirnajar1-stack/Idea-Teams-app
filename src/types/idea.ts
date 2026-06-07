@@ -6,6 +6,16 @@ export type IdeaWorkflowStatus = 'in_progress' | 'completed' | 'pending'
 
 export type IdeaPipeline = 'active' | 'inbox' | 'all'
 
+/** active — לא הושלמו | completed — הושלמו בלבד | all — הכל */
+export type IdeaWorkflowFilter = 'active' | 'completed' | 'all'
+
+export type IdeaSortOption = 'date_desc' | 'priority_desc' | 'author_asc'
+
+export interface IdeasViewPrefs {
+  compact: boolean
+  sort: IdeaSortOption
+}
+
 /** standard — רעיון רגיל; container — רעיון שמכיל תת-רעיונות (יצירה למנהל בלבד) */
 export type IdeaKind = 'standard' | 'container'
 
@@ -71,6 +81,7 @@ export interface IdeaFilters {
   onlyMine?: boolean
   currentUserId?: string
   pipeline?: IdeaPipeline
+  workflow?: IdeaWorkflowFilter
 }
 
 export interface IdeasStats {

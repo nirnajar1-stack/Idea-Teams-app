@@ -1,12 +1,13 @@
 import { Archive, CheckCheck, Pencil, Rocket, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
-import { formatIdeaDateLong } from '../../lib/ideaUtils'
-import type { Idea } from '../../types/idea'
+import { formatIdeaDateLong, WORKFLOW_LABELS } from '../../lib/ideaUtils'
+import type { Idea, IdeaWorkflowStatus } from '../../types/idea'
 import { DateInput } from '../ui/DateInput'
 import { ProgressBar } from '../ui/ProgressBar'
 import { AssigneeSelect } from './AssigneeSelect'
 import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
+import { WorkflowStatusSelect } from './WorkflowStatusSelect'
 import { useUsers } from '../../context/UsersContext'
 import { useAuth } from '../../context/AuthContext'
 import { canChangeIdeaVisibility } from '../../lib/ideaVisibility'
@@ -22,6 +23,16 @@ export interface IdeaDetailSidebarProps {
   onUpdate: (patch: Partial<Idea>) => void
 }
 
+function workflowPatch(status: IdeaWorkflowStatus): Partial<Idea> {
+  if (status === 'completed') {
+    return { workflowStatus: status, progress: 100, progressStep: WORKFLOW_LABELS.completed }
+  }
+  if (status === 'in_progress') {
+    return { workflowStatus: status, progressStep: WORKFLOW_LABELS.in_progress }
+  }
+  return { workflowStatus: status, progressStep: WORKFLOW_LABELS.pending }
+}
+
 export function IdeaDetailSidebar({
   idea,
   canEdit,
@@ -35,22 +46,38 @@ export function IdeaDetailSidebar({
   const { user } = useAuth()
   const { listManageableUsers } = useUsers()
 
+  const handleWorkflowChange = (status: IdeaWorkflowStatus) => {
+    if (status === 'completed') {
+      onComplete()
+      return
+    }
+    onUpdate(workflowPatch(status))
+  }
+
   return (
     <aside className="space-y-6 lg:col-span-4">
       <div className="sticky top-24 glass-card p-6">
         <h3 className="mb-6 font-display text-headline-md text-on-surface">פעולות</h3>
         <div className="space-y-4">
           {canEdit && !isContainer && (
+            <WorkflowStatusSelect
+              value={idea.workflowStatus}
+              disabled={!canEdit}
+              onChange={handleWorkflowChange}
+            />
+          )}
+
+          {canEdit && !isContainer && idea.workflowStatus !== 'completed' && (
             <button
               type="button"
               onClick={onComplete}
-              disabled={idea.workflowStatus === 'completed'}
-              className="btn-boutique flex w-full items-center justify-center gap-2 disabled:opacity-60"
+              className="btn-boutique flex w-full items-center justify-center gap-2"
             >
               <CheckCheck className="h-5 w-5" />
               סימון כהושלם
             </button>
           )}
+
           {canEdit && !isContainer && (
           <button
             type="button"
@@ -80,7 +107,7 @@ export function IdeaDetailSidebar({
           {canEdit && (
             <button
               type="button"
-              onClick={() => navigate(ROUTES.addIdea)}
+              onClick={() => navigate(ROUTES.editIdea(idea.id))}
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light bg-surface-container-low/80 py-4 font-label-md text-secondary transition-all hover:bg-surface-container active:scale-95"
             >
               <Pencil className="h-5 w-5" />
@@ -128,20 +155,6 @@ export function IdeaDetailSidebar({
           hint={`עודכן: ${formatIdeaDateLong(idea.createdAt)} נוצר`}
           disabled={!canEdit}
         />
-
-        <div className="mt-6 space-y-4">
-          <h4 className="font-label-md uppercase text-secondary">תגים</h4>
-          <div className="flex flex-wrap gap-2">
-            {idea.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-border-light/80 bg-surface-container-low/80 px-3 py-1 text-[13px] text-on-surface-variant backdrop-blur-sm"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
 
         <div className="mt-8">
           <h4 className="mb-4 font-label-md uppercase text-secondary">התקדמות</h4>

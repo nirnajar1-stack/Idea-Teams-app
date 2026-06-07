@@ -1,4 +1,4 @@
-import type { Idea, IdeaFilters, IdeaKind, IdeasStats } from '../types/idea'
+import type { Idea, IdeaFilters, IdeaKind, IdeasStats, IdeaSortOption } from '../types/idea'
 
 function addDays(isoDate: string, days: number): string {
   const d = new Date(isoDate)
@@ -64,15 +64,60 @@ export function computeStats(ideas: Idea[]): IdeasStats {
   }
 }
 
+const PRIORITY_RANK = { high: 3, medium: 2, low: 1 } as const
+
+/** זמן פתיחה משוער — מזהה if-* או תאריך createdAt */
+export function getIdeaOpenedAt(idea: Idea): number {
+  const match = /^if-([a-z0-9]+)$/i.exec(idea.id)
+  if (match) {
+    const parsed = parseInt(match[1], 36)
+    if (!Number.isNaN(parsed)) return parsed
+  }
+  const d = new Date(idea.createdAt)
+  if (!Number.isNaN(d.getTime())) return d.getTime()
+  return 0
+}
+
+export function sortIdeas(ideas: Idea[], sort: IdeaSortOption): Idea[] {
+  const list = [...ideas]
+  switch (sort) {
+    case 'priority_desc':
+      return list.sort((a, b) => {
+        const diff = PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority]
+        if (diff !== 0) return diff
+        return getIdeaOpenedAt(b) - getIdeaOpenedAt(a)
+      })
+    case 'author_asc':
+      return list.sort((a, b) => {
+        const byName = a.authorName.localeCompare(b.authorName, 'he')
+        if (byName !== 0) return byName
+        return getIdeaOpenedAt(b) - getIdeaOpenedAt(a)
+      })
+    case 'date_desc':
+    default:
+      return list.sort((a, b) => getIdeaOpenedAt(b) - getIdeaOpenedAt(a))
+  }
+}
+
+export const IDEA_SORT_LABELS: Record<IdeaSortOption, string> = {
+  date_desc: 'תאריך פתיחה (חדש למעלה)',
+  priority_desc: 'חשיבות (גבוהה למעלה)',
+  author_asc: 'פותח המשימה (א–ת)',
+}
+
 export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
   const query = filters.search.trim().toLowerCase()
   const pipeline = filters.pipeline ?? 'active'
+  const workflow = filters.workflow ?? 'active'
 
   return ideas.filter((idea) => {
     if (idea.parentId) return false
 
     if (pipeline === 'active' && idea.sendToMaybeInbox) return false
     if (pipeline === 'inbox' && !idea.sendToMaybeInbox) return false
+
+    if (workflow === 'active' && idea.workflowStatus === 'completed') return false
+    if (workflow === 'completed' && idea.workflowStatus !== 'completed') return false
 
     if (
       filters.categories.length > 0 &&
