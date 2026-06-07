@@ -46,8 +46,12 @@ export function UserManagementPage() {
       setModalOpen(false)
       setEditing(null)
     } catch (err) {
+      const detail =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message?: string }).message)
+          : String(err)
       console.error('save user failed', err)
-      toast.error(formatUserSaveError(err))
+      toast.error(`${formatUserSaveError(err)}${detail ? ` (${detail})` : ''}`)
     }
   }
 

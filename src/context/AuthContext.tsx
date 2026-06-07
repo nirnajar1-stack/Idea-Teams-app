@@ -87,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
         if (cloud.ok && cloud.userId) {
+          await signOutSupabaseAuth()
           if (cloud.email) {
             await signInSupabaseAuth(cloud.email, trimmed)
           }

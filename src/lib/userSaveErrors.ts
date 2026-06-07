@@ -21,7 +21,11 @@ export function formatUserSaveError(error: unknown): string {
   }
 
   if (msg.includes('only active manager')) {
-    return 'רק מנהל פעיל יכול לנהל משתמשים'
+    return 'רק מנהל פעיל יכול לנהל משתמשים — התנתק והתחבר עם nir123'
+  }
+
+  if (msg.includes('app_users_access_level_check') || msg.includes('access_level')) {
+    return 'רמת גישה לא תקינה — הרץ migrations/019_fix_users_actor_rpc.sql'
   }
 
   if (msg.includes('cannot delete last active manager')) {

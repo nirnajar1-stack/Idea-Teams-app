@@ -24,6 +24,7 @@
 | 16 | `016_fix_ideas_insert_rpc.sql` | תיקון insert רעיונות (עמודות + משתמש) |
 | 17 | `017_reload_ideas_write_rpc.sql` | **הרצה אחת** — שמירת רעיונות + reload API |
 | 18 | `018_users_write_rpc.sql` | **RPC ניהול משתמשים** — שמירה ב-/users |
+| 19 | `019_fix_users_actor_rpc.sql` | תיקון זיהוי מנהל (JWT ישן) |
 
 > אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.  
 > אם רעיונות/התראות לא מתעדכנים — הרץ גם **011 → 012 → 013**.
@@ -145,7 +146,7 @@ select * from storage.buckets where id = 'idea-attachments';
 | התראות צ'אט נשארות "לא נקראו" | הרץ `013_chat_read_rpc.sql` |
 | שליחת הודעה בצ'אט נכשלת | הרץ `003` (אם חסרה טבלה) או `014_send_chat_rpc.sql` |
 | הוספת רעיון לא נשמרת / אין הרשאה | הרץ `017_reload_ideas_write_rpc.sql` |
-| שמירת משתמשים נכשלת | הרץ `018_users_write_rpc.sql` (מנהל בלבד) |
+| שמירת משתמשים נכשלת | הרץ `018` ואז `019_fix_users_actor_rpc.sql` (מנהל בלבד) |
 
 ---
 
