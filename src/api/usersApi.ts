@@ -27,7 +27,10 @@ export async function fetchUsersFromDb(): Promise<StoredUser[]> {
   return (fallback.data as AppUserRow[]).map(userRowToStored)
 }
 
-export async function insertUserToDb(input: UserFormInput): Promise<StoredUser> {
+export async function insertUserToDb(
+  input: UserFormInput,
+  actorUserId: string,
+): Promise<StoredUser> {
   const passwordHash = await hashPassword(input.password)
   const user: StoredUser = {
     id: `user-${Date.now().toString(36)}`,
@@ -40,15 +43,23 @@ export async function insertUserToDb(input: UserFormInput): Promise<StoredUser> 
     accessLevel: input.accessLevel,
     active: true,
   }
-  const { error } = await getSupabase().from('app_users').insert(storedUserToRow(user))
-  if (error) throw error
-  return user
+
+  const { error: rpcError } = await getSupabase().rpc('insert_app_user_for_session', {
+    p_actor_user_id: actorUserId,
+    p_user: storedUserToRow(user),
+  })
+
+  if (!rpcError) return user
+
+  console.error('insert_app_user_for_session failed', rpcError)
+  throw rpcError
 }
 
 export async function updateUserInDb(
   id: string,
   input: UserUpdateInput,
   current: StoredUser,
+  actorUserId: string,
 ): Promise<StoredUser> {
   const passwordHash = input.password?.trim()
     ? await hashPassword(input.password)
@@ -66,17 +77,28 @@ export async function updateUserInDb(
     ...(passwordHash && { passwordHash }),
   }
 
-  const { error } = await getSupabase()
-    .from('app_users')
-    .update(storedUserToRow(updated))
-    .eq('id', id)
-  if (error) throw error
-  return updated
+  const { error: rpcError } = await getSupabase().rpc('update_app_user_for_session', {
+    p_actor_user_id: actorUserId,
+    p_user_id: id,
+    p_patch: storedUserToRow(updated),
+  })
+
+  if (!rpcError) return updated
+
+  console.error('update_app_user_for_session failed', rpcError)
+  throw rpcError
 }
 
-export async function deleteUserFromDb(id: string): Promise<void> {
-  const { error } = await getSupabase().from('app_users').delete().eq('id', id)
-  if (error) throw error
+export async function deleteUserFromDb(id: string, actorUserId: string): Promise<void> {
+  const { error: rpcError } = await getSupabase().rpc('delete_app_user_for_session', {
+    p_actor_user_id: actorUserId,
+    p_user_id: id,
+  })
+
+  if (!rpcError) return
+
+  console.error('delete_app_user_for_session failed', rpcError)
+  throw rpcError
 }
 
 export function usersApiAvailable(): boolean {

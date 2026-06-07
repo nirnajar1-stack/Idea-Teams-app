@@ -1,5 +1,6 @@
 import { Pencil, Plus, Shield, Trash2, UserCog } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
 import { UserFormModal } from '../components/sections/UserFormModal'
 import { useAuth } from '../context/AuthContext'
@@ -11,6 +12,7 @@ import {
   type UserUpdateInput,
 } from '../types/user'
 import { cn } from '../lib/cn'
+import { formatUserSaveError } from '../lib/userSaveErrors'
 
 export function UserManagementPage() {
   const { user: currentUser } = useAuth()
@@ -31,13 +33,22 @@ export function UserManagementPage() {
   }
 
   const handleSave = async (data: UserFormInput | UserUpdateInput) => {
-    if (editing) {
-      await updateUser(editing.id, data as UserUpdateInput)
-    } else {
-      await createUser(data as UserFormInput)
+    if (!currentUser?.id) {
+      toast.error('יש להתחבר כמנהל כדי לשמור משתמשים')
+      return
     }
-    setModalOpen(false)
-    setEditing(null)
+    try {
+      if (editing) {
+        await updateUser(editing.id, data as UserUpdateInput, currentUser.id)
+      } else {
+        await createUser(data as UserFormInput, currentUser.id)
+      }
+      setModalOpen(false)
+      setEditing(null)
+    } catch (err) {
+      console.error('save user failed', err)
+      toast.error(formatUserSaveError(err))
+    }
   }
 
   const handleDelete = (u: StoredUser) => {
@@ -50,8 +61,12 @@ export function UserManagementPage() {
       window.alert('חייב להישאר לפחות מנהל פעיל אחד.')
       return
     }
+    if (!currentUser?.id) return
     if (window.confirm(`למחוק את ${u.name}? פעולה זו אינה ניתנת לביטול.`)) {
-      deleteUser(u.id)
+      void deleteUser(u.id, currentUser.id).catch((err) => {
+        console.error('delete user failed', err)
+        toast.error(formatUserSaveError(err))
+      })
     }
   }
 

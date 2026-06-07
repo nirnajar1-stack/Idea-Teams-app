@@ -31,9 +31,9 @@ interface UsersContextValue {
   usingCloud: boolean
   getUserById: (id: string) => StoredUser | undefined
   findUserByPassword: (password: string) => Promise<StoredUser | 'ambiguous' | null>
-  createUser: (input: UserFormInput) => Promise<StoredUser>
-  updateUser: (id: string, input: UserUpdateInput) => Promise<StoredUser>
-  deleteUser: (id: string) => void
+  createUser: (input: UserFormInput, actorUserId?: string) => Promise<StoredUser>
+  updateUser: (id: string, input: UserUpdateInput, actorUserId?: string) => Promise<StoredUser>
+  deleteUser: (id: string, actorUserId?: string) => Promise<void>
   listManageableUsers: () => StoredUser[]
 }
 
@@ -132,9 +132,10 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   )
 
   const createUser = useCallback(
-    async (input: UserFormInput): Promise<StoredUser> => {
+    async (input: UserFormInput, actorUserId?: string): Promise<StoredUser> => {
       if (usingCloud) {
-        const created = await insertUserToDb(input)
+        if (!actorUserId) throw new Error('actor user required')
+        const created = await insertUserToDb(input, actorUserId)
         setUsers((prev) => [...prev, created])
         return created
       }
@@ -164,12 +165,13 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   )
 
   const updateUser = useCallback(
-    async (id: string, input: UserUpdateInput): Promise<StoredUser> => {
+    async (id: string, input: UserUpdateInput, actorUserId?: string): Promise<StoredUser> => {
       const current = usersById.get(id)
       if (!current) throw new Error('User not found')
 
       if (usingCloud) {
-        const updated = await updateUserInDb(id, input, current)
+        if (!actorUserId) throw new Error('actor user required')
+        const updated = await updateUserInDb(id, input, current, actorUserId)
         setUsers((prev) => prev.map((u) => (u.id === id ? updated : u)))
         return updated
       }
@@ -206,10 +208,11 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   )
 
   const deleteUser = useCallback(
-    async (id: string) => {
+    async (id: string, actorUserId?: string) => {
       if (id === GUEST_USER_ID) return
       if (usingCloud) {
-        await deleteUserFromDb(id)
+        if (!actorUserId) throw new Error('actor user required')
+        await deleteUserFromDb(id, actorUserId)
       }
       setUsers((prev) => {
         const next = prev.filter((u) => u.id !== id)
