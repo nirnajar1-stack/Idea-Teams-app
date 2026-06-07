@@ -17,7 +17,7 @@ export function formatUserSaveError(error: unknown): string {
     msg.includes('row-level security') ||
     msg.includes('permission denied')
   ) {
-    return 'אין הרשאה לשמור משתמשים — הרץ ב-Supabase את migrations/018_users_write_rpc.sql'
+    return 'האפליקציה רצה בגרסה ישנה (שמירה ישירה חסומה). רענן Ctrl+F5, או המתן ל-redeploy ב-Vercel. ב-Supabase הרץ 018+019.'
   }
 
   if (msg.includes('only active manager')) {
