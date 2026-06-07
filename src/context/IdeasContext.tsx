@@ -99,8 +99,8 @@ function saveIdeasLocal(ideas: Idea[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ideas))
 }
 
-async function syncIdeasToCloud(ideas: Idea[]): Promise<void> {
-  await Promise.all(ideas.map((idea) => updateIdeaInDb(idea.id, idea)))
+async function syncIdeasToCloud(ideas: Idea[], appUserId: string): Promise<void> {
+  await Promise.all(ideas.map((idea) => updateIdeaInDb(idea.id, idea, appUserId)))
 }
 
 export function IdeasProvider({ children }: { children: ReactNode }) {
@@ -278,7 +278,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         visibility: resolveVisibilityOnCreate(user, input.visibility),
       }
 
-      if (usingCloud) await insertIdeaToDb(newIdea)
+      if (usingCloud) await insertIdeaToDb(newIdea, user.id)
 
       void insertAuditEntry({
         entityType: 'idea',
@@ -298,10 +298,14 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       if (usingCloud && input.parentId) {
         const parent = next.find((i) => i.id === input.parentId)
         if (parent && isContainerIdea(parent)) {
-          await updateIdeaInDb(parent.id, {
-            progress: parent.progress,
-            progressStep: parent.progressStep,
-          })
+          await updateIdeaInDb(
+            parent.id,
+            {
+              progress: parent.progress,
+              progressStep: parent.progressStep,
+            },
+            user.id,
+          )
         }
       }
 
@@ -315,7 +319,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       const idea = ideas.find((i) => i.id === id)
       if (!idea || !canEditIdea(user, idea)) return false
 
-      if (usingCloud) await updateIdeaInDb(id, patch)
+      if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
 
       if (user) {
         const action =
@@ -352,7 +356,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         return next
       })
 
-      if (usingCloud && toSync.length > 0) await syncIdeasToCloud(toSync)
+      if (usingCloud && user && toSync.length > 0) {
+        await syncIdeasToCloud(toSync, user.id)
+      }
 
       return true
     },
@@ -364,7 +370,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       const idea = ideas.find((i) => i.id === id)
       if (!idea || !canDeleteIdea(user, idea)) return false
 
-      if (usingCloud) await deleteIdeaFromDb(id)
+      if (usingCloud && user) await deleteIdeaFromDb(id, user.id)
 
       if (user) {
         void insertAuditEntry({

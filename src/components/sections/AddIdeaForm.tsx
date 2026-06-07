@@ -7,6 +7,7 @@ import {
   Loader2,
 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
+import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
@@ -54,21 +55,24 @@ export function AddIdeaForm() {
     setSubmitState('loading')
     await new Promise((r) => setTimeout(r, 800))
 
-    const idea = await addIdea({
-      title,
-      description,
-      category,
-      priority,
-      targetStartDate,
-      sendToMaybeInbox: isContainer ? false : sendToMaybeInbox,
-      ideaKind: isContainer ? 'container' : 'standard',
-      visibility: user ? resolveVisibilityOnCreate(user, visibility) : 'team',
-    })
-    setSubmitState('success')
-    await new Promise((r) => setTimeout(r, 1200))
-    navigate(
-      sendToMaybeInbox ? ROUTES.inbox : ROUTES.ideaDetail(idea.id),
-    )
+    try {
+      const idea = await addIdea({
+        title,
+        description,
+        category,
+        priority,
+        targetStartDate,
+        sendToMaybeInbox: isContainer ? false : sendToMaybeInbox,
+        ideaKind: isContainer ? 'container' : 'standard',
+        visibility: user ? resolveVisibilityOnCreate(user, visibility) : 'team',
+      })
+      setSubmitState('success')
+      await new Promise((r) => setTimeout(r, 1200))
+      navigate(sendToMaybeInbox ? ROUTES.inbox : ROUTES.ideaDetail(idea.id))
+    } catch {
+      setSubmitState('idle')
+      toast.error('שמירת הרעיון נכשלה — הרץ ב-Supabase את migrations/015_ideas_write_rpc.sql')
+    }
   }
 
   return (

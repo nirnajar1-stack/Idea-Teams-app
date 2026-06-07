@@ -31,19 +31,64 @@ export async function fetchIdeasFromDb(appUserId?: string): Promise<Idea[]> {
   return (data as IdeaRow[]).map(ideaRowToIdea)
 }
 
-export async function insertIdeaToDb(idea: Idea): Promise<void> {
-  const { error } = await getSupabase().from('ideas').insert(ideaToRow(idea))
+function isRpcMissing(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false
+  return (
+    error.code === 'PGRST202' ||
+    (error.message ?? '').includes('insert_idea_for_session') ||
+    (error.message ?? '').includes('update_idea_for_session') ||
+    (error.message ?? '').includes('delete_idea_for_session')
+  )
+}
+
+export async function insertIdeaToDb(idea: Idea, appUserId?: string): Promise<void> {
+  const row = ideaToRow(idea)
+  const userId = appUserId ?? idea.createdByUserId
+
+  const { error: rpcError } = await getSupabase().rpc('insert_idea_for_session', {
+    p_user_id: userId,
+    p_idea: row,
+  })
+
+  if (!rpcError) return
+  if (!isRpcMissing(rpcError)) throw rpcError
+
+  const { error } = await getSupabase().from('ideas').insert(row)
   if (error) throw error
 }
 
-export async function updateIdeaInDb(id: string, patch: Partial<Idea>): Promise<void> {
+export async function updateIdeaInDb(
+  id: string,
+  patch: Partial<Idea>,
+  appUserId?: string,
+): Promise<void> {
   const row = ideaPatchToRow(patch)
   if (Object.keys(row).length === 0) return
+
+  if (appUserId) {
+    const { error: rpcError } = await getSupabase().rpc('update_idea_for_session', {
+      p_user_id: appUserId,
+      p_idea_id: id,
+      p_patch: row,
+    })
+    if (!rpcError) return
+    if (!isRpcMissing(rpcError)) throw rpcError
+  }
+
   const { error } = await getSupabase().from('ideas').update(row).eq('id', id)
   if (error) throw error
 }
 
-export async function deleteIdeaFromDb(id: string): Promise<void> {
+export async function deleteIdeaFromDb(id: string, appUserId?: string): Promise<void> {
+  if (appUserId) {
+    const { error: rpcError } = await getSupabase().rpc('delete_idea_for_session', {
+      p_user_id: appUserId,
+      p_idea_id: id,
+    })
+    if (!rpcError) return
+    if (!isRpcMissing(rpcError)) throw rpcError
+  }
+
   const { error } = await getSupabase().from('ideas').delete().eq('id', id)
   if (error) throw error
 }
