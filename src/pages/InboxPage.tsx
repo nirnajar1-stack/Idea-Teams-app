@@ -8,7 +8,7 @@ import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
 import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
-import type { IdeasViewPrefs } from '../types/idea'
+import { IDEA_SOURCES, type IdeasViewPrefs } from '../types/idea'
 
 export function InboxPage() {
   const { visibleIdeas, updateIdea } = useIdeas()
@@ -21,6 +21,7 @@ export function InboxPage() {
         filterIdeas(visibleIdeas, {
           search,
           categories: ['development', 'monitoring'],
+          sources: [...IDEA_SOURCES],
           priority: null,
           pipeline: 'inbox',
         }),

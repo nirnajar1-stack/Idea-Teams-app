@@ -1,11 +1,15 @@
 import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import type { IdeaCategory, IdeaPriority } from '../../types/idea'
+import type { IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
+import { IDEA_SOURCES } from '../../types/idea'
+import { IDEA_SOURCE_LABELS } from '../../lib/ideaUtils'
 import { cn } from '../../lib/cn'
 
 export interface IdeasFiltersPanelProps {
   categories: IdeaCategory[]
   onToggleCategory: (cat: IdeaCategory) => void
+  sources: IdeaSource[]
+  onToggleSource: (source: IdeaSource) => void
   onlyMine: boolean
   onOnlyMineChange: (value: boolean) => void
   priority: IdeaPriority | null
@@ -16,6 +20,8 @@ export interface IdeasFiltersPanelProps {
 export function IdeasFiltersPanel({
   categories,
   onToggleCategory,
+  sources,
+  onToggleSource,
   onlyMine,
   onOnlyMineChange,
   priority,
@@ -27,10 +33,11 @@ export function IdeasFiltersPanel({
   const activeCount = useMemo(() => {
     let n = 0
     if (categories.length < 2) n += 1
+    if (sources.length < IDEA_SOURCES.length) n += 1
     if (onlyMine) n += 1
     if (priority) n += 1
     return n
-  }, [categories.length, onlyMine, priority])
+  }, [categories.length, sources.length, onlyMine, priority])
 
   return (
     <div className="sticky top-24">
@@ -76,6 +83,29 @@ export function IdeasFiltersPanel({
                   type="checkbox"
                   checked={categories.includes(cat)}
                   onChange={() => onToggleCategory(cat)}
+                  className="h-4 w-4 rounded text-primary focus:ring-primary"
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+          <h3 className="mb-4 font-label-md text-on-surface">מקור הרעיון</h3>
+          <div className="space-y-2">
+            {IDEA_SOURCES.map((source) => (
+              <label
+                key={source}
+                className={cn(
+                  'flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-surface-subtle',
+                  !sources.includes(source) && 'opacity-50',
+                )}
+              >
+                <span className="font-body-md">{IDEA_SOURCE_LABELS[source]}</span>
+                <input
+                  type="checkbox"
+                  checked={sources.includes(source)}
+                  onChange={() => onToggleSource(source)}
                   className="h-4 w-4 rounded text-primary focus:ring-primary"
                 />
               </label>

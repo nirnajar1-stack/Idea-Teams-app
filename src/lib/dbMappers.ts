@@ -20,6 +20,7 @@ export interface IdeaRow {
   description: string
   category: Idea['category']
   department: string
+  idea_source: Idea['ideaSource']
   priority: Idea['priority']
   workflow_status: Idea['workflowStatus']
   created_at: string
@@ -78,6 +79,7 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     description: row.description,
     category: row.category,
     department: row.department,
+    ideaSource: row.idea_source ?? 'mitamim',
     priority: row.priority,
     workflowStatus: row.workflow_status,
     createdAt: row.created_at,
@@ -109,6 +111,7 @@ export function ideaToRow(idea: Idea): IdeaRow {
     description: idea.description,
     category: idea.category,
     department: idea.department,
+    idea_source: idea.ideaSource,
     priority: idea.priority,
     workflow_status: idea.workflowStatus,
     created_at: idea.createdAt,
@@ -139,6 +142,7 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.description !== undefined) row.description = patch.description
   if (patch.category !== undefined) row.category = patch.category
   if (patch.department !== undefined) row.department = patch.department
+  if (patch.ideaSource !== undefined) row.idea_source = patch.ideaSource
   if (patch.priority !== undefined) row.priority = patch.priority
   if (patch.workflowStatus !== undefined) row.workflow_status = patch.workflowStatus
   if (patch.createdAt !== undefined) row.created_at = patch.createdAt

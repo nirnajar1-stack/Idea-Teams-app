@@ -52,6 +52,7 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
       title,
       description,
       category,
+      ideaSource: parent.ideaSource,
       priority,
       targetStartDate,
       sendToMaybeInbox: false,

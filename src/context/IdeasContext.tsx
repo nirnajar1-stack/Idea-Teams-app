@@ -281,6 +281,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         description: input.description.trim(),
         category: input.category,
         department: input.category === 'development' ? 'פיתוח' : 'בקרה',
+        ideaSource: input.ideaSource,
         priority: input.priority,
         workflowStatus: 'pending',
         createdAt: new Date().toISOString().slice(0, 10),

@@ -11,7 +11,8 @@ import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
 import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
-import type { IdeaCategory, IdeaFilters, IdeaPriority, IdeasViewPrefs } from '../types/idea'
+import type { IdeaCategory, IdeaFilters, IdeaPriority, IdeaSource, IdeasViewPrefs } from '../types/idea'
+import { IDEA_SOURCES } from '../types/idea'
 import { Button } from '../components/ui/Button'
 
 export function IdeasListPage() {
@@ -23,6 +24,7 @@ export function IdeasListPage() {
     'development',
     'monitoring',
   ])
+  const [sources, setSources] = useState<IdeaSource[]>([...IDEA_SOURCES])
   const [priority, setPriority] = useState<IdeaPriority | null>(null)
   const [onlyMine, setOnlyMine] = useState(false)
   const [viewPrefs, setViewPrefs] = useState<IdeasViewPrefs>(loadIdeasViewPrefs)
@@ -31,12 +33,13 @@ export function IdeasListPage() {
     (): Omit<IdeaFilters, 'workflow'> => ({
       search,
       categories,
+      sources,
       priority,
       onlyMine,
       currentUserId: user?.id,
       pipeline: 'active',
     }),
-    [search, categories, priority, onlyMine, user?.id],
+    [search, categories, sources, priority, onlyMine, user?.id],
   )
 
   const activeIdeas = useMemo(
@@ -68,6 +71,12 @@ export function IdeasListPage() {
   const toggleCategory = (cat: IdeaCategory) => {
     setCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    )
+  }
+
+  const toggleSource = (source: IdeaSource) => {
+    setSources((prev) =>
+      prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source],
     )
   }
 
@@ -112,6 +121,8 @@ export function IdeasListPage() {
           <IdeasFiltersPanel
             categories={categories}
             onToggleCategory={toggleCategory}
+            sources={sources}
+            onToggleSource={toggleSource}
             onlyMine={onlyMine}
             onOnlyMineChange={setOnlyMine}
             priority={priority}

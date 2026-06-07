@@ -10,12 +10,13 @@ import { useNavigate } from 'react-router-dom'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
-import type { Idea, IdeaCategory, IdeaPriority } from '../../types/idea'
+import type { Idea, IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
 import { CategoryCard } from '../ui/CategoryCard'
 import { DateInput } from '../ui/DateInput'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
 import { Textarea } from '../ui/Textarea'
+import { IdeaSourceSelect } from './IdeaSourceSelect'
 import { cn } from '../../lib/cn'
 
 type SubmitState = 'idle' | 'loading' | 'success'
@@ -30,6 +31,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
   const [title, setTitle] = useState(idea.title)
   const [description, setDescription] = useState(idea.description)
   const [category, setCategory] = useState<IdeaCategory>(idea.category)
+  const [ideaSource, setIdeaSource] = useState<IdeaSource>(idea.ideaSource)
   const [priority, setPriority] = useState<IdeaPriority>(idea.priority)
   const [targetStartDate, setTargetStartDate] = useState(idea.targetStartDate)
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
@@ -45,6 +47,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
         description: description.trim(),
         category,
         department: category === 'development' ? 'פיתוח' : 'בקרה',
+        ideaSource,
         priority,
         targetStartDate,
       })
@@ -102,6 +105,8 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
               />
             </div>
           </div>
+
+          <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
 
           <Textarea
             label="תיאור הרעיון"

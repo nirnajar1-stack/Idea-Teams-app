@@ -19,6 +19,7 @@ import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { IdeaVisibilityBadge } from '../ui/IdeaVisibilityBadge'
+import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 import { IdeaChatSection } from '../chat/IdeaChatSection'
 import { SubIdeasSection } from './SubIdeasSection'
@@ -72,6 +73,7 @@ export function IdeaDetailContent({
             <Badge variant="surface">תת-רעיון</Badge>
           )}
           {idea.sendToMaybeInbox && <InboxBadge />}
+          <IdeaSourceBadge source={idea.ideaSource} />
           <IdeaVisibilityBadge visibility={idea.visibility ?? 'team'} />
           <TargetDateBadge targetStartDate={idea.targetStartDate} />
           <span className="mr-auto font-label-sm text-secondary">
@@ -106,6 +108,12 @@ export function IdeaDetailContent({
                 <div className="text-[12px] text-secondary">{idea.authorRole}</div>
               </div>
             </div>
+          </div>
+          <div>
+            <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">
+              מקור הרעיון
+            </h3>
+            <IdeaSourceBadge source={idea.ideaSource} />
           </div>
           <div>
             <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">

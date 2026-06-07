@@ -1,4 +1,5 @@
-import type { Idea, IdeaFilters, IdeaKind, IdeasStats, IdeaSortOption } from '../types/idea'
+import type { Idea, IdeaFilters, IdeaKind, IdeasStats, IdeaSortOption, IdeaSource } from '../types/idea'
+import { DEFAULT_IDEA_SOURCE, IDEA_SOURCES } from '../types/idea'
 
 function addDays(isoDate: string, days: number): string {
   const d = new Date(isoDate)
@@ -22,6 +23,10 @@ export function normalizeIdea(idea: Idea): Idea {
     ideaKind: idea.ideaKind ?? (idea.parentId ? 'standard' : 'standard'),
     parentId: idea.parentId,
     visibility: idea.visibility ?? 'team',
+    ideaSource:
+      idea.ideaSource && IDEA_SOURCES.includes(idea.ideaSource)
+        ? idea.ideaSource
+        : DEFAULT_IDEA_SOURCE,
   }
 }
 
@@ -109,6 +114,7 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
   const query = filters.search.trim().toLowerCase()
   const pipeline = filters.pipeline ?? 'active'
   const workflow = filters.workflow ?? 'active'
+  const sources = filters.sources ?? IDEA_SOURCES
 
   return ideas.filter((idea) => {
     if (idea.parentId) return false
@@ -123,6 +129,13 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
       filters.categories.length > 0 &&
       filters.categories.length < 2 &&
       !filters.categories.includes(idea.category)
+    ) {
+      return false
+    }
+    if (
+      sources.length > 0 &&
+      sources.length < IDEA_SOURCES.length &&
+      !sources.includes(idea.ideaSource)
     ) {
       return false
     }
@@ -143,6 +156,7 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
       idea.description.toLowerCase().includes(query) ||
       idea.department.toLowerCase().includes(query) ||
       idea.authorName.toLowerCase().includes(query) ||
+      IDEA_SOURCE_LABELS[idea.ideaSource].toLowerCase().includes(query) ||
       idea.externalId.toLowerCase().includes(query)
     )
   })
@@ -207,6 +221,14 @@ export const CATEGORY_LABELS = {
   development: 'פיתוח',
   monitoring: 'בקרה',
 } as const
+
+export const IDEA_SOURCE_LABELS: Record<IdeaSource, string> = {
+  mitamim: 'מתמים',
+  families_division: 'אגף משפחות',
+  headquarters: 'מטה',
+  services: 'מענים',
+  government_offices: 'משרדי ממשלה',
+}
 
 export const IDEA_KIND_LABELS: Record<IdeaKind, string> = {
   standard: 'רעיון',

@@ -1,5 +1,23 @@
 export type IdeaCategory = 'development' | 'monitoring'
 
+/** מקור הרעיון — יחידה/גורם מייצר */
+export type IdeaSource =
+  | 'mitamim'
+  | 'families_division'
+  | 'headquarters'
+  | 'services'
+  | 'government_offices'
+
+export const IDEA_SOURCES: IdeaSource[] = [
+  'mitamim',
+  'families_division',
+  'headquarters',
+  'services',
+  'government_offices',
+]
+
+export const DEFAULT_IDEA_SOURCE: IdeaSource = 'mitamim'
+
 export type IdeaPriority = 'low' | 'medium' | 'high'
 
 export type IdeaWorkflowStatus = 'in_progress' | 'completed' | 'pending'
@@ -37,6 +55,7 @@ export interface Idea {
   description: string
   category: IdeaCategory
   department: string
+  ideaSource: IdeaSource
   priority: IdeaPriority
   workflowStatus: IdeaWorkflowStatus
   createdAt: string
@@ -67,6 +86,7 @@ export interface IdeaFormInput {
   description: string
   category: IdeaCategory
   priority: IdeaPriority
+  ideaSource: IdeaSource
   targetStartDate: string
   sendToMaybeInbox: boolean
   ideaKind?: IdeaKind
@@ -77,6 +97,7 @@ export interface IdeaFormInput {
 export interface IdeaFilters {
   search: string
   categories: IdeaCategory[]
+  sources?: IdeaSource[]
   priority: IdeaPriority | null
   onlyMine?: boolean
   currentUserId?: string

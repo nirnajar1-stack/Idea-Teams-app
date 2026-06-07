@@ -15,7 +15,8 @@ import { ROUTES } from '../../constants/app'
 import { canCreateContainerIdea } from '../../lib/permissions'
 import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
 import { resolveVisibilityOnCreate } from '../../lib/ideaVisibility'
-import type { IdeaCategory, IdeaPriority, IdeaVisibility } from '../../types/idea'
+import type { IdeaCategory, IdeaPriority, IdeaSource, IdeaVisibility } from '../../types/idea'
+import { DEFAULT_IDEA_SOURCE } from '../../types/idea'
 import { ContainerKindToggle } from '../ui/ContainerKindToggle'
 import { CategoryCard } from '../ui/CategoryCard'
 import { DateInput } from '../ui/DateInput'
@@ -23,6 +24,7 @@ import { InboxToggle } from '../ui/InboxToggle'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
 import { Textarea } from '../ui/Textarea'
+import { IdeaSourceSelect } from './IdeaSourceSelect'
 import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
 import { cn } from '../../lib/cn'
 
@@ -41,6 +43,7 @@ export function AddIdeaForm() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState<IdeaCategory>('development')
+  const [ideaSource, setIdeaSource] = useState<IdeaSource>(DEFAULT_IDEA_SOURCE)
   const [priority, setPriority] = useState<IdeaPriority>('medium')
   const [targetStartDate, setTargetStartDate] = useState(defaultTargetDate)
   const [sendToMaybeInbox, setSendToMaybeInbox] = useState(false)
@@ -61,6 +64,7 @@ export function AddIdeaForm() {
         title,
         description,
         category,
+        ideaSource,
         priority,
         targetStartDate,
         sendToMaybeInbox: isContainer ? false : sendToMaybeInbox,
@@ -120,6 +124,8 @@ export function AddIdeaForm() {
               />
             </div>
           </div>
+
+          <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
 
           <Textarea
             label="תיאור הרעיון"

@@ -15,6 +15,7 @@ import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { InboxBadge } from '../ui/InboxBadge'
+import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 
 export interface IdeaListCardProps {
@@ -81,6 +82,7 @@ export function IdeaListCard({
               {PRIORITY_LABELS[idea.priority]}
             </Badge>
             {showInboxActions && <InboxBadge />}
+            <IdeaSourceBadge source={idea.ideaSource} compact />
             {completed && (
               <Badge variant="surface" className="!py-0 text-[10px] text-success-vibrant">
                 {WORKFLOW_LABELS.completed}
@@ -136,6 +138,7 @@ export function IdeaListCard({
               <ContainerBadge subCount={subCount} compact />
             )}
             {!showInboxActions && idea.sendToMaybeInbox && <InboxBadge />}
+            <IdeaSourceBadge source={idea.ideaSource} />
             <TargetDateBadge targetStartDate={idea.targetStartDate} compact />
             <span className="mr-auto font-label-sm text-secondary md:mr-0">
               {formatIdeaDate(idea.createdAt)}

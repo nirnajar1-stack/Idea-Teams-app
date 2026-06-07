@@ -1,11 +1,12 @@
 import type { Idea } from '../types/idea'
+import { DEFAULT_IDEA_SOURCE } from '../types/idea'
 import { authorFieldsFromUser } from '../lib/userUtils'
 import { SEED_AUTHORS } from './seedUsers'
 
 const nir = authorFieldsFromUser(SEED_AUTHORS.nir)
 const golan = authorFieldsFromUser(SEED_AUTHORS.golan)
 
-export const SEED_IDEAS: Idea[] = [
+const SEED_RAW: Omit<Idea, 'ideaSource'>[] = [
   {
     id: 'if-9042',
     externalId: 'IF-9042',
@@ -175,3 +176,8 @@ export const SEED_IDEAS: Idea[] = [
     progressStep: 'שלב 1 מתוך 5',
   },
 ]
+
+export const SEED_IDEAS: Idea[] = SEED_RAW.map((idea) => ({
+  ...idea,
+  ideaSource: DEFAULT_IDEA_SOURCE,
+}))

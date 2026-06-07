@@ -43,6 +43,7 @@ const baseIdea: Idea = {
   description: 'Desc',
   category: 'development',
   department: 'פיתוח',
+  ideaSource: 'mitamim',
   priority: 'medium',
   workflowStatus: 'pending',
   createdAt: '2026-01-01',
