@@ -1,6 +1,6 @@
 import { Plus, Sparkles } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ROUTES } from '../../constants/app'
+import { APP_NAME_FULL, ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { ACCESS_LEVEL_LABELS } from '../../types/user'
@@ -22,7 +22,7 @@ export function WelcomeHero() {
             שלום, <span className="text-gradient">{user?.name}</span>
           </h1>
           <p className="max-w-lg font-body-md text-secondary">
-            ברוכים הבאים ל-IdeaFlow
+            ברוכים הבאים ל-{APP_NAME_FULL}
             {user?.accessLevel === 'guest'
               ? ` — כניסה כ${ACCESS_LEVEL_LABELS.guest}, רואים רק רעיונות מסשן זה.`
               : '. רעיונות חדשים נרשמים תחת שמך, עם תאריך יעד להתחלה ואפשרות שמירה ל-Inbox.'}

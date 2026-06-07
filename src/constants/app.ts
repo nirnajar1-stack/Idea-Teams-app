@@ -1,4 +1,7 @@
-export const APP_NAME = 'IdeaFlow'
+export const APP_NAME = 'Ogen'
+export const APP_NAME_FULL = 'Ogen System'
+export const APP_NAME_HE = 'עוגן'
+export const APP_LOGO_SRC = '/ogen-logo.png'
 
 export const ROUTES = {
   login: '/login',

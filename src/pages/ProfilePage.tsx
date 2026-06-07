@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
-import { ROUTES } from '../constants/app'
+import { APP_NAME_FULL, ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
 import { usePreferences } from '../context/PreferencesContext'
@@ -183,7 +183,7 @@ export function ProfilePage() {
       )}
 
       <section className="rounded-xl border border-border-light bg-surface-container-low p-6">
-        <h2 className="mb-4 font-display text-headline-md text-on-surface">קהילת IdeaFlow</h2>
+        <h2 className="mb-4 font-display text-headline-md text-on-surface">קהילת {APP_NAME_FULL}</h2>
         <p className="font-body-md text-on-surface-variant">
           שתפו משוב, הצביעו על רעיונות חדשים והשפיעו על מפת הדרכים. ערוץ Slack ייעודי
           פעיל לשאלות מוצר ותיאום עם צוותי הפיתוח והבקרה.

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import {
   ArrowRight,
-  Lightbulb,
   LogOut,
   Search,
   Share2,
@@ -9,13 +8,14 @@ import {
 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { APP_NAME, NAV_LABELS, ROUTES } from '../../constants/app'
+import { APP_NAME_FULL, NAV_LABELS, ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
 import { canManageUsers } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
+import { AppLogo } from '../ui/AppLogo'
 import { NotificationBell } from '../chat/NotificationBell'
 import { GlobalSearchModal } from '../search/GlobalSearchModal'
 import { ThemeToggle } from '../ui/ThemeToggle'
@@ -85,7 +85,6 @@ function NavLinks({
 
 export function Navbar({
   variant = 'main',
-  brandName = APP_NAME,
   connectedAs,
   searchValue = '',
   onSearchChange,
@@ -110,7 +109,7 @@ export function Navbar({
     const url = shareUrl ?? window.location.href
     try {
       if (navigator.share) {
-        await navigator.share({ title: APP_NAME, url })
+        await navigator.share({ title: APP_NAME_FULL, url })
         return
       }
       await navigator.clipboard.writeText(url)
@@ -133,16 +132,8 @@ export function Navbar({
             <ArrowRight className="h-6 w-6" />
           </button>
         )}
-        {variant !== 'back' && (
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-container shadow-glow">
-            <Lightbulb className="h-5 w-5 text-on-primary" aria-hidden />
-          </div>
-        )}
-        <Link
-          to={ROUTES.home}
-          className="truncate font-display text-headline-md font-bold text-on-surface"
-        >
-          {brandName}
+        <Link to={ROUTES.home} className="min-w-0 shrink-0">
+          <AppLogo size="md" showLabel />
         </Link>
       </div>
 

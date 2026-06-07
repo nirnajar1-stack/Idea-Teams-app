@@ -1,10 +1,11 @@
-import { Eye, EyeOff, Lightbulb, Sparkles, UserRound } from 'lucide-react'
+import { Eye, EyeOff, Sparkles, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { APP_NAME, ROUTES } from '../constants/app'
+import { APP_NAME_FULL, ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { ACCESS_LEVEL_LABELS } from '../types/user'
 import { cn } from '../lib/cn'
+import { AppLogo } from '../components/ui/AppLogo'
 import { ThemeToggle } from '../components/ui/ThemeToggle'
 
 export function LoginPage() {
@@ -45,18 +46,13 @@ export function LoginPage() {
       <div className="ambient-orb right-[10%] top-16 h-80 w-80 bg-primary/15" />
       <div className="ambient-orb bottom-16 left-[5%] h-96 w-96 bg-inbox/10" />
 
-      <div className="relative mb-10 max-w-md animate-fade-up text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-container shadow-boutique">
-          <Lightbulb className="h-8 w-8 text-on-primary" aria-hidden />
-        </div>
+      <div className="relative mb-10 max-w-sm animate-fade-up text-center">
+        <AppLogo size="xl" imageOnly className="mx-auto mb-6" />
         <span className="section-eyebrow mx-auto">
           <Sparkles className="h-3.5 w-3.5" />
-          {APP_NAME}
+          {APP_NAME_FULL}
         </span>
-        <h1 className="mb-3 font-display text-headline-lg text-gradient">
-          {APP_NAME}
-        </h1>
-        <p className="font-body-md text-secondary">
+        <p className="mt-4 font-body-md text-secondary">
           הזינו את הסיסמה שלכם לכניסה, או היכנסו כ{ACCESS_LEVEL_LABELS.guest} לסשן
           זמני.
         </p>
