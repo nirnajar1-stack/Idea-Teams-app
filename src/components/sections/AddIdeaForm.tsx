@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { canCreateContainerIdea } from '../../lib/permissions'
+import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
 import { resolveVisibilityOnCreate } from '../../lib/ideaVisibility'
 import type { IdeaCategory, IdeaPriority, IdeaVisibility } from '../../types/idea'
 import { ContainerKindToggle } from '../ui/ContainerKindToggle'
@@ -69,9 +70,10 @@ export function AddIdeaForm() {
       setSubmitState('success')
       await new Promise((r) => setTimeout(r, 1200))
       navigate(sendToMaybeInbox ? ROUTES.inbox : ROUTES.ideaDetail(idea.id))
-    } catch {
+    } catch (err) {
       setSubmitState('idle')
-      toast.error('שמירת הרעיון נכשלה — הרץ ב-Supabase את migrations/015_ideas_write_rpc.sql')
+      console.error('addIdea failed', err)
+      toast.error(formatIdeaSaveError(err))
     }
   }
 

@@ -33,11 +33,14 @@ export async function fetchIdeasFromDb(appUserId?: string): Promise<Idea[]> {
 
 function isRpcMissing(error: { code?: string; message?: string } | null): boolean {
   if (!error) return false
+  const msg = error.message ?? ''
   return (
     error.code === 'PGRST202' ||
-    (error.message ?? '').includes('insert_idea_for_session') ||
-    (error.message ?? '').includes('update_idea_for_session') ||
-    (error.message ?? '').includes('delete_idea_for_session')
+    msg.includes('Could not find the function') ||
+    (msg.includes('does not exist') &&
+      (msg.includes('insert_idea_for_session') ||
+        msg.includes('update_idea_for_session') ||
+        msg.includes('delete_idea_for_session')))
   )
 }
 
@@ -51,10 +54,9 @@ export async function insertIdeaToDb(idea: Idea, appUserId?: string): Promise<vo
   })
 
   if (!rpcError) return
-  if (!isRpcMissing(rpcError)) throw rpcError
 
-  const { error } = await getSupabase().from('ideas').insert(row)
-  if (error) throw error
+  console.error('insert_idea_for_session failed', rpcError)
+  throw rpcError
 }
 
 export async function updateIdeaInDb(

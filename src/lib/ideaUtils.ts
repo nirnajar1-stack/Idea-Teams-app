@@ -149,7 +149,7 @@ export function generateIdeaId(): string {
 }
 
 export function generateExternalId(): string {
-  return `IF-${Math.floor(1000 + Math.random() * 9000)}`
+  return `IF-${Date.now().toString(36).toUpperCase()}`
 }
 
 export const PRIORITY_LABELS = {
