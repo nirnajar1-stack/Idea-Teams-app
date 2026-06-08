@@ -43,6 +43,10 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
       toast.error('מספר טלפון לא תקין (לדוגמה 050-1234567)')
       return
     }
+    if (password.trim() && password.trim().length < 4) {
+      toast.error('סיסמה חייבת להכיל לפחות 4 תווים')
+      return
+    }
     setSaving(true)
     try {
       if (isEdit) {

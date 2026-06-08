@@ -1,5 +1,5 @@
 import type { Idea, IdeaAttachment, IdeaKind, IdeaVisibility } from '../types/idea'
-import type { AccessLevel, StoredUser } from '../types/user'
+import type { AccessLevel, StoredUser, UserUpdateInput } from '../types/user'
 
 export interface AppUserRow {
   id: string
@@ -73,6 +73,23 @@ export function storedUserToRow(user: StoredUser): AppUserRow {
     access_level: user.accessLevel,
     active: user.active,
   }
+}
+
+/** patch חלקי לעדכון משתמש — לא שולח password_hash אלא אם הוחלפה סיסמה */
+export function userUpdateInputToRow(
+  input: UserUpdateInput,
+  passwordHash?: string,
+): Partial<AppUserRow> {
+  const row: Partial<AppUserRow> = {}
+  if (input.name !== undefined) row.name = input.name.trim()
+  if (input.jobTitle !== undefined) row.job_title = input.jobTitle.trim()
+  if (input.email !== undefined) row.email = input.email.trim()
+  if (input.username !== undefined) row.username = input.username.trim().toLowerCase()
+  if (input.initials !== undefined) row.initials = input.initials.trim()
+  if (input.accessLevel !== undefined) row.access_level = input.accessLevel
+  if (input.active !== undefined) row.active = input.active
+  if (passwordHash) row.password_hash = passwordHash
+  return row
 }
 
 export function ideaRowToIdea(row: IdeaRow): Idea {

@@ -1,5 +1,10 @@
 import { getSupabase, isSupabaseEnabled } from '../lib/supabaseClient'
-import { storedUserToRow, userRowToStored, type AppUserRow } from '../lib/dbMappers'
+import {
+  storedUserToRow,
+  userRowToStored,
+  userUpdateInputToRow,
+  type AppUserRow,
+} from '../lib/dbMappers'
 import { normalizePhoneE164 } from '../lib/phoneUtils'
 import type { StoredUser, UserFormInput, UserUpdateInput } from '../types/user'
 import { hashPassword } from '../lib/password'
@@ -74,6 +79,12 @@ export async function updateUserInDb(
     ? await hashPassword(input.password)
     : undefined
 
+  const patch = userUpdateInputToRow(input, passwordHash)
+  if (input.phone !== undefined) {
+    patch.phone = phoneForDb(input.phone) ?? null
+  }
+  if (Object.keys(patch).length === 0) return current
+
   const updated: StoredUser = {
     ...current,
     ...(input.name !== undefined && { name: input.name.trim() }),
@@ -90,7 +101,7 @@ export async function updateUserInDb(
   const { error: rpcError } = await getSupabase().rpc('update_app_user_for_session', {
     p_actor_user_id: actorUserId,
     p_user_id: id,
-    p_patch: storedUserToRow(updated),
+    p_patch: patch,
   })
 
   if (!rpcError) return updated
