@@ -1,5 +1,6 @@
 import { getSupabase, isSupabaseEnabled } from '../lib/supabaseClient'
 import { storedUserToRow, userRowToStored, type AppUserRow } from '../lib/dbMappers'
+import { normalizePhoneE164 } from '../lib/phoneUtils'
 import type { StoredUser, UserFormInput, UserUpdateInput } from '../types/user'
 import { hashPassword } from '../lib/password'
 
@@ -27,6 +28,13 @@ export async function fetchUsersFromDb(): Promise<StoredUser[]> {
   return (fallback.data as AppUserRow[]).map(userRowToStored)
 }
 
+function phoneForDb(raw?: string): string | undefined {
+  if (raw === undefined) return undefined
+  const trimmed = raw.trim()
+  if (!trimmed) return undefined
+  return normalizePhoneE164(trimmed)
+}
+
 export async function insertUserToDb(
   input: UserFormInput,
   actorUserId: string,
@@ -38,6 +46,7 @@ export async function insertUserToDb(
     jobTitle: input.jobTitle.trim(),
     email: input.email.trim(),
     username: input.username.trim().toLowerCase(),
+    phone: phoneForDb(input.phone),
     initials: input.initials?.trim() || initialsFromName(input.name),
     passwordHash,
     accessLevel: input.accessLevel,
@@ -71,6 +80,7 @@ export async function updateUserInDb(
     ...(input.jobTitle !== undefined && { jobTitle: input.jobTitle.trim() }),
     ...(input.email !== undefined && { email: input.email.trim() }),
     ...(input.username !== undefined && { username: input.username.trim().toLowerCase() }),
+    ...(input.phone !== undefined && { phone: phoneForDb(input.phone) }),
     ...(input.initials !== undefined && { initials: input.initials.trim() }),
     ...(input.accessLevel !== undefined && { accessLevel: input.accessLevel }),
     ...(input.active !== undefined && { active: input.active }),

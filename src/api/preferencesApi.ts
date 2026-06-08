@@ -7,6 +7,7 @@ interface PrefsRow {
   notify_general_mentions: boolean
   notify_replies: boolean
   notify_target_date: boolean
+  notify_whatsapp_completed: boolean
   email_notifications: boolean
 }
 
@@ -17,6 +18,7 @@ function rowToPrefs(row: PrefsRow): UserPreferences {
     notifyGeneralMentions: row.notify_general_mentions,
     notifyReplies: row.notify_replies,
     notifyTargetDate: row.notify_target_date,
+    notifyWhatsappCompleted: row.notify_whatsapp_completed ?? true,
     emailNotifications: row.email_notifications,
   }
 }
@@ -28,6 +30,7 @@ function prefsToRow(prefs: UserPreferences): PrefsRow {
     notify_general_mentions: prefs.notifyGeneralMentions,
     notify_replies: prefs.notifyReplies,
     notify_target_date: prefs.notifyTargetDate,
+    notify_whatsapp_completed: prefs.notifyWhatsappCompleted,
     email_notifications: prefs.emailNotifications,
   }
 }

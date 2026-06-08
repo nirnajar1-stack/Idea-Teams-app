@@ -15,6 +15,7 @@ export interface AppUser {
   initials: string
   email: string
   username: string
+  phone?: string
   accessLevel: AccessLevel
   active: boolean
   /** מזהה סשן לאורח — רעיונות נראים רק באותה כניסה */
@@ -36,6 +37,7 @@ export interface UserFormInput {
   email: string
   username: string
   password: string
+  phone?: string
   accessLevel: Exclude<AccessLevel, 'guest'>
   initials?: string
 }
@@ -46,6 +48,7 @@ export interface UserUpdateInput {
   email?: string
   username?: string
   password?: string
+  phone?: string
   accessLevel?: Exclude<AccessLevel, 'guest'>
   active?: boolean
   initials?: string

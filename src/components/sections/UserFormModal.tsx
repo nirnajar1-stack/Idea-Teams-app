@@ -7,6 +7,7 @@ import {
   type UserFormInput,
   type UserUpdateInput,
 } from '../../types/user'
+import { isValidIsraeliPhone } from '../../lib/phoneUtils'
 
 interface UserFormModalProps {
   user: StoredUser | null
@@ -20,6 +21,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
   const [jobTitle, setJobTitle] = useState(user?.jobTitle ?? '')
   const [email, setEmail] = useState(user?.email ?? '')
   const [username, setUsername] = useState(user?.username ?? '')
+  const [phone, setPhone] = useState(user?.phone ?? '')
   const [password, setPassword] = useState('')
   const [accessLevel, setAccessLevel] = useState<'manager' | 'member' | 'master'>(
     user?.accessLevel === 'manager'
@@ -37,6 +39,10 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
       toast.error('סיסמה חייבת להכיל לפחות 4 תווים')
       return
     }
+    if (phone.trim() && !isValidIsraeliPhone(phone)) {
+      toast.error('מספר טלפון לא תקין (לדוגמה 050-1234567)')
+      return
+    }
     setSaving(true)
     try {
       if (isEdit) {
@@ -47,6 +53,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
           username,
           accessLevel,
           active,
+          phone: phone.trim(),
         }
         if (password.trim()) patch.password = password
         await onSave(patch)
@@ -58,6 +65,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
           username,
           password,
           accessLevel,
+          phone: phone.trim() || undefined,
         } satisfies UserFormInput)
       }
     } finally {
@@ -125,6 +133,20 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
               autoComplete="off"
               required
             />
+          </div>
+          <div>
+            <label className="mb-1 block font-label-md">טלפון WhatsApp (אופציונלי)</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="boutique-input"
+              placeholder="050-1234567"
+              dir="ltr"
+            />
+            <p className="mt-1 font-label-sm text-secondary">
+              לקבלת הודעה אוטומטית כשמשימה מוקצית מסומנת כהושלמה
+            </p>
           </div>
           <div>
             <label className="mb-1 block font-label-md">

@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from 'react'
 import { AppSplashLoader } from '../components/ui/AppSplashLoader'
+import { DailyIntroVideo } from '../components/ui/DailyIntroVideo'
+import { shouldShowDailyIntroVideo } from '../lib/dailyIntroVideo'
 import {
   deleteIdeaFromDb,
   fetchIdeasFromDb,
@@ -15,6 +17,7 @@ import {
   updateIdeaInDb,
 } from '../api/ideasApi'
 import { insertAuditEntry } from '../api/auditApi'
+import { notifyIdeaCompletedWhatsApp } from '../api/whatsappApi'
 import { restoreSupabaseSession } from '../api/authApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
 import { SPLASH_SHOWN_KEY, STORAGE_KEY } from '../constants/app'
@@ -121,6 +124,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   )
   const [splashExiting, setSplashExiting] = useState(false)
   const [showSplash, setShowSplash] = useState(!skipSplash)
+  const [showDailyVideo, setShowDailyVideo] = useState(
+    () => !!(user && shouldShowDailyIntroVideo(user)),
+  )
   const [usingCloud, setUsingCloud] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const cloudConfigured = isSupabaseEnabled()
@@ -183,7 +189,16 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   }, [usersReady, cloudConfigured, user?.id])
 
   useEffect(() => {
+    if (!user) {
+      setShowDailyVideo(false)
+      return
+    }
+    setShowDailyVideo(shouldShowDailyIntroVideo(user))
+  }, [user])
+
+  useEffect(() => {
     if (!isReady) return
+    if (showDailyVideo) return
     if (skipSplash) {
       setShowSplash(false)
       return
@@ -202,7 +217,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       window.clearTimeout(startExit)
       window.clearTimeout(hide)
     }
-  }, [isReady, splashStartedAt, skipSplash])
+  }, [isReady, splashStartedAt, skipSplash, showDailyVideo])
 
   const applyLocalIdeas = useCallback(
     (updater: (prev: Idea[]) => Idea[]) => {
@@ -347,6 +362,14 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
 
+      const becameCompleted =
+        patch.workflowStatus === 'completed' && idea.workflowStatus !== 'completed'
+      if (becameCompleted && usingCloud && user) {
+        void notifyIdeaCompletedWhatsApp(id, user.id).catch((err) => {
+          console.warn('WhatsApp notify failed', err)
+        })
+      }
+
       if (user) {
         const action =
           patch.assigneeUserId !== undefined
@@ -476,10 +499,14 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     ],
   )
 
-  if (!isReady || showSplash) {
+  if (!isReady || showSplash || showDailyVideo) {
     return (
       <>
-        <AppSplashLoader exiting={splashExiting && isReady} />
+        {showDailyVideo && user ? (
+          <DailyIntroVideo user={user} onComplete={() => setShowDailyVideo(false)} />
+        ) : (
+          <AppSplashLoader exiting={splashExiting && isReady} />
+        )}
         {!isReady && (
           <div className="invisible min-h-screen" aria-hidden>
             טוען…

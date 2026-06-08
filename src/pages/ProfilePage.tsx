@@ -136,6 +136,7 @@ export function ProfilePage() {
                 ['notifyGeneralMentions', 'תיוגים בצ\'אט כללי'],
                 ['notifyReplies', 'תגובות ישירות'],
                 ['notifyTargetDate', 'תזכורות תאריך יעד'],
+                ['notifyWhatsappCompleted', 'WhatsApp כשמשימה מוקצית הושלמה'],
               ] as const
             ).map(([key, label]) => (
               <li key={key} className="flex items-center justify-between gap-4">

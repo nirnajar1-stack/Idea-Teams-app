@@ -1,12 +1,12 @@
-import { APP_LOGO_SRC, APP_NAME, APP_NAME_FULL } from '../../constants/app'
+import { APP_LOGO_SRC, APP_NAME, APP_NAME_FULL, APP_TAGLINE } from '../../constants/app'
 import { cn } from '../../lib/cn'
 
 const sizeMap = {
-  xs: { img: 'h-9 w-9', text: 'text-base', sub: 'text-[9px]' },
-  sm: { img: 'h-11 w-11', text: 'text-lg', sub: 'text-[10px]' },
-  md: { img: 'h-14 w-14', text: 'text-headline-md', sub: 'text-label-sm' },
-  lg: { img: 'h-20 w-20', text: 'text-headline-lg', sub: 'text-label-md' },
-  xl: { img: 'h-32 max-w-[280px] w-auto', text: 'text-headline-lg', sub: 'text-label-md' },
+  xs: { img: 'h-9 w-9', text: 'text-base', sub: 'text-[10px]' },
+  sm: { img: 'h-11 w-11', text: 'text-lg', sub: 'text-xs' },
+  md: { img: 'h-14 w-14', text: 'text-headline-md', sub: 'text-sm' },
+  lg: { img: 'h-20 w-20', text: 'text-headline-lg', sub: 'text-base' },
+  xl: { img: 'h-32 max-w-[280px] w-auto', text: 'text-headline-lg', sub: 'text-base' },
 } as const
 
 export interface AppLogoProps {
@@ -51,8 +51,13 @@ export function AppLogo({
           <span className={cn('block font-display font-bold text-on-surface', s.text)}>
             {APP_NAME}
           </span>
-          <span className={cn('block font-label-sm uppercase tracking-wider text-secondary', s.sub)}>
-            System
+          <span
+            className={cn(
+              'block font-label-md font-semibold leading-snug text-primary',
+              s.sub,
+            )}
+          >
+            {APP_TAGLINE}
           </span>
         </div>
       )}

@@ -8,6 +8,7 @@ export interface AppUserRow {
   initials: string
   email: string
   username: string
+  phone: string | null
   password_hash: string
   access_level: AccessLevel
   active: boolean
@@ -51,6 +52,7 @@ export function userRowToStored(row: AppUserRow): StoredUser {
     initials: row.initials,
     email: row.email,
     username: row.username,
+    phone: row.phone ?? undefined,
     passwordHash: row.password_hash,
     accessLevel: row.access_level,
     active: row.active,
@@ -65,6 +67,7 @@ export function storedUserToRow(user: StoredUser): AppUserRow {
     initials: user.initials,
     email: user.email,
     username: user.username,
+    phone: user.phone ?? null,
     password_hash: user.passwordHash,
     access_level: user.accessLevel,
     active: user.active,

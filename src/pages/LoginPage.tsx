@@ -1,7 +1,7 @@
 import { Eye, EyeOff, Sparkles, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
-import { APP_NAME_FULL, ROUTES } from '../constants/app'
+import { APP_TAGLINE, ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { ACCESS_LEVEL_LABELS } from '../types/user'
 import { cn } from '../lib/cn'
@@ -48,9 +48,9 @@ export function LoginPage() {
 
       <div className="relative mb-10 max-w-sm animate-fade-up text-center">
         <AppLogo size="xl" imageOnly className="mx-auto mb-6" />
-        <span className="section-eyebrow mx-auto">
+        <span className="section-eyebrow mx-auto font-semibold text-primary">
           <Sparkles className="h-3.5 w-3.5" />
-          {APP_NAME_FULL}
+          {APP_TAGLINE}
         </span>
         <p className="mt-4 font-body-md text-secondary">
           הזינו את הסיסמה שלכם לכניסה, או היכנסו כ{ACCESS_LEVEL_LABELS.guest} לסשן
