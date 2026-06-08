@@ -1,4 +1,4 @@
-import { LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell } from 'lucide-react'
+import { CalendarRange, LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -7,7 +7,7 @@ import { APP_NAME_FULL, ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
 import { usePreferences } from '../context/PreferencesContext'
-import { canManageUsers } from '../lib/permissions'
+import { canManageUsers, isMaster } from '../lib/permissions'
 import { ACCESS_LEVEL_LABELS } from '../types/user'
 import { DEFAULT_USER_PREFERENCES, type UserPreferences } from '../types/preferences'
 import { Avatar } from '../components/ui/Avatar'
@@ -78,6 +78,15 @@ export function ProfilePage() {
                 ניהול משתמשים
               </Button>
             )}
+            {isMaster(user) && (
+              <Button
+                variant="secondary"
+                icon={<CalendarRange className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.timeline)}
+              >
+                טיימליין תכנון
+              </Button>
+            )}
             <Button
               variant="secondary"
               icon={<RefreshCw className="h-4 w-4" />}
@@ -136,7 +145,7 @@ export function ProfilePage() {
                 ['notifyGeneralMentions', 'תיוגים בצ\'אט כללי'],
                 ['notifyReplies', 'תגובות ישירות'],
                 ['notifyTargetDate', 'תזכורות תאריך יעד'],
-                ['notifyWhatsappCompleted', 'WhatsApp כשמשימה מוקצית הושלמה'],
+                ['notifyEmailCompleted', 'מייל כשמשימה הושלמה (פותח / מוקצה)'],
               ] as const
             ).map(([key, label]) => (
               <li key={key} className="flex items-center justify-between gap-4">

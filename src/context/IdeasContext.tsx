@@ -17,7 +17,7 @@ import {
   updateIdeaInDb,
 } from '../api/ideasApi'
 import { insertAuditEntry } from '../api/auditApi'
-import { notifyIdeaCompletedWhatsApp } from '../api/whatsappApi'
+import { notifyIdeaCompletedEmail } from '../api/emailApi'
 import { restoreSupabaseSession } from '../api/authApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
 import { SPLASH_SHOWN_KEY, STORAGE_KEY } from '../constants/app'
@@ -42,6 +42,7 @@ import {
 import {
   canDeleteIdea,
   canEditIdea,
+  canScheduleOnTimeline,
   canViewIdea,
   filterVisibleIdeas,
 } from '../lib/permissions'
@@ -63,6 +64,7 @@ interface IdeasContextValue {
   updateIdea: (id: string, patch: Partial<Idea>) => Promise<boolean>
   deleteIdea: (id: string) => Promise<boolean>
   markCompleted: (id: string) => Promise<void>
+  scheduleIdeaOnTimeline: (id: string, plannedDate: string | null) => Promise<boolean>
   getIdeaById: (id: string) => Idea | undefined
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
   getRecentIdeas: (limit?: number, sort?: IdeaSortOption) => Idea[]
@@ -365,8 +367,8 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       const becameCompleted =
         patch.workflowStatus === 'completed' && idea.workflowStatus !== 'completed'
       if (becameCompleted && usingCloud && user) {
-        void notifyIdeaCompletedWhatsApp(id, user.id).catch((err) => {
-          console.warn('WhatsApp notify failed', err)
+        void notifyIdeaCompletedEmail(id, user.id).catch((err) => {
+          console.warn('Email notify failed', err)
         })
       }
 
@@ -456,6 +458,31 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [updateIdea],
   )
 
+  const scheduleIdeaOnTimeline = useCallback(
+    async (id: string, plannedDate: string | null): Promise<boolean> => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canScheduleOnTimeline(user, idea)) return false
+
+      const patch: Partial<Idea> = { plannedDate }
+
+      if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
+
+      applyLocalIdeas((prev) =>
+        prev.map((i) => {
+          if (i.id !== id) return i
+          if (!plannedDate) {
+            const { plannedDate: _removed, ...rest } = i
+            return rest
+          }
+          return { ...i, plannedDate }
+        }),
+      )
+
+      return true
+    },
+    [applyLocalIdeas, ideas, user, usingCloud],
+  )
+
   const value = useMemo(
     () => ({
       ideas,
@@ -469,6 +496,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       updateIdea,
       deleteIdea,
       markCompleted,
+      scheduleIdeaOnTimeline,
       getIdeaById,
       getFilteredIdeas,
       getRecentIdeas,
@@ -489,6 +517,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       updateIdea,
       deleteIdea,
       markCompleted,
+      scheduleIdeaOnTimeline,
       getIdeaById,
       getFilteredIdeas,
       getRecentIdeas,

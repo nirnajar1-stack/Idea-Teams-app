@@ -11,13 +11,9 @@ interface NotifyRequest {
   actorUserId: string
 }
 
-function normalizePhone(raw: string): string | null {
-  const digits = raw.replace(/\D/g, '')
-  if (!digits) return null
-  if (digits.startsWith('972')) return digits
-  if (digits.startsWith('0') && digits.length >= 9) return `972${digits.slice(1)}`
-  if (digits.length >= 9 && digits.length <= 10) return `972${digits}`
-  return digits
+interface RecipientRole {
+  userId: string
+  role: 'creator' | 'assignee'
 }
 
 function truncate(text: string, max: number): string {
@@ -26,64 +22,78 @@ function truncate(text: string, max: number): string {
   return `${t.slice(0, max - 1)}…`
 }
 
-async function sendWhatsAppTemplate(
-  token: string,
-  phoneNumberId: string,
-  to: string,
-  templateName: string,
-  assigneeName: string,
-  title: string,
-  description: string,
-): Promise<Response> {
-  const url = `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`
-  return fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'template',
-      template: {
-        name: templateName,
-        language: { code: 'he' },
-        components: [
-          {
-            type: 'body',
-            parameters: [
-              { type: 'text', text: truncate(assigneeName, 60) },
-              { type: 'text', text: truncate(title, 120) },
-              { type: 'text', text: truncate(description, 400) },
-            ],
-          },
-        ],
-      },
-    }),
-  })
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
 }
 
-async function sendWhatsAppText(
-  token: string,
-  phoneNumberId: string,
+function roleIntro(role: RecipientRole['role'], name: string): string {
+  if (role === 'creator') {
+    return `שלום ${name},<br><br>הרעיון שפתחת סומן כ<strong>הושלם</strong>.`
+  }
+  return `שלום ${name},<br><br>המשימה שהוקצתה לך סומנה כ<strong>הושלמה</strong>.`
+}
+
+function buildEmailHtml(params: {
+  recipientName: string
+  role: RecipientRole['role']
+  title: string
+  description: string
+  actorName: string
+  ideaUrl: string | null
+}): string {
+  const { recipientName, role, title, description, actorName, ideaUrl } = params
+  const desc = description
+    ? `<p style="margin:16px 0;color:#444;line-height:1.6;">${escapeHtml(truncate(description, 1200))}</p>`
+    : ''
+
+  const link = ideaUrl
+    ? `<p style="margin:24px 0;"><a href="${escapeHtml(ideaUrl)}" style="color:#1a5f4a;font-weight:600;">צפייה ברעיון באפליקציה</a></p>`
+    : ''
+
+  return `<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head><meta charset="utf-8"></head>
+<body style="font-family:Segoe UI,Arial,sans-serif;background:#f5f5f0;margin:0;padding:24px;">
+  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e8e8e0;">
+    <p style="margin:0 0 8px;font-size:13px;color:#888;">Ogen — צוות פיתוח ובקרה</p>
+    <h1 style="margin:0 0 20px;font-size:22px;color:#1a1a1a;">✅ הרעיון הושלם</h1>
+    <p style="margin:0 0 20px;line-height:1.6;color:#333;">${roleIntro(role, escapeHtml(recipientName))}</p>
+    <h2 style="margin:0 0 8px;font-size:18px;color:#1a5f4a;">${escapeHtml(truncate(title, 200))}</h2>
+    ${desc}
+    <p style="margin:16px 0 0;font-size:14px;color:#666;">סומן כהושלם על ידי: <strong>${escapeHtml(actorName)}</strong></p>
+    ${link}
+    <hr style="margin:28px 0;border:none;border-top:1px solid #eee;">
+    <p style="margin:0;font-size:12px;color:#999;">הודעה אוטומטית ממערכת Ogen</p>
+  </div>
+</body>
+</html>`
+}
+
+async function sendResendEmail(
+  apiKey: string,
+  from: string,
   to: string,
-  body: string,
-): Promise<Response> {
-  const url = `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`
-  return fetch(url, {
+  subject: string,
+  html: string,
+): Promise<{ ok: boolean; id?: string; error?: unknown }> {
+  const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to,
-      type: 'text',
-      text: { body, preview_url: false },
-    }),
+    body: JSON.stringify({ from, to: [to], subject, html }),
   })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    console.error('Resend error', json)
+    return { ok: false, error: json }
+  }
+  return { ok: true, id: json.id }
 }
 
 Deno.serve(async (req) => {
@@ -92,14 +102,13 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const token = Deno.env.get('WHATSAPP_ACCESS_TOKEN')
-    const phoneNumberId = Deno.env.get('WHATSAPP_PHONE_NUMBER_ID')
-    const templateName = Deno.env.get('WHATSAPP_TEMPLATE_NAME') ?? 'idea_completed'
-    const useTextFallback = Deno.env.get('WHATSAPP_USE_TEXT') === 'true'
+    const resendKey = Deno.env.get('RESEND_API_KEY')
+    const emailFrom = Deno.env.get('EMAIL_FROM')
+    const appPublicUrl = Deno.env.get('APP_PUBLIC_URL') ?? ''
 
-    if (!token || !phoneNumberId) {
+    if (!resendKey || !emailFrom) {
       return new Response(
-        JSON.stringify({ ok: false, skipped: true, reason: 'whatsapp_not_configured' }),
+        JSON.stringify({ ok: false, skipped: true, reason: 'email_not_configured' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
@@ -136,23 +145,18 @@ Deno.serve(async (req) => {
       })
     }
 
-    const assigneeId = idea.assignee_user_id as string | null
-    if (!assigneeId) {
-      return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'no_assignee' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
     const { data: actor } = await admin
       .from('app_users')
-      .select('id, access_level')
+      .select('id, name, access_level')
       .eq('id', actorUserId)
       .maybeSingle()
 
+    const creatorId = idea.created_by_user_id as string | null
+    const assigneeId = idea.assignee_user_id as string | null
+
     const canNotify =
       actor &&
-      (actor.id === idea.created_by_user_id ||
+      (actor.id === creatorId ||
         actor.id === assigneeId ||
         actor.access_level === 'manager' ||
         actor.access_level === 'master')
@@ -164,76 +168,87 @@ Deno.serve(async (req) => {
       })
     }
 
-    const { data: assignee } = await admin
-      .from('app_users')
-      .select('id, name, phone, active')
-      .eq('id', assigneeId)
-      .maybeSingle()
+    const recipients: RecipientRole[] = []
+    if (creatorId) recipients.push({ userId: creatorId, role: 'creator' })
+    if (assigneeId && assigneeId !== creatorId) {
+      recipients.push({ userId: assigneeId, role: 'assignee' })
+    }
 
-    if (!assignee?.active || !assignee.phone) {
-      return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'no_phone' }), {
+    if (recipients.length === 0) {
+      return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'no_recipients' }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
 
-    const { data: prefs } = await admin
-      .from('user_preferences')
-      .select('notify_whatsapp_completed')
-      .eq('user_id', assigneeId)
-      .maybeSingle()
-
-    if (prefs && prefs.notify_whatsapp_completed === false) {
-      return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'prefs_off' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const to = normalizePhone(assignee.phone as string)
-    if (!to) {
-      return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'invalid_phone' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const assigneeName = (assignee.name as string) || 'משתמש'
     const title = (idea.title as string) || 'רעיון'
     const description = (idea.description as string) || ''
+    const actorName = (actor?.name as string) || 'משתמש'
+    const ideaUrl = appPublicUrl
+      ? `${appPublicUrl.replace(/\/$/, '')}/ideas/${ideaId}`
+      : null
 
-    let waRes: Response
-    if (useTextFallback) {
-      const body =
-        `✅ *הרעיון הושלם — Ogen System*\n\n` +
-        `שלום ${assigneeName},\n\n` +
-        `*${title}*\n\n` +
-        `${truncate(description, 800)}\n\n` +
-        `_הודעה אוטומטית ממערכת Ogen_`
-      waRes = await sendWhatsAppText(token, phoneNumberId, to, body)
-    } else {
-      waRes = await sendWhatsAppTemplate(
-        token,
-        phoneNumberId,
-        to,
-        templateName,
-        assigneeName,
+    const sent: { email: string; role: string; id?: string }[] = []
+    const skipped: { userId: string; reason: string }[] = []
+    const failed: { email: string; error: unknown }[] = []
+
+    for (const { userId, role } of recipients) {
+      const { data: user } = await admin
+        .from('app_users')
+        .select('id, name, email, active')
+        .eq('id', userId)
+        .maybeSingle()
+
+      if (!user?.active) {
+        skipped.push({ userId, reason: 'inactive' })
+        continue
+      }
+
+      const email = (user.email as string)?.trim()
+      if (!email) {
+        skipped.push({ userId, reason: 'no_email' })
+        continue
+      }
+
+      const { data: prefs } = await admin
+        .from('user_preferences')
+        .select('notify_email_completed')
+        .eq('user_id', userId)
+        .maybeSingle()
+
+      if (prefs && prefs.notify_email_completed === false) {
+        skipped.push({ userId, reason: 'prefs_off' })
+        continue
+      }
+
+      const recipientName = (user.name as string) || 'משתמש'
+      const subject = `✅ הושלם: ${truncate(title, 80)} — Ogen`
+      const html = buildEmailHtml({
+        recipientName,
+        role,
         title,
         description,
-      )
+        actorName,
+        ideaUrl,
+      })
+
+      const result = await sendResendEmail(resendKey, emailFrom, email, subject, html)
+      if (result.ok) {
+        sent.push({ email, role, id: result.id })
+      } else {
+        failed.push({ email, error: result.error })
+      }
     }
 
-    const waJson = await waRes.json().catch(() => ({}))
-    if (!waRes.ok) {
-      console.error('WhatsApp API error', waJson)
+    if (sent.length === 0 && failed.length > 0) {
       return new Response(
-        JSON.stringify({ ok: false, error: 'whatsapp_send_failed', detail: waJson }),
+        JSON.stringify({ ok: false, error: 'email_send_failed', failed, skipped }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
 
     return new Response(
-      JSON.stringify({ ok: true, to, messageId: waJson.messages?.[0]?.id }),
+      JSON.stringify({ ok: true, sent, skipped, failed: failed.length ? failed : undefined }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (err) {

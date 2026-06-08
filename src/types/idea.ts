@@ -60,6 +60,8 @@ export interface Idea {
   workflowStatus: IdeaWorkflowStatus
   createdAt: string
   targetStartDate: string
+  /** תאריך תכנון בטיימליין מאסטר (גרירה ליום ביצוע) */
+  plannedDate?: string | null
   sendToMaybeInbox: boolean
   createdByUserId: string
   guestSessionId?: string

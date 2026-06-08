@@ -26,11 +26,13 @@
 | 18 | `018_users_write_rpc.sql` | **RPC ניהול משתמשים** — שמירה ב-/users |
 | 19 | `019_fix_users_actor_rpc.sql` | תיקון זיהוי מנהל (JWT ישן) |
 | 20 | `020_idea_source.sql` | **מקור רעיון** — עמודה + RPC רעיונות |
-| 21 | `021_whatsapp_notifications.sql` | **WhatsApp** — טלפון משתמש + העדפת התראה |
+| 21 | `021_whatsapp_notifications.sql` | (אופציונלי) טלפון WhatsApp — לא בשימוש כרגע |
+| 22 | `022_email_completion.sql` | **מייל בהשלמה** — פותח + מוקצה |
+| 23 | `023_planned_date.sql` | **טיימליין מאסטר** — planned_date + הרשאות עדכון |
 
 > אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.  
 > אם רעיונות/התראות לא מתעדכנים — הרץ גם **011 → 012 → 013**.  
-> ל-WhatsApp — ראו גם [`docs/WHATSAPP_SETUP.md`](../docs/WHATSAPP_SETUP.md).
+> למייל בהשלמה — ראו [`docs/EMAIL_SETUP.md`](../docs/EMAIL_SETUP.md).
 
 ---
 
@@ -151,7 +153,7 @@ select * from storage.buckets where id = 'idea-attachments';
 | הוספת רעיון לא נשמרת / אין הרשאה | הרץ `017_reload_ideas_write_rpc.sql` |
 | שמירת משתמשים נכשלת | הרץ `018` ואז `019_fix_users_actor_rpc.sql` (מנהל בלבד) |
 | שדה מקור רעיון חסר | הרץ `020_idea_source.sql` |
-| WhatsApp לא נשלח | הרץ `021`, פרוס Edge Function, הגדר Secrets — ראו `docs/WHATSAPP_SETUP.md` |
+| מייל השלמה לא נשלח | הרץ `022`, פרוס `notify-idea-completed`, הגדר Resend Secrets — ראו `docs/EMAIL_SETUP.md` |
 
 ---
 
@@ -166,4 +168,5 @@ select * from storage.buckets where id = 'idea-attachments';
 | `ChatMessage.editedAt` | `edited_at` |
 | `ideaSource` | `idea_source` |
 | `AppUser.phone` | `app_users.phone` |
-| `notifyWhatsappCompleted` | `notify_whatsapp_completed` |
+| `notifyEmailCompleted` | `notify_email_completed` |
+| `plannedDate` | `planned_date` |

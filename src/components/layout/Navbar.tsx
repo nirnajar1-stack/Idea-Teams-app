@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   ArrowRight,
+  CalendarRange,
   LogOut,
   Search,
   Share2,
@@ -12,7 +13,7 @@ import { APP_NAME_FULL, NAV_LABELS, ROUTES } from '../../constants/app'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
-import { canManageUsers } from '../../lib/permissions'
+import { canManageUsers, isMaster } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
 import { AppLogo } from '../ui/AppLogo'
@@ -97,6 +98,7 @@ export function Navbar({
   const { stats } = useIdeas()
   const [searchOpen, setSearchOpen] = useState(false)
   const showUserManagement = canManageUsers(user)
+  const showTimeline = isMaster(user)
 
   useKeyboardShortcuts({ onSearchOpen: () => setSearchOpen(true) })
 
@@ -157,6 +159,20 @@ export function Navbar({
             >
               <UserCog className="h-4 w-4" />
               {NAV_LABELS.users}
+            </Link>
+          )}
+          {showTimeline && variant === 'main' && (
+            <Link
+              to={ROUTES.timeline}
+              className={cn(
+                'relative flex items-center gap-1.5 rounded-xl px-3 py-2 font-label-md transition-colors duration-200',
+                pathname === ROUTES.timeline
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-secondary hover:bg-primary/5 hover:text-on-surface',
+              )}
+            >
+              <CalendarRange className="h-4 w-4" />
+              {NAV_LABELS.timeline}
             </Link>
           )}
           <NavLinks

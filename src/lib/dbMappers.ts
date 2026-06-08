@@ -26,6 +26,7 @@ export interface IdeaRow {
   workflow_status: Idea['workflowStatus']
   created_at: string
   target_start_date: string
+  planned_date: string | null
   send_to_maybe_inbox: boolean
   created_by_user_id: string
   guest_session_id: string | null
@@ -87,6 +88,7 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     workflowStatus: row.workflow_status,
     createdAt: row.created_at,
     targetStartDate: row.target_start_date,
+    plannedDate: row.planned_date ?? undefined,
     sendToMaybeInbox: row.send_to_maybe_inbox,
     createdByUserId: row.created_by_user_id,
     guestSessionId: row.guest_session_id ?? undefined,
@@ -119,6 +121,7 @@ export function ideaToRow(idea: Idea): IdeaRow {
     workflow_status: idea.workflowStatus,
     created_at: idea.createdAt,
     target_start_date: idea.targetStartDate,
+    planned_date: idea.plannedDate ?? null,
     send_to_maybe_inbox: idea.sendToMaybeInbox,
     created_by_user_id: idea.createdByUserId,
     guest_session_id: idea.guestSessionId ?? null,
@@ -150,6 +153,7 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.workflowStatus !== undefined) row.workflow_status = patch.workflowStatus
   if (patch.createdAt !== undefined) row.created_at = patch.createdAt
   if (patch.targetStartDate !== undefined) row.target_start_date = patch.targetStartDate
+  if (patch.plannedDate !== undefined) row.planned_date = patch.plannedDate ?? null
   if (patch.sendToMaybeInbox !== undefined) row.send_to_maybe_inbox = patch.sendToMaybeInbox
   if (patch.createdByUserId !== undefined) row.created_by_user_id = patch.createdByUserId
   if (patch.guestSessionId !== undefined) row.guest_session_id = patch.guestSessionId ?? null

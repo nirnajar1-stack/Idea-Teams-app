@@ -9,6 +9,7 @@ import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { ManagerRoute } from './components/layout/ManagerRoute'
+import { MasterRoute } from './components/layout/MasterRoute'
 import { ROUTES } from './constants/app'
 import { HomePage } from './pages/HomePage'
 import { IdeasListPage } from './pages/IdeasListPage'
@@ -20,6 +21,7 @@ import { InboxPage } from './pages/InboxPage'
 import { LoginPage } from './pages/LoginPage'
 import { UserManagementPage } from './pages/UserManagementPage'
 import { AddSubIdeaPage } from './pages/AddSubIdeaPage'
+import { TimelinePage } from './pages/TimelinePage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +53,9 @@ function App() {
                 <Route path={ROUTES.profile} element={<ProfilePage />} />
                 <Route element={<ManagerRoute />}>
                   <Route path={ROUTES.users} element={<UserManagementPage />} />
+                </Route>
+                <Route element={<MasterRoute />}>
+                  <Route path={ROUTES.timeline} element={<TimelinePage />} />
                 </Route>
                 <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
               </Route>

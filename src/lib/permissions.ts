@@ -42,6 +42,13 @@ export function canDeleteIdea(user: AppUser | null, idea: Idea): boolean {
   return idea.createdByUserId === user.id
 }
 
+/** טיימליין מאסטר — תכנון תאריך לרעיונות גלויים */
+export function canScheduleOnTimeline(user: AppUser | null, idea: Idea): boolean {
+  if (!isMaster(user)) return false
+  if (idea.visibility === 'master_private' && idea.createdByUserId !== user!.id) return false
+  return true
+}
+
 export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
   if (!user) return false
   if (isOthersMasterPrivate(user, idea) && user.accessLevel === 'manager') return false

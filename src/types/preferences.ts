@@ -4,7 +4,7 @@ export interface UserPreferences {
   notifyGeneralMentions: boolean
   notifyReplies: boolean
   notifyTargetDate: boolean
-  notifyWhatsappCompleted: boolean
+  notifyEmailCompleted: boolean
   emailNotifications: boolean
 }
 
@@ -13,6 +13,6 @@ export const DEFAULT_USER_PREFERENCES: Omit<UserPreferences, 'userId'> = {
   notifyGeneralMentions: true,
   notifyReplies: true,
   notifyTargetDate: true,
-  notifyWhatsappCompleted: true,
+  notifyEmailCompleted: true,
   emailNotifications: false,
 }

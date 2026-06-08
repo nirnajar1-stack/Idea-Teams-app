@@ -15,6 +15,7 @@ export const ROUTES = {
   addSubIdea: (parentId: string) => `/ideas/${parentId}/sub/new`,
   profile: '/profile',
   users: '/users',
+  timeline: '/timeline',
 } as const
 
 export const STORAGE_KEY = 'ideaflow-ideas-v1'
@@ -34,4 +35,5 @@ export const NAV_LABELS = {
   profile: 'פרופיל',
   add: 'חדש',
   users: 'משתמשים',
+  timeline: 'טיימליין',
 } as const

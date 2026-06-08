@@ -1,17 +1,18 @@
 import { getSupabase, isSupabaseEnabled } from '../lib/supabaseClient'
 
-export interface WhatsAppNotifyResult {
+export interface EmailNotifyResult {
   ok: boolean
   skipped?: boolean
   reason?: string
   error?: string
+  sent?: { email: string; role: string }[]
 }
 
-/** שולח WhatsApp למוקצה כשהרעיון הושלם (Edge Function) */
-export async function notifyIdeaCompletedWhatsApp(
+/** שולח מייל לפותח המשימה ולמוקצה כשהרעיון הושלם (Edge Function) */
+export async function notifyIdeaCompletedEmail(
   ideaId: string,
   actorUserId: string,
-): Promise<WhatsAppNotifyResult> {
+): Promise<EmailNotifyResult> {
   if (!isSupabaseEnabled()) {
     return { ok: false, skipped: true, reason: 'offline' }
   }
@@ -21,9 +22,9 @@ export async function notifyIdeaCompletedWhatsApp(
   })
 
   if (error) {
-    console.warn('notify-idea-completed failed', error)
+    console.warn('notify-idea-completed email failed', error)
     return { ok: false, error: error.message }
   }
 
-  return (data ?? { ok: false }) as WhatsAppNotifyResult
+  return (data ?? { ok: false }) as EmailNotifyResult
 }
