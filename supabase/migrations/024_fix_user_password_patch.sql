@@ -1,5 +1,8 @@
 -- Ogen 024 — תיקון עדכון סיסמה: לא לדרוס כש-password_hash חסר או ריק ב-patch
 
+alter table public.app_users
+  add column if not exists phone text;
+
 create or replace function public.update_app_user_for_session(
   p_actor_user_id text,
   p_user_id text,

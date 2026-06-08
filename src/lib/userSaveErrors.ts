@@ -24,6 +24,14 @@ export function formatUserSaveError(error: unknown): string {
     return 'רק מנהל או מאסטר פעיל יכול לנהל משתמשים — וודא שרצת migrations/019_fix_users_actor_rpc.sql'
   }
 
+  if (msg.includes('u.phone does not exist') || (msg.includes('column') && msg.includes('phone'))) {
+    return 'חסרה עמודת טלפון — הרץ migrations/025_add_phone_column.sql ב-Supabase SQL Editor'
+  }
+
+  if (msg.includes('cannot change name of view column')) {
+    return 'עדכון view נכשל — הרץ שוב את migrations/025_add_phone_column.sql (גרסה מעודכנת עם DROP VIEW)'
+  }
+
   if (msg.includes('app_users_access_level_check') || msg.includes('access_level')) {
     return 'רמת גישה לא תקינה — הרץ migrations/019_fix_users_actor_rpc.sql'
   }

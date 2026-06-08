@@ -11,8 +11,10 @@ comment on column public.app_users.phone is 'מספר WhatsApp בפורמט בי
 alter table public.user_preferences
   add column if not exists notify_whatsapp_completed boolean not null default true;
 
--- view ציבורי מעודכן
-create or replace view public.app_users_public as
+-- view ציבורי מעודכן (DROP נדרש כי נוספת עמודה phone)
+drop view if exists public.app_users_public;
+
+create view public.app_users_public as
 select
   id, name, job_title, initials, email, username, phone,
   access_level, active, auth_user_id, created_at, updated_at

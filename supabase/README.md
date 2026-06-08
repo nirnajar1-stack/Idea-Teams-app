@@ -30,6 +30,7 @@
 | 22 | `022_email_completion.sql` | **מייל בהשלמה** — פותח + מוקצה |
 | 23 | `023_planned_date.sql` | **טיימליין מאסטר** — planned_date + הרשאות עדכון |
 | 24 | `024_fix_user_password_patch.sql` | **תיקון שמירת סיסמה** בעדכון משתמש |
+| 25 | `025_add_phone_column.sql` | **עמודת phone** — אם קיבלת `column u.phone does not exist` |
 
 > אם כבר הרצת 001–004 — הרץ רק **005 → 006 → 007**.  
 > אם רעיונות/התראות לא מתעדכנים — הרץ גם **011 → 012 → 013**.  
@@ -154,6 +155,7 @@ select * from storage.buckets where id = 'idea-attachments';
 | הוספת רעיון לא נשמרת / אין הרשאה | הרץ `017_reload_ideas_write_rpc.sql` |
 | שמירת משתמשים נכשלת | הרץ `018` ואז `019_fix_users_actor_rpc.sql` (מנהל בלבד) |
 | סיסמה לא מתעדכנת / מתאפסת | הרץ `024_fix_user_password_patch.sql` + רענון Ctrl+F5 |
+| `column u.phone does not exist` | הרץ `025_add_phone_column.sql` (או `021`) |
 | שדה מקור רעיון חסר | הרץ `020_idea_source.sql` |
 | מייל השלמה לא נשלח | הרץ `022`, פרוס `notify-idea-completed`, הגדר Resend Secrets — ראו `docs/EMAIL_SETUP.md` |
 
