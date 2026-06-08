@@ -75,15 +75,27 @@ export async function updateUserInDb(
   current: StoredUser,
   actorUserId: string,
 ): Promise<StoredUser> {
-  const passwordHash = input.password?.trim()
-    ? await hashPassword(input.password)
-    : undefined
+  const plainPassword = input.password?.trim() || undefined
+  const { password: _password, ...fieldsWithoutPassword } = input
 
-  const patch = userUpdateInputToRow(input, passwordHash)
+  if (plainPassword) {
+    const { error: pwError } = await getSupabase().rpc('set_app_user_password_for_session', {
+      p_actor_user_id: actorUserId,
+      p_user_id: id,
+      p_password: plainPassword,
+    })
+    if (pwError) {
+      console.error('set_app_user_password_for_session failed', pwError)
+      throw pwError
+    }
+  }
+
+  const patch = userUpdateInputToRow(fieldsWithoutPassword)
   if (input.phone !== undefined) {
     patch.phone = phoneForDb(input.phone) ?? null
   }
-  if (Object.keys(patch).length === 0) return current
+
+  const passwordHash = plainPassword ? await hashPassword(plainPassword) : undefined
 
   const updated: StoredUser = {
     ...current,
@@ -96,6 +108,10 @@ export async function updateUserInDb(
     ...(input.accessLevel !== undefined && { accessLevel: input.accessLevel }),
     ...(input.active !== undefined && { active: input.active }),
     ...(passwordHash && { passwordHash }),
+  }
+
+  if (Object.keys(patch).length === 0) {
+    return updated
   }
 
   const { error: rpcError } = await getSupabase().rpc('update_app_user_for_session', {

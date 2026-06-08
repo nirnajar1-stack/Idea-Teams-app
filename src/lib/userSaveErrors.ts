@@ -24,6 +24,17 @@ export function formatUserSaveError(error: unknown): string {
     return 'רק מנהל או מאסטר פעיל יכול לנהל משתמשים — וודא שרצת migrations/019_fix_users_actor_rpc.sql'
   }
 
+  if (
+    msg.includes('set_app_user_password_for_session') &&
+    msg.includes('does not exist')
+  ) {
+    return 'פונקציית עדכון סיסמה חסרה — הרץ migrations/026_set_user_password_rpc.sql ב-Supabase'
+  }
+
+  if (msg.includes('password must be at least')) {
+    return 'סיסמה חייבת להכיל לפחות 4 תווים'
+  }
+
   if (msg.includes('u.phone does not exist') || (msg.includes('column') && msg.includes('phone'))) {
     return 'חסרה עמודת טלפון — הרץ migrations/025_add_phone_column.sql ב-Supabase SQL Editor'
   }
