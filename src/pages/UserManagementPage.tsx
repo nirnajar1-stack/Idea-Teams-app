@@ -37,7 +37,7 @@ export function UserManagementPage() {
 
   const handleSave = async (data: UserFormInput | UserUpdateInput) => {
     if (!currentUser?.id) {
-      toast.error('יש להתחבר כמנהל כדי לשמור משתמשים')
+      toast.error('יש להתחבר כמנהל או מאסטר כדי לשמור משתמשים')
       return
     }
     try {

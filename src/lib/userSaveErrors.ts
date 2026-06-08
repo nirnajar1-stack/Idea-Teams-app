@@ -21,7 +21,7 @@ export function formatUserSaveError(error: unknown): string {
   }
 
   if (msg.includes('only active manager')) {
-    return 'רק מנהל פעיל יכול לנהל משתמשים — התנתק והתחבר עם nir123'
+    return 'רק מנהל או מאסטר פעיל יכול לנהל משתמשים — וודא שרצת migrations/019_fix_users_actor_rpc.sql'
   }
 
   if (msg.includes('app_users_access_level_check') || msg.includes('access_level')) {

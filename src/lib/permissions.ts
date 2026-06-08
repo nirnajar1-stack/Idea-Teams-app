@@ -14,7 +14,7 @@ export function isManagerOrMaster(user: AppUser | null): boolean {
 }
 
 export function canManageUsers(user: AppUser | null): boolean {
-  return user?.accessLevel === 'manager'
+  return isManagerOrMaster(user)
 }
 
 /** רעיון-מארז עם תת-רעיונות — יצירה למנהל בלבד */

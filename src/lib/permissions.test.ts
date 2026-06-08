@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canEditIdea, canViewIdea, filterVisibleIdeas } from './permissions'
+import { canEditIdea, canManageUsers, canViewIdea, filterVisibleIdeas } from './permissions'
 import type { Idea } from '../types/idea'
 import type { AppUser, StoredUser } from '../types/user'
 
@@ -68,6 +68,12 @@ const usersById = new Map<string, StoredUser>([
 ])
 
 describe('permissions', () => {
+  it('master can manage users', () => {
+    expect(canManageUsers(master)).toBe(true)
+    expect(canManageUsers(manager)).toBe(true)
+    expect(canManageUsers(member)).toBe(false)
+  })
+
   it('manager sees all non-private ideas', () => {
     expect(canViewIdea(manager, baseIdea, usersById)).toBe(true)
     expect(
