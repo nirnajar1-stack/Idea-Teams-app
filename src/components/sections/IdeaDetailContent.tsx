@@ -94,7 +94,7 @@ export function IdeaDetailContent({
         <p className="mb-8 font-body-lg leading-relaxed text-on-surface-variant">
           {idea.description}
         </p>
-        <div className="grid grid-cols-1 gap-6 rounded-xl border border-border-light bg-surface-subtle p-6 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 border border-border-light bg-surface-subtle p-6 md:grid-cols-2">
           <div>
             <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">
               יוצר הבקשה/רעיון
@@ -163,7 +163,7 @@ export function IdeaDetailContent({
                     href={file.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex w-full items-center justify-between rounded-lg border border-border-light bg-surface-subtle p-3 transition-colors hover:bg-surface-container-low"
+                    className="group flex w-full items-center justify-between border border-border-light bg-surface-subtle p-3 transition-colors hover:bg-surface-container-low"
                   >
                     <div className="flex items-center gap-3">
                       {file.type === 'pdf' ? (
@@ -178,7 +178,7 @@ export function IdeaDetailContent({
                 ) : (
                   <div
                     key={file.id}
-                    className="flex w-full items-center justify-between rounded-lg border border-border-light bg-surface-subtle p-3"
+                    className="flex w-full items-center justify-between border border-border-light bg-surface-subtle p-3"
                   >
                     <div className="flex items-center gap-3">
                       {file.type === 'pdf' ? (

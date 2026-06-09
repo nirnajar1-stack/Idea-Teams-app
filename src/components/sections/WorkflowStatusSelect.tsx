@@ -35,7 +35,7 @@ export function WorkflowStatusSelect({
             disabled={disabled}
             onClick={() => onChange(opt)}
             className={cn(
-              'flex flex-col items-center gap-1 rounded-xl border py-3 font-label-sm transition-all active:scale-95 disabled:opacity-50',
+              'flex flex-col items-center gap-1 border py-3 font-label-sm transition-colors disabled:opacity-50',
               value === opt
                 ? `${color} bg-current/5 ring-2 ring-current/20`
                 : 'border-border-light text-on-surface-variant hover:border-primary/20',

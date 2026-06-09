@@ -18,6 +18,7 @@ import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
 import type { IdeaCategory, IdeaFilters, IdeaPriority, IdeaSource, IdeasViewPrefs } from '../types/idea'
 import { IDEA_SOURCES } from '../types/idea'
 import { Button } from '../components/ui/Button'
+import { EmptyState } from '../components/ui/EmptyState'
 
 export function IdeasListPage() {
   const navigate = useNavigate()
@@ -122,7 +123,7 @@ export function IdeasListPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="חיפוש..."
-            className="h-12 w-full rounded-xl border border-border-light bg-surface-container-lowest pr-12 pl-4 font-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="h-12 w-full border border-border-light bg-surface-container-lowest pr-12 pl-4 font-body-md focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
       </div>
@@ -162,9 +163,9 @@ export function IdeasListPage() {
             }
           >
             {activeIdeas.length === 0 ? (
-              <p className="rounded-xl border border-border-light bg-surface-container-lowest p-8 text-center font-body-md text-secondary">
-                {IDEA_TERM.noActiveMatch}
-              </p>
+              <div className="border border-border-light bg-surface-container-lowest p-8">
+                <EmptyState title={IDEA_TERM.noActiveMatch} />
+              </div>
             ) : (
               activeIdeas.map((idea, i) => (
                 <div

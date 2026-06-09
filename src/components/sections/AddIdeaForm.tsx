@@ -187,9 +187,9 @@ export function AddIdeaForm() {
               type="submit"
               disabled={submitState !== 'idle'}
               className={cn(
-                'flex w-full items-center justify-center gap-2 rounded-xl py-4 font-display text-headline-md transition-all duration-200 active:scale-[0.98]',
+                'flex min-h-12 w-full items-center justify-center gap-2 font-body text-base font-normal uppercase tracking-wide transition-colors duration-300',
                 submitState === 'success'
-                  ? 'bg-success-vibrant text-on-primary shadow-glow'
+                  ? 'bg-success-vibrant text-on-primary'
                   : 'btn-boutique',
                 submitState === 'loading' && 'opacity-80',
               )}
@@ -222,7 +222,7 @@ export function AddIdeaForm() {
       </div>
 
       <div className="mt-12 flex items-center gap-6 glass-card p-6">
-        <div className="rounded-2xl bg-gradient-to-br from-primary/15 to-inbox/10 p-3">
+        <div className="bg-surface-container-low p-3">
           <Lightbulb className="h-7 w-7 text-primary" />
         </div>
         <div>

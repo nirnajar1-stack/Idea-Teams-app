@@ -3,8 +3,8 @@ export type Theme = 'light' | 'dark'
 export const THEME_STORAGE_KEY = 'ideaflow-theme-v1'
 
 const THEME_COLORS: Record<Theme, string> = {
-  light: '#f0f4fa',
-  dark: '#060a12',
+  light: '#f8f8f8',
+  dark: '#000000',
 }
 
 export function getStoredTheme(): Theme | null {
@@ -20,10 +20,7 @@ export function getStoredTheme(): Theme | null {
 export function resolveInitialTheme(): Theme {
   const stored = getStoredTheme()
   if (stored) return stored
-  if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return 'dark'
-  }
-  return 'light'
+  return 'dark'
 }
 
 export function applyTheme(theme: Theme) {

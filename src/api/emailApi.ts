@@ -21,9 +21,25 @@ export async function notifyIdeaCompletedEmail(
     body: { ideaId, actorUserId },
   })
 
+  const payload = (data ?? {}) as EmailNotifyResult & {
+    error?: string
+    reason?: string
+    skipped?: boolean
+  }
+
   if (error) {
-    console.warn('notify-idea-completed email failed', error)
-    return { ok: false, error: error.message }
+    console.warn('notify-idea-completed email failed', error, payload)
+    if (payload.skipped && payload.reason) {
+      return { ok: false, skipped: true, reason: payload.reason }
+    }
+    if (payload.error) {
+      return { ok: false, error: payload.error }
+    }
+    const msg = error.message ?? ''
+    if (msg.includes('non-2xx') || msg.includes('Invalid JWT') || msg.includes('401')) {
+      return { ok: false, error: 'edge_function_auth_failed' }
+    }
+    return { ok: false, error: msg }
   }
 
   return (data ?? { ok: false }) as EmailNotifyResult

@@ -39,7 +39,19 @@ function App() {
           <PreferencesProvider>
           <IdeasProvider>
             <ChatNotificationsProvider>
-            <Toaster position="top-center" richColors dir="rtl" />
+            <Toaster
+              position="top-center"
+              dir="rtl"
+              toastOptions={{
+                className: 'lambo-toast',
+                style: {
+                  background: 'var(--color-surface-container-lowest)',
+                  border: '1px solid var(--color-border-light)',
+                  color: 'var(--color-on-surface)',
+                  borderRadius: '0',
+                },
+              }}
+            />
             <Routes>
               <Route path={ROUTES.login} element={<LoginPage />} />
               <Route element={<ProtectedRoute />}>

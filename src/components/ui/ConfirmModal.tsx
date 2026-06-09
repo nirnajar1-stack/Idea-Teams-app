@@ -26,20 +26,20 @@ export function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md animate-fade-up rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-boutique"
+        className="w-full max-w-md animate-fade-up border border-border-light bg-surface-container-lowest p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             {variant === 'danger' && (
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/10">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-error/10">
                 <AlertTriangle className="h-5 w-5 text-error" />
               </div>
             )}
@@ -50,7 +50,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-lg p-1 text-secondary hover:bg-surface-container-low"
+            className="p-1 text-secondary hover:bg-surface-container-low"
             aria-label="סגור"
           >
             <X className="h-5 w-5" />
@@ -61,7 +61,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 rounded-xl border border-border-light py-3 font-label-md text-on-surface transition-colors hover:bg-surface-container-low"
+            className="btn-secondary-light flex-1 py-3"
           >
             {cancelLabel}
           </button>
@@ -69,7 +69,7 @@ export function ConfirmModal({
             type="button"
             onClick={onConfirm}
             className={cn(
-              'flex-1 rounded-xl py-3 font-label-md text-on-primary transition-all active:scale-[0.98]',
+              'flex-1 py-3 font-label-md text-on-primary transition-colors',
               variant === 'danger' ? 'bg-error hover:bg-error/90' : 'btn-boutique',
             )}
           >

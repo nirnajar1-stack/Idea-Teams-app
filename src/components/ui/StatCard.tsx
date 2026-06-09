@@ -19,27 +19,23 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'group relative flex flex-col justify-between overflow-hidden glass-card-hover p-8',
+        'flex flex-col justify-between bg-surface-container-lowest p-8 transition-colors duration-300 hover:bg-surface-container',
         className,
       )}
     >
-      <div className="relative z-10">
-        <p className="mb-1 font-label-md text-secondary">{label}</p>
-        <h2 className="stat-value bg-gradient-to-l from-primary-deep via-primary to-glow bg-clip-text font-display text-display-lg leading-none text-transparent">
+      <div>
+        <p className="mb-2 text-label-md uppercase text-secondary">{label}</p>
+        <h2 className="stat-value font-display text-display-lg leading-none">
           {value}
         </h2>
       </div>
-      <div className="relative z-10 mt-8 flex items-center gap-2">
-        <span className="flex items-center font-label-md text-success-vibrant">
-          <TrendingUp className="h-[18px] w-[18px]" aria-hidden />
+      <div className="mt-10 flex items-center gap-3 border-t border-border-light pt-6">
+        <span className="flex items-center gap-1 font-display text-sm text-success-vibrant">
+          <TrendingUp className="h-4 w-4" aria-hidden />
           {trendPercent}
         </span>
-        <span className="font-label-sm text-secondary">{trendLabel}</span>
+        <span className="text-body-sm text-secondary">{trendLabel}</span>
       </div>
-      <div
-        className="absolute -bottom-8 -right-8 h-40 w-40 rounded-full bg-primary/10 blur-2xl transition-all group-hover:bg-primary/15"
-        aria-hidden
-      />
     </div>
   )
 }

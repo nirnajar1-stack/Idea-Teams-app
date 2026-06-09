@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
 import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
+import { EmptyState } from '../components/ui/EmptyState'
 import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
@@ -76,7 +77,7 @@ export function InboxPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="חיפוש ב-Inbox..."
-            className="boutique-input h-12 w-full rounded-xl pr-12"
+            className="boutique-input h-12 w-full pr-12"
           />
         </div>
       </div>
@@ -91,12 +92,17 @@ export function InboxPage() {
       />
 
       {inboxIdeas.length === 0 ? (
-        <div className="glass-card p-12 text-center">
-          <Archive className="mx-auto mb-4 h-12 w-12 text-inbox/50" />
-          <p className="font-body-lg text-on-surface">ה-Inbox ריק כרגע</p>
-          <p className="mt-2 font-body-md text-secondary">
-            בעת הוספת בקשה/רעיון, סמנו &quot;שלח ל-Inbox — אולי בהמשך&quot;
-          </p>
+        <div className="glass-card p-12">
+          <EmptyState
+            title="ה-Inbox ריק כרגע"
+            description='בעת הוספת בקשה/רעיון, סמנו "שלח ל-Inbox — אולי בהמשך"'
+            action={
+              <Link to={ROUTES.ideas} className="btn-secondary-light">
+                <ArrowLeft className="h-4 w-4" />
+                חזרה לבקשות/רעיונות פעילים
+              </Link>
+            }
+          />
         </div>
       ) : (
         <div className={viewPrefs.compact ? 'space-y-2' : 'space-y-4'}>

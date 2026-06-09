@@ -65,88 +65,103 @@ export function GlobalSearchModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-start justify-center bg-black/40 p-4 pt-24 backdrop-blur-sm"
+      className="lambo-search"
       role="dialog"
       aria-modal="true"
       aria-label="חיפוש גלובלי"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-xl overflow-hidden rounded-2xl border border-border-light bg-surface-container-lowest shadow-elevated"
+        className="mx-auto flex h-full w-full max-w-container-max flex-col px-margin-mobile pt-24 md:px-margin-desktop"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 border-b border-border-light px-4 py-3">
-          <Search className="h-5 w-5 text-secondary" />
+        <div className="mb-8 flex items-center gap-3 border-b border-border-light pb-6">
+          <Search className="h-6 w-6 shrink-0 text-secondary" />
           <input
             autoFocus
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="חיפוש בקשות/רעיונות, תיאורים, צ'אט…"
-            className="flex-1 bg-transparent font-body-md outline-none"
+            className="flex-1 bg-transparent font-display text-headline-md text-on-surface outline-none placeholder:text-outline-variant"
           />
-          <button type="button" onClick={onClose} aria-label="סגירה" className="rounded-lg p-1 hover:bg-surface-container">
-            <X className="h-5 w-5" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="סגירה"
+            className="p-2 text-secondary transition-colors hover:text-on-surface"
+          >
+            <X className="h-6 w-6" />
           </button>
         </div>
 
-        <div className="max-h-[60vh] overflow-y-auto p-2">
+        <div className="flex-1 overflow-y-auto pb-12">
           {loading && (
-            <div className="flex items-center justify-center gap-2 py-8 text-secondary">
+            <div className="flex items-center justify-center gap-2 py-16 text-secondary">
               <Loader2 className="h-5 w-5 animate-spin" />
               מחפש…
             </div>
           )}
 
           {!loading && query.trim() && total === 0 && (
-            <p className="py-8 text-center font-body-md text-secondary">לא נמצאו תוצאות</p>
+            <p className="py-16 text-center font-display text-headline-md text-secondary">
+              לא נמצאו תוצאות
+            </p>
           )}
 
           {!loading && results.ideas.length > 0 && (
-            <section className="mb-2">
-              <h3 className="px-3 py-2 font-label-sm uppercase text-secondary">בקשות/רעיונות</h3>
-              {results.ideas.map(({ idea, snippet }) => (
-                <button
-                  key={idea.id}
-                  type="button"
-                  className="flex w-full items-start gap-3 rounded-xl px-3 py-2 text-right hover:bg-surface-container-low"
-                  onClick={() => {
-                    navigate(ROUTES.ideaDetail(idea.id))
-                    onClose()
-                  }}
-                >
-                  <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="font-label-md text-on-surface">{idea.title}</p>
-                    <p className="font-label-sm text-secondary">#{idea.externalId} · {snippet}</p>
-                  </div>
-                </button>
-              ))}
+            <section className="mb-8">
+              <h3 className="section-eyebrow mb-4">בקשות/רעיונות</h3>
+              <div className="lambo-stagger divide-y divide-border-light border border-border-light">
+                {results.ideas.map(({ idea, snippet }) => (
+                  <button
+                    key={idea.id}
+                    type="button"
+                    className="flex w-full items-start gap-4 bg-surface-container-lowest px-4 py-4 text-right transition-colors hover:bg-surface-container"
+                    onClick={() => {
+                      navigate(ROUTES.ideaDetail(idea.id))
+                      onClose()
+                    }}
+                  >
+                    <Lightbulb className="mt-1 h-4 w-4 shrink-0 text-primary" />
+                    <div>
+                      <p className="font-label-md text-on-surface">{idea.title}</p>
+                      <p className="mt-1 font-body-sm text-secondary">
+                        #{idea.externalId} · {snippet}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </section>
           )}
 
           {!loading && results.chat.length > 0 && (
             <section>
-              <h3 className="px-3 py-2 font-label-sm uppercase text-secondary">צ'אט</h3>
-              {results.chat.map(({ message, ideaTitle }) => (
-                <button
-                  key={message.id}
-                  type="button"
-                  className="flex w-full items-start gap-3 rounded-xl px-3 py-2 text-right hover:bg-surface-container-low"
-                  onClick={() => {
-                    if (message.ideaId) navigate(ROUTES.ideaDetail(message.ideaId))
-                    onClose()
-                  }}
-                >
-                  <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                  <div>
-                    <p className="font-label-md text-on-surface">
-                      {ideaTitle ?? 'צ\'אט כללי'} · {message.authorName}
-                    </p>
-                    <p className={cn('font-label-sm text-secondary line-clamp-2')}>{message.body}</p>
-                  </div>
-                </button>
-              ))}
+              <h3 className="section-eyebrow mb-4">צ'אט</h3>
+              <div className="divide-y divide-border-light border border-border-light">
+                {results.chat.map(({ message, ideaTitle }) => (
+                  <button
+                    key={message.id}
+                    type="button"
+                    className="flex w-full items-start gap-4 bg-surface-container-lowest px-4 py-4 text-right transition-colors hover:bg-surface-container"
+                    onClick={() => {
+                      if (message.ideaId) navigate(ROUTES.ideaDetail(message.ideaId))
+                      onClose()
+                    }}
+                  >
+                    <MessageSquare className="mt-1 h-4 w-4 shrink-0 text-secondary" />
+                    <div>
+                      <p className="font-label-md text-on-surface">
+                        {ideaTitle ?? 'צ\'אט כללי'} · {message.authorName}
+                      </p>
+                      <p className={cn('mt-1 font-body-sm text-secondary line-clamp-2')}>
+                        {message.body}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </section>
           )}
         </div>

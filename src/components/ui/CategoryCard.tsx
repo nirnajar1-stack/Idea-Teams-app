@@ -29,7 +29,7 @@ export function CategoryCard({
       />
       <div
         className={cn(
-          'flex flex-col items-center justify-center rounded-xl border-2 border-transparent bg-surface-subtle p-6 transition-all duration-200 hover:bg-surface-container-low',
+          'flex flex-col items-center justify-center border-2 border-transparent bg-surface-subtle p-6 transition-colors duration-200 hover:bg-surface-container-low',
           selected && 'border-primary bg-primary/5',
         )}
       >

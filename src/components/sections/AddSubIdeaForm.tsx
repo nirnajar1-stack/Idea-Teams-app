@@ -149,7 +149,7 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
             type="submit"
             disabled={submitState !== 'idle'}
             className={cn(
-              'flex w-full items-center justify-center gap-2 rounded-xl py-4 font-display text-headline-md transition-all',
+              'flex w-full items-center justify-center gap-2 py-4 font-display text-headline-md transition-colors',
               submitState === 'success'
                 ? 'bg-success-vibrant text-on-primary'
                 : 'btn-boutique',

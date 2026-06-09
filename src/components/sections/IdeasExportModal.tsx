@@ -136,19 +136,19 @@ export function IdeasExportModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="export-modal-title"
       onClick={onClose}
     >
       <div
-        className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-border-light bg-surface-container-lowest shadow-boutique sm:rounded-2xl"
+        className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden border border-border-light bg-surface-container-lowest"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 border-b border-border-light px-6 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center bg-primary/10">
               <FileSpreadsheet className="h-5 w-5 text-primary" />
             </div>
             <div>
@@ -163,7 +163,7 @@ export function IdeasExportModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-secondary hover:bg-surface-container-low"
+            className="p-1 text-secondary hover:bg-surface-container-low"
             aria-label="סגור"
           >
             <X className="h-5 w-5" />
@@ -198,7 +198,7 @@ export function IdeasExportModal({
             <div className="flex flex-col gap-2 sm:flex-row">
               <label
                 className={cn(
-                  'flex flex-1 cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 font-label-sm',
+                  'flex flex-1 cursor-pointer items-center gap-2 border px-4 py-3 font-label-sm',
                   layout === 'per_slice'
                     ? 'border-primary bg-primary/5 text-on-surface'
                     : 'border-border-light text-secondary',
@@ -215,7 +215,7 @@ export function IdeasExportModal({
               </label>
               <label
                 className={cn(
-                  'flex flex-1 cursor-pointer items-center gap-2 rounded-xl border px-4 py-3 font-label-sm',
+                  'flex flex-1 cursor-pointer items-center gap-2 border px-4 py-3 font-label-sm',
                   layout === 'single'
                     ? 'border-primary bg-primary/5 text-on-surface'
                     : 'border-border-light text-secondary',
@@ -256,7 +256,7 @@ export function IdeasExportModal({
                       type="button"
                       onClick={() => toggleSource(source)}
                       className={cn(
-                        'rounded-lg border px-3 py-1.5 font-label-sm',
+                        'border px-3 py-1.5 font-label-sm',
                         sources.includes(source)
                           ? 'border-primary bg-primary/10 text-primary'
                           : 'border-border-light text-secondary',
@@ -278,7 +278,7 @@ export function IdeasExportModal({
                         type="button"
                         onClick={() => toggleCategory(cat)}
                         className={cn(
-                          'rounded-lg border px-3 py-1.5 font-label-sm',
+                          'border px-3 py-1.5 font-label-sm',
                           categories.includes(cat)
                             ? 'border-primary bg-primary/10 text-primary'
                             : 'border-border-light text-secondary',
@@ -348,7 +348,7 @@ export function IdeasExportModal({
                   type="checkbox"
                   checked={onlyMine}
                   onChange={(e) => setOnlyMine(e.target.checked)}
-                  className="h-4 w-4 rounded accent-primary"
+                  className="h-4 w-4 accent-primary"
                 />
                 רק בקשות/רעיונות שפתחתי
               </label>
@@ -358,14 +358,14 @@ export function IdeasExportModal({
                   type="checkbox"
                   checked={includeSubIdeas}
                   onChange={(e) => setIncludeSubIdeas(e.target.checked)}
-                  className="h-4 w-4 rounded accent-primary"
+                  className="h-4 w-4 accent-primary"
                 />
                 כולל תת-בקשות/רעיונות
               </label>
             </div>
           </section>
 
-          <p className="rounded-xl bg-surface-container-low px-4 py-3 font-body-sm text-secondary">
+          <p className="bg-surface-container-low px-4 py-3 font-body-sm text-secondary">
             {describeExportConfig(config)}
             <span className="mt-1 block font-label-md text-primary">
               {rowCount} שורות לייצוא
@@ -377,7 +377,7 @@ export function IdeasExportModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-xl border border-border-light py-3 font-label-md text-on-surface hover:bg-surface-container-low"
+            className="btn-secondary-light flex-1 py-3"
           >
             ביטול
           </button>

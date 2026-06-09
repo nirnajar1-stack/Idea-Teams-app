@@ -143,7 +143,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
             <button
               type="button"
               onClick={() => navigate(ROUTES.ideaDetail(idea.id))}
-              className="flex-1 rounded-xl border border-border-light py-4 font-label-md text-on-surface hover:bg-surface-container-low"
+              className="btn-secondary-light flex-1 py-4"
             >
               ביטול
             </button>
@@ -151,7 +151,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
               type="submit"
               disabled={submitState !== 'idle'}
               className={cn(
-                'flex flex-1 items-center justify-center gap-2 rounded-xl py-4 font-display text-headline-md transition-all active:scale-[0.98]',
+                'flex flex-1 items-center justify-center gap-2 py-4 font-display text-headline-md transition-colors',
                 submitState === 'success'
                   ? 'bg-success-vibrant text-on-primary'
                   : 'btn-boutique',

@@ -79,12 +79,12 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-on-surface/40 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal
       aria-labelledby="user-form-title"
     >
-      <div className="glass-card max-h-[90vh] w-full max-w-lg overflow-y-auto p-8 shadow-boutique">
+      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto border border-border-light bg-surface-container-lowest p-8">
         <div className="mb-6 flex items-center justify-between">
           <h2 id="user-form-title" className="font-display text-headline-md text-on-surface">
             {isEdit ? 'עריכת משתמש' : 'משתמש חדש'}
@@ -92,7 +92,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-secondary hover:bg-primary/5"
+            className="p-2 text-secondary transition-colors hover:bg-primary/5"
             aria-label="סגירה"
           >
             <X className="h-5 w-5" />
@@ -185,7 +185,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
                 type="checkbox"
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
-                className="h-4 w-4 rounded text-primary"
+                className="h-4 w-4 text-primary"
               />
               <span className="font-body-md">משתמש פעיל</span>
             </label>
@@ -197,7 +197,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-xl border border-border-light py-3.5 font-label-md text-secondary hover:bg-surface-container"
+              className="btn-secondary-light flex-1 py-3.5 text-secondary"
             >
               ביטול
             </button>

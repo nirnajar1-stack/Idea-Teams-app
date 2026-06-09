@@ -48,7 +48,7 @@ export function AttachmentUpload({
         type="button"
         disabled={disabled || uploading}
         onClick={() => inputRef.current?.click()}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/30 py-3 font-label-md text-primary transition-colors hover:bg-primary/5 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 border border-dashed border-primary/30 py-3 font-label-md text-primary transition-colors hover:bg-primary/5 disabled:opacity-50"
       >
         {uploading ? (
           <Loader2 className="h-4 w-4 animate-spin" />

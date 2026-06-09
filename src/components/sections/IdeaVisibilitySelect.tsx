@@ -27,7 +27,7 @@ export function IdeaVisibilitySelect({
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value as IdeaVisibility)}
-        className="boutique-input w-full rounded-xl"
+        className="boutique-input w-full"
       >
         {options.map((v) => (
           <option key={v} value={v}>

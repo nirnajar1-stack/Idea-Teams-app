@@ -3,6 +3,7 @@ import { useState } from 'react'
 import type { Idea } from '../../types/idea'
 import { cn } from '../../lib/cn'
 import { IdeaListCard } from './IdeaListCard'
+import { EmptyState } from '../ui/EmptyState'
 
 export interface CompletedIdeasSectionProps {
   ideas: Idea[]
@@ -12,8 +13,6 @@ export interface CompletedIdeasSectionProps {
 export function CompletedIdeasSection({ ideas, compact }: CompletedIdeasSectionProps) {
   const [open, setOpen] = useState(true)
 
-  if (ideas.length === 0) return null
-
   return (
     <section
       className="mt-10 border-t border-border-light pt-8"
@@ -22,7 +21,7 @@ export function CompletedIdeasSection({ ideas, compact }: CompletedIdeasSectionP
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="mb-4 flex w-full items-center justify-between gap-3 rounded-xl px-1 py-2 text-right transition-colors hover:bg-primary/5"
+        className="mb-4 flex w-full items-center justify-between gap-3 px-1 py-2 text-right transition-colors hover:bg-primary/5"
         aria-expanded={open}
       >
         <span className="flex items-center gap-2 font-display text-headline-md text-on-surface">
@@ -40,7 +39,14 @@ export function CompletedIdeasSection({ ideas, compact }: CompletedIdeasSectionP
         />
       </button>
 
-      {open && (
+      {open && ideas.length === 0 && (
+        <EmptyState
+          title="אין בקשות/רעיונות שהושלמו"
+          description="בקשות/רעיונות שסומנו כהושלמו יופיעו כאן."
+        />
+      )}
+
+      {open && ideas.length > 0 && (
         <div className={cn('space-y-3 opacity-90', compact && 'space-y-2')}>
           {ideas.map((idea, i) => (
             <div

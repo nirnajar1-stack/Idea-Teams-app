@@ -109,7 +109,7 @@ export function ChatMentionInput({
     <div className={cn('relative min-w-0 flex-1', className)}>
       {showSuggestions && (
         <ul
-          className="absolute bottom-full z-20 mb-2 max-h-48 w-full overflow-y-auto rounded-xl border border-border-light bg-surface-container-lowest py-1 shadow-card"
+          className="absolute bottom-full z-20 mb-2 max-h-48 w-full overflow-y-auto border border-border-light bg-surface-container-lowest py-1"
           role="listbox"
           aria-label="תיוג משתמשים"
         >

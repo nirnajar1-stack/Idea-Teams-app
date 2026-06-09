@@ -25,7 +25,7 @@ export function IdeasListToolbar({
   onExportClick,
 }: IdeasListToolbarProps) {
   return (
-    <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-border-light bg-surface-container-lowest/80 p-4 shadow-sm backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-4 flex flex-col gap-3 border border-border-light bg-surface-container-lowest/80 p-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-2 text-label-sm text-secondary">
         <span className="rounded-full bg-primary/10 px-3 py-1 font-label-md text-primary">
           {activeCount} פעילים
@@ -42,7 +42,7 @@ export function IdeasListToolbar({
           <button
             type="button"
             onClick={onExportClick}
-            className="flex items-center gap-1.5 rounded-xl border border-primary/30 bg-primary/5 px-3 py-2 font-label-sm text-primary transition-colors hover:bg-primary/10"
+            className="flex items-center gap-1.5 border border-primary/30 bg-primary/5 px-3 py-2 font-label-sm text-primary transition-colors hover:bg-primary/10"
           >
             <FileSpreadsheet className="h-4 w-4" />
             <span>ייצוא לאקסל</span>
@@ -66,7 +66,7 @@ export function IdeasListToolbar({
         </label>
 
         <div
-          className="flex rounded-xl border border-border-light bg-surface-container-low p-0.5"
+          className="flex border border-border-light bg-surface-container-low p-0.5"
           role="group"
           aria-label="תצוגה"
         >
@@ -74,9 +74,9 @@ export function IdeasListToolbar({
             type="button"
             onClick={() => onCompactChange(false)}
             className={cn(
-              'flex items-center gap-1.5 rounded-lg px-3 py-2 font-label-sm transition-colors',
+              'flex items-center gap-1.5 px-3 py-2 font-label-sm transition-colors',
               !compact
-                ? 'bg-primary text-on-primary shadow-sm'
+                ? 'bg-primary text-on-primary'
                 : 'text-secondary hover:text-on-surface',
             )}
             aria-pressed={!compact}
@@ -88,9 +88,9 @@ export function IdeasListToolbar({
             type="button"
             onClick={() => onCompactChange(true)}
             className={cn(
-              'flex items-center gap-1.5 rounded-lg px-3 py-2 font-label-sm transition-colors',
+              'flex items-center gap-1.5 px-3 py-2 font-label-sm transition-colors',
               compact
-                ? 'bg-primary text-on-primary shadow-sm'
+                ? 'bg-primary text-on-primary'
                 : 'text-secondary hover:text-on-surface',
             )}
             aria-pressed={compact}

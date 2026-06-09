@@ -25,7 +25,7 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
     <section className="glass-card p-6 md:p-8">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+          <div className="flex h-11 w-11 items-center justify-center bg-primary/10">
             <GitBranch className="h-6 w-6 text-primary" />
           </div>
           <div>
@@ -58,7 +58,7 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
       </div>
 
       {subIdeas.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border-light bg-surface-subtle/80 p-8 text-center font-body-md text-secondary">
+        <p className="border border-dashed border-border-light bg-surface-subtle/80 p-8 text-center font-body-md text-secondary">
           הוסיפו תת-בקשות/רעיונות כדי לפרק את המארז לשלבים ברורים.
         </p>
       ) : (
@@ -68,8 +68,8 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
               <Link
                 to={ROUTES.ideaDetail(sub.id)}
                 className={cn(
-                  'block rounded-xl border border-border-light bg-surface-container-low/80 p-4 transition-all',
-                  'hover:border-primary/30 hover:bg-surface-container hover:shadow-card',
+                  'block border border-border-light bg-surface-container-low/80 p-4 transition-colors',
+                  'hover:border-primary/30 hover:bg-surface-container',
                 )}
               >
                 <div className="mb-2 flex flex-wrap items-center gap-2">

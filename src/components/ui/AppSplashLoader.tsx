@@ -1,13 +1,22 @@
+import { useEffect, useState } from 'react'
 import { cn } from '../../lib/cn'
 import { APP_NAME_FULL } from '../../constants/app'
 import { AppLogo } from './AppLogo'
 
 export interface AppSplashLoaderProps {
-  /** true when data is ready — triggers exit animation */
   exiting?: boolean
 }
 
 export function AppSplashLoader({ exiting = false }: AppSplashLoaderProps) {
+  const [progress, setProgress] = useState(12)
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setProgress((p) => (p >= 92 ? p : p + Math.random() * 8))
+    }, 280)
+    return () => window.clearInterval(id)
+  }, [])
+
   return (
     <div
       className={cn(
@@ -18,29 +27,23 @@ export function AppSplashLoader({ exiting = false }: AppSplashLoaderProps) {
       aria-live="polite"
       aria-label={`טוען את ${APP_NAME_FULL}`}
     >
-      <div className="app-splash-grid pointer-events-none absolute inset-0 opacity-40" />
       <div className="app-splash-orb app-splash-orb-a" />
       <div className="app-splash-orb app-splash-orb-b" />
 
-      <div className="relative flex flex-col items-center gap-8">
-        <div className="app-splash-ring-wrap relative flex h-44 w-44 items-center justify-center">
-          <div className="app-splash-ring app-splash-ring-outer" />
-          <div className="app-splash-ring app-splash-ring-inner" />
-          <AppLogo size="xl" imageOnly className="relative z-10 drop-shadow-lg" />
-        </div>
+      <div className="relative flex flex-col items-center gap-10 px-6">
+        <AppLogo size="xl" imageOnly className="app-splash-logo" />
 
         <div className="text-center">
-          <p className="font-body-md text-secondary">טוען בקשות/רעיונות וצוות…</p>
+          <p className="text-micro uppercase tracking-[0.2em] text-secondary">טוען מערכת</p>
+          <p className="mt-2 font-body text-body-md text-on-surface-variant">
+            בקשות/רעיונות וצוות…
+          </p>
         </div>
 
-        <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className="app-splash-dot h-2 w-2 rounded-full bg-primary"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            />
-          ))}
+        <div className="w-48">
+          <div className="lambo-progress">
+            <span style={{ width: exiting ? '100%' : `${progress}%` }} />
+          </div>
         </div>
       </div>
     </div>

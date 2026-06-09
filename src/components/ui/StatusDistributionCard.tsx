@@ -29,7 +29,7 @@ export function StatusDistributionCard({
       style={style}
     >
       <div className="mb-8 flex items-center justify-between">
-        <h3 className="font-display text-headline-md text-on-surface">{title}</h3>
+        <h3 className="font-display text-headline-md uppercase text-on-surface">{title}</h3>
         <div className="flex gap-4">
           {legend.map((item) => (
             <div key={item.label} className="flex items-center gap-2">
@@ -44,7 +44,7 @@ export function StatusDistributionCard({
           <div key={item.label}>
             <div className="mb-2 flex justify-between">
               <span className="font-label-md text-on-surface">{item.label}</span>
-              <span className="font-label-md font-bold text-on-surface">
+              <span className="font-mono text-number-display text-on-surface">
                 {item.count}
               </span>
             </div>

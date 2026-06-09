@@ -19,14 +19,14 @@ export interface BadgeProps {
 }
 
 const variantClasses: Record<BadgeVariant, string> = {
-  primary: 'bg-primary/10 text-primary',
-  development: 'bg-primary/10 text-primary-container',
-  monitoring: 'bg-tertiary/10 text-tertiary-container',
+  primary: 'bg-primary/15 text-primary',
+  development: 'bg-surface-container-high text-on-surface',
+  monitoring: 'bg-surface-container-high text-secondary',
   'priority-high': 'bg-error-container text-on-error-container',
-  'priority-medium': 'bg-surface-container text-secondary',
-  'priority-low': 'bg-surface-container-low text-secondary',
-  success: 'bg-success-vibrant/10 text-success-vibrant',
-  surface: 'bg-surface-variant text-on-primary-fixed-variant',
+  'priority-medium': 'bg-surface-container-high text-secondary',
+  'priority-low': 'bg-surface-container-low text-tertiary',
+  success: 'text-success-vibrant bg-surface-container-high',
+  surface: 'bg-tertiary text-white',
 }
 
 export function Badge({
@@ -38,7 +38,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold',
+        'inline-flex items-center gap-1 rounded-sm px-2 py-1 text-micro font-medium uppercase tracking-wider',
         variantClasses[variant],
         className,
       )}

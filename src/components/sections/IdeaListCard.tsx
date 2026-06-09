@@ -54,7 +54,7 @@ export function IdeaListCard({
         onRestoreFromInbox(idea.id)
         toast.success('הוחזר לבקשות/רעיונות פעילים')
       }}
-      className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1.5 font-label-sm text-primary transition-colors hover:bg-primary/10"
+      className="inline-flex shrink-0 items-center gap-1 border border-primary/20 bg-primary/5 px-2.5 py-1.5 font-label-sm text-primary transition-colors hover:bg-primary/10"
     >
       <Rocket className="h-3.5 w-3.5" />
       החזר לפעילים
@@ -65,12 +65,12 @@ export function IdeaListCard({
     return (
       <article
         className={cn(
-          'group flex items-center gap-3 rounded-xl border border-border-light bg-surface-container-lowest/90 px-3 py-2.5 transition-all hover:border-primary/30 hover:bg-primary/5',
+          'group flex items-center gap-3 border border-border-light bg-surface-container-lowest/90 px-3 py-2.5 transition-colors hover:border-primary/30 hover:bg-primary/5',
           completed && 'border-success-vibrant/20 bg-success-vibrant/5',
           showInboxActions && 'border-inbox/20',
         )}
       >
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-gradient-to-br from-primary-fixed to-surface-container-high text-[9px] font-bold text-primary-container">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-container-low text-[9px] font-semibold text-secondary">
           {idea.authorInitials}
         </div>
         <div className="min-w-0 flex-1">
@@ -97,7 +97,7 @@ export function IdeaListCard({
           {restoreButton}
           <Link
             to={ROUTES.ideaDetail(idea.id)}
-            className="rounded-lg p-2 text-primary transition-colors hover:bg-primary/10"
+            className="p-2 text-primary transition-colors hover:bg-primary/10"
             aria-label={`פרטים — ${idea.title}`}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -152,7 +152,7 @@ export function IdeaListCard({
           </p>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-border-light bg-gradient-to-br from-primary-fixed to-surface-container-high text-[10px] font-bold text-primary-container shadow-sm">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-container-low text-[10px] font-semibold text-secondary">
                 {idea.authorInitials}
               </div>
               <span className="font-label-sm text-secondary">

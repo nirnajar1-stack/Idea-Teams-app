@@ -31,9 +31,9 @@ export function TimelineDayColumn({
   return (
     <div
       className={cn(
-        'flex min-h-[320px] w-[min(88vw,240px)] shrink-0 snap-center flex-col rounded-xl border transition-colors sm:min-h-[420px] sm:w-[min(100%,220px)]',
-        isToday ? 'border-primary/30 bg-primary/5' : 'border-border-light bg-surface-container-low/50',
-        isDropTarget && 'border-primary bg-primary/10 ring-2 ring-primary/20',
+        'flex min-h-[320px] w-[min(88vw,240px)] shrink-0 snap-center flex-col border transition-colors sm:min-h-[420px] sm:w-[min(100%,220px)]',
+        isToday ? 'lambo-today bg-surface-container-low' : 'border-border-light bg-surface-container-low',
+        isDropTarget && 'border-primary bg-surface-container',
       )}
       onDragOver={(e) => {
         e.preventDefault()
@@ -49,8 +49,8 @@ export function TimelineDayColumn({
     >
       <header
         className={cn(
-          'sticky top-0 z-10 rounded-t-xl border-b px-3 py-3 text-center',
-          isToday ? 'border-primary/20 bg-primary/10' : 'border-border-light bg-surface-container-lowest',
+          'sticky top-0 z-10 border-b px-3 py-3 text-center',
+          isToday ? 'border-primary bg-surface-container-low' : 'border-border-light bg-surface-container-lowest',
         )}
       >
         <p className="font-label-md text-on-surface">{timelineDayHeading(dateKey)}</p>

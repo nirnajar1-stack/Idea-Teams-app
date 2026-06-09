@@ -47,10 +47,10 @@ export function ChatWidget() {
         aria-label={open ? 'סגור צ\'אט' : 'פתח צ\'אט כללי'}
         aria-expanded={open}
         className={cn(
-          'relative flex h-16 w-16 items-center justify-center rounded-full transition-all duration-200 active:scale-95',
+          'relative flex h-16 w-16 items-center justify-center rounded-full transition-colors duration-200',
           open
-            ? 'border border-border-light bg-surface-container-low shadow-card'
-            : 'bg-gradient-to-br from-amber-400/90 to-amber-500 shadow-glow hover:brightness-105',
+            ? 'border border-border-light bg-surface-container-low'
+            : 'bg-primary text-on-primary transition-colors duration-300 hover:bg-primary-deep',
         )}
       >
         {open ? (
@@ -59,7 +59,7 @@ export function ChatWidget() {
           <DogChatAvatar size="lg" animated />
         )}
         {!open && generalUnread > 0 && (
-          <span className="absolute -left-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-surface-container-lowest bg-error px-1.5 text-[11px] font-bold text-white shadow-sm">
+          <span className="absolute -left-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-surface-container-lowest bg-error px-1.5 text-[11px] font-bold text-white">
             {generalUnread > 99 ? '99+' : generalUnread}
           </span>
         )}

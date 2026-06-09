@@ -48,12 +48,12 @@ export function AppLogo({
       />
       {showLabel && (
         <div className="min-w-0 leading-tight">
-          <span className={cn('block font-display font-bold text-on-surface', s.text)}>
+          <span className={cn('block font-display font-normal uppercase tracking-wider text-on-surface', s.text)}>
             {APP_NAME}
           </span>
           <span
             className={cn(
-              'block font-label-md font-semibold leading-snug text-primary',
+              'block text-micro uppercase tracking-[0.14em] text-secondary',
               s.sub,
             )}
           >

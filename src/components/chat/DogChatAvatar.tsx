@@ -29,7 +29,7 @@ export function DogChatAvatar({
     >
       <svg
         viewBox="0 0 64 64"
-        className="h-full w-full drop-shadow-md"
+        className="h-full w-full"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >

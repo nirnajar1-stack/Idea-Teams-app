@@ -10,10 +10,10 @@ export function ContainerKindToggle({ checked, onChange }: ContainerKindTogglePr
   return (
     <label
       className={cn(
-        'flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all',
+        'flex cursor-pointer items-start gap-4 border p-4 transition-colors duration-300',
         checked
-          ? 'border-primary/35 bg-primary/5 shadow-glow'
-          : 'border-border-light bg-surface-container-low/80 hover:border-primary/30',
+          ? 'border-primary bg-primary/5'
+          : 'border-border-light bg-surface-container-lowest hover:bg-surface-container-low',
       )}
     >
       <input

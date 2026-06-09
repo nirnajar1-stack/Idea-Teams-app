@@ -11,10 +11,9 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: 'btn-boutique',
-  secondary:
-    'border border-border-light bg-surface-container-low/80 text-secondary shadow-sm backdrop-blur-md hover:border-primary/30 hover:bg-primary/10 hover:text-on-surface active:scale-95',
+  secondary: 'btn-secondary-light',
   ghost:
-    'text-primary hover:bg-primary/5 active:scale-95',
+    'min-h-12 rounded-none px-4 text-sm font-light uppercase tracking-wider text-secondary transition-colors duration-300 hover:text-on-surface',
 }
 
 export function Button({
@@ -29,7 +28,7 @@ export function Button({
     <button
       type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-label-md transition-all duration-200',
+        'inline-flex items-center justify-center gap-2 transition-colors duration-300',
         variantClasses[variant],
         className,
       )}

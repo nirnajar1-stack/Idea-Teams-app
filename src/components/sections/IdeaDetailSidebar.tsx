@@ -85,7 +85,7 @@ export function IdeaDetailSidebar({
               onUpdate({ sendToMaybeInbox: !idea.sendToMaybeInbox })
             }
             className={cn(
-              'flex w-full items-center justify-center gap-2 rounded-xl border py-4 font-label-md transition-all active:scale-95',
+              'flex w-full items-center justify-center gap-2 border py-4 font-label-md transition-colors',
               idea.sendToMaybeInbox
                 ? 'border-primary/30 bg-primary/5 text-primary hover:bg-primary/10'
                 : 'border-inbox/30 bg-inbox-soft text-inbox hover:bg-inbox/10',
@@ -108,7 +108,7 @@ export function IdeaDetailSidebar({
             <button
               type="button"
               onClick={() => navigate(ROUTES.editIdea(idea.id))}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light bg-surface-container-low/80 py-4 font-label-md text-secondary transition-all hover:bg-surface-container active:scale-95"
+              className="btn-secondary-light flex w-full items-center justify-center gap-2 py-4 font-label-md"
             >
               <Pencil className="h-5 w-5" />
               עריכת בקשה/רעיון
@@ -118,7 +118,7 @@ export function IdeaDetailSidebar({
             <button
               type="button"
               onClick={onDelete}
-              className="flex w-full items-center justify-center gap-2 rounded-lg py-2 font-label-md text-error transition-colors hover:bg-error/5"
+              className="flex w-full items-center justify-center gap-2 py-2 font-label-md text-error transition-colors hover:bg-error/5"
             >
               <Trash2 className="h-5 w-5" />
               מחיקת בקשה/רעיון
@@ -167,14 +167,14 @@ export function IdeaDetailSidebar({
       </div>
 
       {idea.conceptImageUrl && (
-        <div className="overflow-hidden rounded-2xl border border-border-light bg-surface-container-low/80 shadow-card backdrop-blur-sm">
+        <div className="overflow-hidden border border-border-light bg-surface-container-low/80 backdrop-blur-sm">
           <div className="relative h-48">
             <img
               src={idea.conceptImageUrl}
               alt="קונספט ויזואלי"
               className="h-full w-full object-cover"
             />
-            <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/60 to-transparent p-4">
+            <div className="absolute inset-0 flex items-end bg-black/70 p-4">
               <span className="font-label-md text-white">קונספט ויזואלי ראשוני</span>
             </div>
           </div>

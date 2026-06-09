@@ -19,14 +19,14 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
       aria-pressed={isDark}
       title={isDark ? 'מצב בהיר' : 'מצב כהה'}
       className={cn(
-        'inline-flex items-center gap-2 rounded-full border border-border-light bg-surface-container-low p-1 transition-all duration-200 hover:border-primary/30 hover:bg-primary/10 active:scale-95',
+        'inline-flex items-center gap-2 border border-border-light p-1 transition-colors duration-300 hover:border-primary/50',
         className,
       )}
     >
       <span
         className={cn(
-          'flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200',
-          !isDark && 'bg-primary/15 text-primary shadow-sm',
+          'flex h-8 w-8 items-center justify-center transition-colors duration-300',
+          !isDark && 'bg-primary text-on-primary',
           isDark && 'text-secondary',
         )}
         aria-hidden
@@ -35,8 +35,8 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
       </span>
       <span
         className={cn(
-          'flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200',
-          isDark && 'bg-primary/15 text-primary shadow-sm',
+          'flex h-8 w-8 items-center justify-center transition-colors duration-300',
+          isDark && 'bg-surface-container-lowest text-on-surface',
           !isDark && 'text-secondary',
         )}
         aria-hidden
@@ -44,7 +44,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
         <Moon className="h-4 w-4" />
       </span>
       {showLabel && (
-        <span className="hidden pe-2 text-label-sm text-secondary sm:inline">
+        <span className="hidden pe-2 text-micro uppercase tracking-widest text-secondary sm:inline">
           {isDark ? 'כהה' : 'בהיר'}
         </span>
       )}

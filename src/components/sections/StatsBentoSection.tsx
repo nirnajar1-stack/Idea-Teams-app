@@ -9,11 +9,11 @@ export function StatsBentoSection() {
 
   return (
     <section
-      className="mb-10 grid grid-cols-1 gap-gutter md:grid-cols-12"
+      className="lambo-stagger grid grid-cols-1 gap-gutter md:grid-cols-12"
       aria-label="סטטיסטיקות"
     >
       <StatCard
-        className="animate-fade-up md:col-span-4"
+        className="md:col-span-4"
         label="בקשות/רעיונות פעילים"
         value={stats.activeCount}
         trendPercent={`${stats.monthGrowthPercent}%`}
@@ -21,35 +21,33 @@ export function StatsBentoSection() {
       />
       <Link
         to={ROUTES.inbox}
-        className="glass-card-hover group flex flex-col justify-between p-8 animate-fade-up md:col-span-4"
-        style={{ animationDelay: '60ms' }}
+        className="glass-card-hover group flex flex-col justify-between p-8 md:col-span-4"
       >
         <div>
-          <p className="mb-1 font-label-md text-inbox">Inbox · אולי בהמשך</p>
-          <p className="stat-value font-display text-display-lg leading-none text-inbox">
+          <p className="mb-2 text-label-md uppercase text-secondary">Inbox</p>
+          <p className="stat-value font-display text-display-lg leading-none">
             {stats.inboxCount}
           </p>
         </div>
-        <p className="mt-6 font-label-sm text-secondary transition-colors group-hover:text-inbox">
+        <p className="mt-8 border-t border-border-light pt-6 text-body-sm text-secondary transition-colors duration-300 group-hover:text-primary">
           בקשות/רעיונות לבחינה עתידית ←
         </p>
       </Link>
       <StatusDistributionCard
-        className="animate-fade-up md:col-span-4"
-        style={{ animationDelay: '120ms' }}
+        className="md:col-span-4"
         title="חלוקת סטטוס"
         items={[
           {
             label: 'פיתוח',
             count: stats.developmentCount,
             percent: stats.developmentPercent,
-            barClassName: 'bg-gradient-to-l from-primary-container to-primary',
+            barClassName: 'bg-primary',
           },
           {
             label: 'בקרה',
             count: stats.monitoringCount,
             percent: stats.monitoringPercent,
-            barClassName: 'bg-gradient-to-l from-tertiary-container to-tertiary',
+            barClassName: 'bg-surface-container-high',
           },
         ]}
         legend={[

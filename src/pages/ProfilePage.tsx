@@ -53,7 +53,7 @@ export function ProfilePage() {
 
   return (
     <AppShell variant="main">
-      <div className="mb-10 flex flex-col items-center gap-6 rounded-xl border border-border-light bg-surface-container-lowest p-8 shadow-card md:flex-row md:items-start md:text-right">
+      <div className="mb-10 flex flex-col items-center gap-6 border border-border-light bg-surface-container-lowest p-8 md:flex-row md:items-start md:text-right">
         <Avatar alt={user.name} size="md" />
         <div className="flex-1 text-center md:text-right">
           <h1 className="mb-2 font-display text-headline-lg text-on-surface">
@@ -106,23 +106,23 @@ export function ProfilePage() {
       </div>
 
       {isGuest && (
-        <p className="mb-8 rounded-xl border border-inbox/20 bg-inbox-soft/50 p-4 font-body-md text-on-surface-variant">
+        <p className="mb-8 border border-inbox/20 bg-inbox-soft/50 p-4 font-body-md text-on-surface-variant">
           כ{ACCESS_LEVEL_LABELS.guest} אתם רואים רק בקשות/רעיונות שנוצרו בכניסה הנוכחית. לאחר
           יציאה הסשן מתאפס.
         </p>
       )}
 
       <div className="mb-10 grid grid-cols-1 gap-gutter sm:grid-cols-3">
-        <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <Lightbulb className="mb-2 h-8 w-8 text-primary" />
           <p className="font-label-md text-secondary">הבקשות/רעיונות שלי</p>
           <p className="font-display text-display-lg text-primary">{myIdeas.length}</p>
         </div>
-        <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <p className="font-label-md text-secondary">בקשות/רעיונות גלויים לי</p>
           <p className="font-display text-display-lg text-primary">{stats.total}</p>
         </div>
-        <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <p className="font-label-md text-secondary">בביצוע (שלי)</p>
           <p className="font-display text-display-lg text-primary">
             {myInProgress.length}
@@ -130,7 +130,7 @@ export function ProfilePage() {
         </div>
       </div>
 
-      <section className="mb-10 rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
+      <section className="mb-10 border border-border-light bg-surface-container-lowest p-6">
         <div className="mb-4 flex items-center gap-2">
           <Bell className="h-5 w-5 text-primary" />
           <h2 className="font-display text-headline-md text-on-surface">העדפות התראות</h2>
@@ -169,7 +169,7 @@ export function ProfilePage() {
       </section>
 
       {myIdeas.length > 0 && (
-        <section className="mb-10 rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
+        <section className="mb-10 border border-border-light bg-surface-container-lowest p-6">
           <h2 className="mb-4 font-display text-headline-md text-on-surface">
             בקשות/רעיונות שפתחתי
           </h2>
@@ -179,7 +179,7 @@ export function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => navigate(ROUTES.ideaDetail(idea.id))}
-                  className="w-full rounded-lg border border-border-light bg-surface-subtle p-4 text-right transition-colors hover:bg-surface-container-low"
+                  className="w-full border border-border-light bg-surface-subtle p-4 text-right transition-colors hover:bg-surface-container-low"
                 >
                   <span className="font-label-md text-on-surface">{idea.title}</span>
                   <span className="mt-1 block font-label-sm text-secondary">
@@ -192,7 +192,7 @@ export function ProfilePage() {
         </section>
       )}
 
-      <section className="rounded-xl border border-border-light bg-surface-container-low p-6">
+      <section className="border border-border-light bg-surface-container-low p-6">
         <h2 className="mb-4 font-display text-headline-md text-on-surface">קהילת {APP_NAME_FULL}</h2>
         <p className="font-body-md text-on-surface-variant">
           שתפו משוב, הצביעו על בקשות/רעיונות חדשים והשפיעו על מפת הדרכים. ערוץ Slack ייעודי

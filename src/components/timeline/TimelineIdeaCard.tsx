@@ -31,7 +31,7 @@ export function TimelineIdeaCard({
       }}
       onDragEnd={onDragEnd}
       className={cn(
-        'group cursor-grab rounded-lg border border-border-light bg-surface-container-lowest shadow-card transition-shadow active:cursor-grabbing hover:shadow-boutique',
+        'group cursor-grab border border-border-light bg-surface-container-lowest transition-colors active:cursor-grabbing hover:border-primary/30',
         compact ? 'p-1' : 'p-3',
         idea.priority === 'high' && 'border-priority-high/30',
       )}

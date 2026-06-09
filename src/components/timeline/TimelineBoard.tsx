@@ -95,7 +95,7 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col gap-3 sm:gap-4">
         <div
-          className="flex rounded-xl border border-border-light bg-surface-container-low p-1"
+          className="flex border border-border-light bg-surface-container-low p-1"
           role="tablist"
           aria-label="תצוגת טיימליין"
         >
@@ -105,9 +105,9 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
             aria-selected={viewMode === 'week'}
             onClick={() => setViewMode('week')}
             className={cn(
-              'flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 font-label-md transition-colors',
+              'flex flex-1 items-center justify-center gap-1.5 py-2.5 font-label-md transition-colors',
               viewMode === 'week'
-                ? 'bg-primary text-on-primary shadow-sm'
+                ? 'bg-primary text-on-primary'
                 : 'text-secondary hover:text-on-surface',
             )}
           >
@@ -120,9 +120,9 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
             aria-selected={viewMode === 'month'}
             onClick={() => setViewMode('month')}
             className={cn(
-              'flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 font-label-md transition-colors',
+              'flex flex-1 items-center justify-center gap-1.5 py-2.5 font-label-md transition-colors',
               viewMode === 'month'
-                ? 'bg-primary text-on-primary shadow-sm'
+                ? 'bg-primary text-on-primary'
                 : 'text-secondary hover:text-on-surface',
             )}
           >
@@ -135,7 +135,7 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
           <button
             type="button"
             onClick={goPrev}
-            className="flex items-center gap-1 rounded-xl border border-border-light px-2.5 py-2 font-label-md text-secondary hover:bg-surface-container sm:px-3"
+            className="flex items-center gap-1 border border-border-light px-2.5 py-2 font-label-md text-secondary hover:bg-surface-container sm:px-3"
           >
             <ChevronRight className="h-4 w-4" />
             <span className="hidden sm:inline">
@@ -160,7 +160,7 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
           <button
             type="button"
             onClick={goNext}
-            className="flex items-center gap-1 rounded-xl border border-border-light px-2.5 py-2 font-label-md text-secondary hover:bg-surface-container sm:px-3"
+            className="flex items-center gap-1 border border-border-light px-2.5 py-2 font-label-md text-secondary hover:bg-surface-container sm:px-3"
           >
             <span className="hidden sm:inline">
               {viewMode === 'week' ? 'שבוע הבא' : 'חודש הבא'}

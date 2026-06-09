@@ -156,7 +156,7 @@ export function UserManagementPage() {
                       <button
                         type="button"
                         onClick={() => openEdit(u)}
-                        className="rounded-lg p-2 text-primary hover:bg-primary/10"
+                        className="p-2 text-primary hover:bg-primary/10"
                         aria-label={`עריכת ${u.name}`}
                       >
                         <Pencil className="h-4 w-4" />
@@ -164,7 +164,7 @@ export function UserManagementPage() {
                       <button
                         type="button"
                         onClick={() => handleDelete(u)}
-                        className="rounded-lg p-2 text-error hover:bg-error/10"
+                        className="p-2 text-error hover:bg-error/10"
                         aria-label={`מחיקת ${u.name}`}
                       >
                         <Trash2 className="h-4 w-4" />

@@ -7,6 +7,7 @@ import { visibleNavItems } from '../../config/appNavigation'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
+import { useNavbarScroll } from '../../hooks/useNavbarScroll'
 import { canManageUsers, isMaster } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
@@ -41,6 +42,7 @@ export function Navbar({
   const { user, logout } = useAuth()
   const { stats } = useIdeas()
   const [searchOpen, setSearchOpen] = useState(false)
+  const scrolled = useNavbarScroll()
 
   const navItems = visibleNavItems({
     canManageUsers: canManageUsers(user),
@@ -74,16 +76,18 @@ export function Navbar({
     <header
       className={cn(
         'nav-glass fixed top-0 z-50 w-full',
+        scrolled && 'nav-glass--scrolled',
         showMainNav ? 'md:h-16' : 'h-16',
       )}
     >
+      <div className="nav-glass__scanline" aria-hidden />
       <div className="flex h-14 items-center justify-between px-margin-mobile md:h-16 md:px-margin-desktop">
         <div className="flex min-w-0 items-center gap-3">
           {variant === 'back' && (
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-primary transition-all hover:bg-primary/5 active:scale-95"
+              className="flex h-10 w-10 items-center justify-center text-on-surface transition-colors duration-300 hover:text-primary"
               aria-label="חזרה"
             >
               <ArrowRight className="h-6 w-6" />
@@ -113,7 +117,7 @@ export function Navbar({
                 value={searchValue}
                 onChange={(e) => onSearchChange?.(e.target.value)}
                 placeholder="חיפוש בקשות/רעיונות..."
-                className="boutique-input h-10 rounded-full pr-12"
+                className="boutique-input h-11 bg-surface-container-low pr-12"
               />
             </div>
           </div>
@@ -124,7 +128,7 @@ export function Navbar({
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
-              className="rounded-full p-2 text-secondary transition-all hover:bg-primary/5 hover:text-primary"
+              className="p-2 text-secondary transition-colors duration-300 hover:text-on-surface"
               aria-label="חיפוש גלובלי ( / )"
               title="חיפוש ( / )"
             >
@@ -140,7 +144,7 @@ export function Navbar({
             <button
               type="button"
               onClick={() => void handleShare()}
-              className="hidden items-center gap-2 rounded-xl border border-primary/15 bg-primary/5 px-4 py-2 font-label-md text-primary transition-colors hover:border-primary/30 hover:bg-primary/10 md:flex"
+              className="btn-secondary-light hidden gap-2 md:inline-flex"
             >
               <Share2 className="h-5 w-5" />
               שיתוף
@@ -154,7 +158,7 @@ export function Navbar({
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-full p-2 text-secondary transition-all hover:bg-error/5 hover:text-error active:scale-95"
+            className="p-2 text-secondary transition-colors duration-300 hover:text-error"
             aria-label="יציאה"
           >
             <LogOut className="h-5 w-5" />
@@ -163,7 +167,7 @@ export function Navbar({
       </div>
 
       {showMainNav && (
-        <div className="border-t border-border-light/60 px-2 py-1.5 md:hidden">
+        <div className="border-t border-border-light px-2 py-2 md:hidden">
           <NavTabs
             items={navItems}
             pathname={pathname}

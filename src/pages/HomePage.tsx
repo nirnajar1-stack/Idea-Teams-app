@@ -7,7 +7,9 @@ export function HomePage() {
   return (
     <AppShell variant="main">
       <WelcomeHero />
-      <StatsBentoSection />
+      <div className="lambo-section">
+        <StatsBentoSection />
+      </div>
       <RecentIdeasSection />
     </AppShell>
   )

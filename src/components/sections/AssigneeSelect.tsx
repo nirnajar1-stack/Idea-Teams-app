@@ -22,7 +22,7 @@ export function AssigneeSelect({
         value={value ?? ''}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value || undefined)}
-        className="boutique-input w-full rounded-xl"
+        className="boutique-input w-full"
       >
         <option value="">ללא הקצאה</option>
         {options.map((u) => (

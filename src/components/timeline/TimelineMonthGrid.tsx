@@ -49,7 +49,7 @@ export function TimelineMonthGrid({
                 return (
                   <div
                     key={`empty-${wi}-${di}`}
-                    className="min-h-[4.5rem] rounded-lg bg-surface-container-low/30 sm:min-h-[6.5rem]"
+                    className="min-h-[4.5rem] bg-surface-container-low/30 sm:min-h-[6.5rem]"
                     aria-hidden
                   />
                 )
@@ -63,7 +63,7 @@ export function TimelineMonthGrid({
                 <div
                   key={dateKey}
                   className={cn(
-                    'flex min-h-[4.5rem] flex-col rounded-lg border p-1 transition-colors sm:min-h-[6.5rem] sm:p-1.5',
+                    'flex min-h-[4.5rem] flex-col border p-1 transition-colors sm:min-h-[6.5rem] sm:p-1.5',
                     isToday
                       ? 'border-primary/40 bg-primary/5'
                       : 'border-border-light bg-surface-container-low/50',

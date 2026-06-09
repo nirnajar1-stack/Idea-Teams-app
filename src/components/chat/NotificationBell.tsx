@@ -47,7 +47,7 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="relative rounded-full p-2 transition-all duration-200 hover:bg-primary/10 active:scale-95"
+        className="relative rounded-full p-2 transition-colors duration-200 hover:bg-primary/10"
         aria-label="התראות צ'אט"
         aria-expanded={open}
       >
@@ -60,7 +60,7 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-[min(90vw,20rem)] animate-fade-up rounded-2xl border border-border-light bg-surface-container-lowest/95 p-2 shadow-boutique backdrop-blur-xl">
+        <div className="absolute left-0 top-full z-50 mt-2 w-[min(90vw,20rem)] animate-fade-up border border-border-light bg-surface-container-lowest/95 p-2 backdrop-blur-xl">
           <p className="px-3 py-2 font-label-md text-on-surface">התראות צ&apos;אט</p>
           {bellNotifications.length === 0 ? (
             <p className="px-3 py-6 text-center font-label-sm text-secondary">
@@ -77,7 +77,7 @@ export function NotificationBell() {
                         ? handleOpenGeneral()
                         : handleOpenIdea(n.targetId)
                     }
-                    className="flex w-full gap-3 rounded-xl px-3 py-3 text-right transition-colors hover:bg-primary/10"
+                    className="flex w-full gap-3 px-3 py-3 text-right transition-colors hover:bg-primary/10"
                   >
                     <span
                       className={

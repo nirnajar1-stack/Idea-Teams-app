@@ -66,7 +66,7 @@ export function AuditLogSection({
         {entries.map((e) => (
           <li
             key={e.id}
-            className="rounded-lg border border-border-light bg-surface-subtle px-4 py-3"
+            className="border border-border-light bg-surface-subtle px-4 py-3"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-label-md text-on-surface">

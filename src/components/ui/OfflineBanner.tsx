@@ -25,7 +25,7 @@ export function OfflineBanner() {
       <button
         type="button"
         onClick={() => window.location.reload()}
-        className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 underline hover:no-underline"
+        className="inline-flex items-center gap-1 px-2 py-0.5 underline hover:no-underline"
       >
         <RefreshCw className="h-3 w-3" />
         רענון

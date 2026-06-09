@@ -43,8 +43,10 @@
 ```bash
 supabase login
 supabase link --project-ref YOUR_PROJECT_REF
-supabase functions deploy notify-idea-completed
+supabase functions deploy notify-idea-completed --no-verify-jwt
 ```
+
+> **חשוב:** האפליקציה מתחברת עם סיסמה (RPC) ולא עם Supabase Auth JWT. בלי `--no-verify-jwt` תקבל שגיאה `Edge Function returned a non-2xx status code` / `Invalid JWT`.
 
 ---
 
@@ -87,6 +89,7 @@ supabase functions deploy notify-idea-completed
 
 | תסמין | פתרון |
 |-------|--------|
+| `non-2xx` / `Invalid JWT` | פרוס עם `--no-verify-jwt` (ראה שלב 3) |
 | `email_not_configured` | הגדר `RESEND_API_KEY` ו-`EMAIL_FROM` |
 | `no_email` | הוסף אימייל למשתמש |
 | `prefs_off` | הפעל בפרופיל |

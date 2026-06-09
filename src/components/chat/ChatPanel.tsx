@@ -94,7 +94,7 @@ export function ChatPanel({
   return (
     <div
       className={cn(
-        'flex flex-col overflow-hidden rounded-2xl border border-border-light bg-surface-container-lowest/95 shadow-card backdrop-blur-xl',
+        'flex flex-col overflow-hidden border border-border-light bg-surface-container-lowest/95 backdrop-blur-xl',
         compact ? 'h-full' : 'min-h-[320px]',
         className,
       )}
@@ -119,7 +119,7 @@ export function ChatPanel({
         )}
 
         {!loading && error && (
-          <p className="rounded-xl border border-error/25 bg-error-container/40 px-3 py-2 font-label-sm text-on-error-container">
+          <p className="border border-error/25 bg-error-container/40 px-3 py-2 font-label-sm text-on-error-container">
             {error}
           </p>
         )}
@@ -142,10 +142,10 @@ export function ChatPanel({
             >
               <div
                 className={cn(
-                  'max-w-[85%] rounded-2xl px-3 py-2',
+                  'max-w-[85%] px-3 py-2',
                   isMine
-                    ? 'rounded-tr-sm bg-primary/15 text-on-surface'
-                    : 'rounded-tl-sm border border-border-light bg-surface-container-low/90',
+                    ? 'bg-primary/15 text-on-surface'
+                    : 'border border-border-light bg-surface-container-low/90',
                 )}
               >
                 <div className="mb-1 flex items-center gap-2">
@@ -160,7 +160,7 @@ export function ChatPanel({
                     <textarea
                       value={editDraft}
                       onChange={(e) => setEditDraft(e.target.value)}
-                      className="w-full rounded-lg border border-border-light bg-surface-container-lowest p-2 font-body-md"
+                      className="w-full border border-border-light bg-surface-container-lowest p-2 font-body-md"
                       rows={2}
                     />
                     <div className="flex gap-2">

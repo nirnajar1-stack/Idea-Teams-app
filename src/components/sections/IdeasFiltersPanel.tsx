@@ -44,7 +44,7 @@ export function IdeasFiltersPanel({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="mb-4 flex w-full items-center justify-between rounded-2xl border border-border-light bg-surface-container-lowest px-4 py-3 shadow-sm transition-colors hover:border-primary/25 lg:hidden"
+        className="mb-4 flex w-full items-center justify-between border border-border-light bg-surface-container-lowest px-4 py-3 transition-colors hover:border-primary/25 lg:hidden"
         aria-expanded={open}
       >
         <span className="flex items-center gap-2 font-label-md text-on-surface">
@@ -65,14 +65,14 @@ export function IdeasFiltersPanel({
       </button>
 
       <div className={cn('space-y-8', open ? 'block' : 'hidden', 'lg:block')}>
-        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
           <div className="space-y-2">
             {(['development', 'monitoring'] as IdeaCategory[]).map((cat) => (
               <label
                 key={cat}
                 className={cn(
-                  'flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-surface-subtle',
+                  'flex cursor-pointer items-center justify-between p-2 transition-colors hover:bg-surface-subtle',
                   !categories.includes(cat) && 'opacity-50',
                 )}
               >
@@ -83,21 +83,21 @@ export function IdeasFiltersPanel({
                   type="checkbox"
                   checked={categories.includes(cat)}
                   onChange={() => onToggleCategory(cat)}
-                  className="h-4 w-4 rounded text-primary focus:ring-primary"
+                  className="h-4 w-4 text-primary focus:ring-primary"
                 />
               </label>
             ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <h3 className="mb-4 font-label-md text-on-surface">מקור הבקשה/רעיון</h3>
           <div className="space-y-2">
             {IDEA_SOURCES.map((source) => (
               <label
                 key={source}
                 className={cn(
-                  'flex cursor-pointer items-center justify-between rounded-lg p-2 transition-colors hover:bg-surface-subtle',
+                  'flex cursor-pointer items-center justify-between p-2 transition-colors hover:bg-surface-subtle',
                   !sources.includes(source) && 'opacity-50',
                 )}
               >
@@ -106,27 +106,27 @@ export function IdeasFiltersPanel({
                   type="checkbox"
                   checked={sources.includes(source)}
                   onChange={() => onToggleSource(source)}
-                  className="h-4 w-4 rounded text-primary focus:ring-primary"
+                  className="h-4 w-4 text-primary focus:ring-primary"
                 />
               </label>
             ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
           <label className="flex cursor-pointer items-center gap-3">
             <input
               type="checkbox"
               checked={onlyMine}
               onChange={(e) => onOnlyMineChange(e.target.checked)}
-              className="h-4 w-4 rounded text-primary focus:ring-primary"
+              className="h-4 w-4 text-primary focus:ring-primary"
             />
             <span className="font-body-md">רק הבקשות/רעיונות שלי ({userName})</span>
           </label>
         </div>
 
-        <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
+        <div className="border border-border-light bg-surface-container-lowest p-6">
           <h3 className="mb-4 font-label-md text-on-surface">רמת חשיבות</h3>
           <div className="space-y-3">
             {(['high', 'medium', 'low'] as IdeaPriority[]).map((p) => (

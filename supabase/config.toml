@@ -1,0 +1,3 @@
+# Edge Function config — https://supabase.com/docs/guides/functions/function-configuration
+[functions.notify-idea-completed]
+verify_jwt = false

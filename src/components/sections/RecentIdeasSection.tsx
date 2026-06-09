@@ -6,6 +6,7 @@ import { loadIdeasViewPrefs } from '../../lib/ideasViewPrefs'
 import { formatIdeaDate } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
 import { IdeaTableRow } from '../ui/IdeaTableRow'
+import { EmptyState } from '../ui/EmptyState'
 
 const iconMap = {
   development: { icon: CreditCard, className: 'bg-primary/10 text-primary' },
@@ -38,16 +39,16 @@ export function RecentIdeasSection() {
       </div>
 
       {recent.length === 0 ? (
-        <div className="p-12 text-center">
-          <Lightbulb className="mx-auto mb-4 h-10 w-10 text-primary/40" />
-          <p className="font-body-md text-secondary">עדיין אין בקשות/רעיונות פעילים</p>
-          <Link
-            to={ROUTES.addIdea}
-            className="mt-3 inline-block font-label-md text-primary hover:underline"
-          >
-            הוסף בקשה/רעיון ראשון
-          </Link>
-        </div>
+        <EmptyState
+          title="עדיין אין בקשות/רעיונות פעילים"
+          description="התחילו ליצור רעיונות חדשים כדי לבנות מומנטום."
+          action={
+            <Link to={ROUTES.addIdea} className="btn-boutique">
+              <Lightbulb className="h-4 w-4" />
+              הוסף בקשה/רעיון ראשון
+            </Link>
+          }
+        />
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-right">

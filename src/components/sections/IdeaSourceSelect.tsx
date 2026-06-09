@@ -18,7 +18,7 @@ export function IdeaSourceSelect({ value, onChange, disabled = false }: IdeaSour
           <label
             key={source}
             className={cn(
-              'flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-all',
+              'flex cursor-pointer items-center gap-3 border px-4 py-3 transition-colors',
               disabled && 'cursor-not-allowed opacity-60',
               value === source
                 ? 'border-primary/40 bg-primary/5 text-primary'

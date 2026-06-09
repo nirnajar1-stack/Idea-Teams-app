@@ -3,6 +3,7 @@ import { useState, type DragEvent } from 'react'
 import { cn } from '../../lib/cn'
 import { timelineDragMime } from '../../lib/timelineUtils'
 import type { Idea } from '../../types/idea'
+import { EmptyState } from '../ui/EmptyState'
 import { TimelineIdeaCard } from './TimelineIdeaCard'
 
 interface TimelineBacklogProps {
@@ -46,7 +47,7 @@ export function TimelineBacklog({
       {/* מובייל — פס גלילה אופקי */}
       <section
         className={cn(
-          'rounded-xl border border-border-light bg-surface-container-lowest p-3 lg:hidden',
+          'border border-border-light bg-surface-container-lowest p-3 lg:hidden',
           isDropTarget && 'border-primary ring-2 ring-primary/20',
         )}
         {...dropHandlers}
@@ -104,7 +105,7 @@ export function TimelineBacklog({
       {/* דסקטופ — סרגל צד */}
       <aside
         className={cn(
-          'hidden w-64 shrink-0 rounded-xl border border-border-light bg-surface-container-lowest p-4 lg:block',
+          'hidden w-64 shrink-0 border border-border-light bg-surface-container-lowest p-4 lg:block',
           isDropTarget && 'border-primary ring-2 ring-primary/20',
         )}
         {...dropHandlers}
@@ -132,7 +133,7 @@ export function TimelineBacklog({
             />
           ))}
           {backlog.length === 0 && (
-            <p className="py-6 text-center font-label-sm text-secondary">הכל מתוכנן</p>
+            <EmptyState title="הכל מתוכנן" description="אין כרגע בקשות/רעיונות ב-Backlog." />
           )}
         </div>
       </aside>

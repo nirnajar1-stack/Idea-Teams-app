@@ -39,10 +39,7 @@ export function IdeaTableRow({
           className="flex items-center gap-3"
         >
           <div
-            className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-lg',
-              iconWrapperClassName,
-            )}
+            className={cn('flex h-10 w-10 items-center justify-center', iconWrapperClassName)}
           >
             <Icon className="h-5 w-5" aria-hidden />
           </div>
@@ -74,7 +71,7 @@ export function IdeaTableRow({
       <td className="px-4 py-5 text-left md:px-8">
         <Link
           to={ROUTES.ideaDetail(ideaId)}
-          className="inline-flex rounded-lg p-2 opacity-100 transition-all hover:bg-surface-container md:opacity-0 md:group-hover:opacity-100"
+          className="inline-flex p-2 opacity-100 transition-colors hover:bg-surface-container md:opacity-0 md:group-hover:opacity-100"
           aria-label={`פעולות עבור ${title}`}
         >
           <MoreVertical className="h-5 w-5 text-secondary" />

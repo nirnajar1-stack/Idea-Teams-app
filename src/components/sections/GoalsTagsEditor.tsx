@@ -43,14 +43,14 @@ export function GoalsTagsEditor({
           {goals.map((goal) => (
             <li
               key={goal}
-              className="flex items-center justify-between gap-2 rounded-lg border border-border-light bg-surface-subtle px-3 py-2 font-body-md text-on-surface-variant"
+              className="flex items-center justify-between gap-2 border border-border-light bg-surface-subtle px-3 py-2 font-body-md text-on-surface-variant"
             >
               <span>{goal}</span>
               {!disabled && (
                 <button
                   type="button"
                   onClick={() => onChange({ goals: goals.filter((g) => g !== goal) })}
-                  className="rounded p-1 text-secondary hover:text-error"
+                  className="p-1 text-secondary hover:text-error"
                   aria-label="הסר יעד"
                 >
                   <X className="h-4 w-4" />
@@ -74,7 +74,7 @@ export function GoalsTagsEditor({
             <button
               type="button"
               onClick={addGoal}
-              className="shrink-0 rounded-xl border border-primary/20 bg-primary/5 px-3 text-primary hover:bg-primary/10"
+              className="shrink-0 border border-primary/20 bg-primary/5 px-3 text-primary hover:bg-primary/10"
               aria-label="הוסף יעד"
             >
               <Plus className="h-5 w-5" />
@@ -99,7 +99,7 @@ export function GoalsTagsEditor({
                 <button
                   type="button"
                   onClick={() => onChange({ tags: tags.filter((t) => t !== tag) })}
-                  className="rounded p-0.5 hover:text-error"
+                  className="p-0.5 hover:text-error"
                   aria-label="הסר תג"
                 >
                   <X className="h-3 w-3" />
@@ -123,7 +123,7 @@ export function GoalsTagsEditor({
             <button
               type="button"
               onClick={addTag}
-              className="shrink-0 rounded-xl border border-primary/20 bg-primary/5 px-3 text-primary hover:bg-primary/10"
+              className="shrink-0 border border-primary/20 bg-primary/5 px-3 text-primary hover:bg-primary/10"
               aria-label="הוסף תג"
             >
               <Plus className="h-5 w-5" />
