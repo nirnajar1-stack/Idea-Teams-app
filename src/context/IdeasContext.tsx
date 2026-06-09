@@ -17,7 +17,7 @@ import {
   updateIdeaInDb,
 } from '../api/ideasApi'
 import { insertAuditEntry } from '../api/auditApi'
-import { notifyIdeaCompletedEmail } from '../api/emailApi'
+import { notifyIdeaCompletedEmail, type EmailNotifyResult } from '../api/emailApi'
 import { restoreSupabaseSession } from '../api/authApi'
 import { SEED_IDEAS } from '../data/seedIdeas'
 import { SPLASH_SHOWN_KEY, STORAGE_KEY } from '../constants/app'
@@ -52,6 +52,11 @@ import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats, IdeaSortOption } fro
 import { useAuth } from './AuthContext'
 import { useUsers } from './UsersContext'
 
+export interface UpdateIdeaResult {
+  ok: boolean
+  emailNotify?: EmailNotifyResult
+}
+
 interface IdeasContextValue {
   ideas: Idea[]
   visibleIdeas: Idea[]
@@ -61,9 +66,9 @@ interface IdeasContextValue {
   cloudConfigured: boolean
   loadError: string | null
   addIdea: (input: IdeaFormInput) => Promise<Idea>
-  updateIdea: (id: string, patch: Partial<Idea>) => Promise<boolean>
+  updateIdea: (id: string, patch: Partial<Idea>) => Promise<UpdateIdeaResult>
   deleteIdea: (id: string) => Promise<boolean>
-  markCompleted: (id: string) => Promise<void>
+  markCompleted: (id: string) => Promise<UpdateIdeaResult>
   scheduleIdeaOnTimeline: (id: string, plannedDate: string | null) => Promise<boolean>
   getIdeaById: (id: string) => Idea | undefined
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
@@ -358,18 +363,22 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   )
 
   const updateIdea = useCallback(
-    async (id: string, patch: Partial<Idea>): Promise<boolean> => {
+    async (id: string, patch: Partial<Idea>): Promise<UpdateIdeaResult> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canEditIdea(user, idea)) return false
+      if (!idea || !canEditIdea(user, idea)) return { ok: false }
 
       if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
 
       const becameCompleted =
         patch.workflowStatus === 'completed' && idea.workflowStatus !== 'completed'
+      let emailNotify: EmailNotifyResult | undefined
       if (becameCompleted && usingCloud && user) {
-        void notifyIdeaCompletedEmail(id, user.id).catch((err) => {
+        try {
+          emailNotify = await notifyIdeaCompletedEmail(id, user.id)
+        } catch (err) {
           console.warn('Email notify failed', err)
-        })
+          emailNotify = { ok: false, error: String(err) }
+        }
       }
 
       if (user) {
@@ -411,7 +420,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         await syncIdeasToCloud(toSync, user.id)
       }
 
-      return true
+      return { ok: true, emailNotify }
     },
     [applyLocalIdeas, ideas, user, usingCloud],
   )
@@ -448,13 +457,12 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   )
 
   const markCompleted = useCallback(
-    async (id: string) => {
-      await updateIdea(id, {
+    (id: string) =>
+      updateIdea(id, {
         workflowStatus: 'completed',
         progress: 100,
         progressStep: 'הושלם',
-      })
-    },
+      }),
     [updateIdea],
   )
 

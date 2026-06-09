@@ -42,7 +42,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
 
     setSubmitState('loading')
     try {
-      const ok = await updateIdea(idea.id, {
+      const { ok } = await updateIdea(idea.id, {
         title: title.trim(),
         description: description.trim(),
         category,

@@ -8,7 +8,7 @@ export interface EmailNotifyResult {
   sent?: { email: string; role: string }[]
 }
 
-/** שולח מייל לפותח המשימה ולמוקצה כשהרעיון הושלם (Edge Function) */
+/** שולח מייל לכל המשתמשים הפעילים (לפי נראות הרעיון) כשבקשה/רעיון הושלם */
 export async function notifyIdeaCompletedEmail(
   ideaId: string,
   actorUserId: string,

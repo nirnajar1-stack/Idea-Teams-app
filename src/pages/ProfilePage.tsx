@@ -145,7 +145,7 @@ export function ProfilePage() {
                 ['notifyGeneralMentions', 'תיוגים בצ\'אט כללי'],
                 ['notifyReplies', 'תגובות ישירות'],
                 ['notifyTargetDate', 'תזכורות תאריך יעד'],
-                ['notifyEmailCompleted', 'מייל כשבקשה/רעיון הושלם (פותח / מוקצה)'],
+                ['notifyEmailCompleted', 'מייל כשבקשה/רעיון הושלם (כל המשתמשים)'],
               ] as const
             ).map(([key, label]) => (
               <li key={key} className="flex items-center justify-between gap-4">

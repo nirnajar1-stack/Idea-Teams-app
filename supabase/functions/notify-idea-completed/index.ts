@@ -13,7 +13,7 @@ interface NotifyRequest {
 
 interface RecipientRole {
   userId: string
-  role: 'creator' | 'assignee'
+  role: 'creator' | 'assignee' | 'team'
 }
 
 function truncate(text: string, max: number): string {
@@ -32,9 +32,12 @@ function escapeHtml(text: string): string {
 
 function roleIntro(role: RecipientRole['role'], name: string): string {
   if (role === 'creator') {
-    return `שלום ${name},<br><br>הרעיון שפתחת סומן כ<strong>הושלם</strong>.`
+    return `שלום ${name},<br><br>הבקשה/רעיון שפתחת סומן/ה כ<strong>הושלם</strong>.`
   }
-  return `שלום ${name},<br><br>המשימה שהוקצתה לך סומנה כ<strong>הושלמה</strong>.`
+  if (role === 'assignee') {
+    return `שלום ${name},<br><br>הבקשה/רעיון שהוקצה לך סומן/ה כ<strong>הושלם</strong>.`
+  }
+  return `שלום ${name},<br><br>בקשה/רעיון במערכת Ogen סומן/ה כ<strong>הושלם</strong>.`
 }
 
 function buildEmailHtml(params: {
@@ -51,7 +54,7 @@ function buildEmailHtml(params: {
     : ''
 
   const link = ideaUrl
-    ? `<p style="margin:24px 0;"><a href="${escapeHtml(ideaUrl)}" style="color:#1a5f4a;font-weight:600;">צפייה ברעיון באפליקציה</a></p>`
+    ? `<p style="margin:24px 0;"><a href="${escapeHtml(ideaUrl)}" style="color:#1a5f4a;font-weight:600;">צפייה בבקשה/רעיון באפליקציה</a></p>`
     : ''
 
   return `<!DOCTYPE html>
@@ -60,7 +63,7 @@ function buildEmailHtml(params: {
 <body style="font-family:Segoe UI,Arial,sans-serif;background:#f5f5f0;margin:0;padding:24px;">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e8e8e0;">
     <p style="margin:0 0 8px;font-size:13px;color:#888;">Ogen — צוות פיתוח ובקרה</p>
-    <h1 style="margin:0 0 20px;font-size:22px;color:#1a1a1a;">✅ הרעיון הושלם</h1>
+    <h1 style="margin:0 0 20px;font-size:22px;color:#1a1a1a;">✅ בקשה/רעיון הושלם</h1>
     <p style="margin:0 0 20px;line-height:1.6;color:#333;">${roleIntro(role, escapeHtml(recipientName))}</p>
     <h2 style="margin:0 0 8px;font-size:18px;color:#1a5f4a;">${escapeHtml(truncate(title, 200))}</h2>
     ${desc}
@@ -127,7 +130,9 @@ Deno.serve(async (req) => {
 
     const { data: idea, error: ideaErr } = await admin
       .from('ideas')
-      .select('id, title, description, workflow_status, assignee_user_id, created_by_user_id')
+      .select(
+        'id, title, description, workflow_status, visibility, assignee_user_id, created_by_user_id',
+      )
       .eq('id', ideaId)
       .maybeSingle()
 
@@ -168,11 +173,36 @@ Deno.serve(async (req) => {
       })
     }
 
-    const recipients: RecipientRole[] = []
-    if (creatorId) recipients.push({ userId: creatorId, role: 'creator' })
-    if (assigneeId && assigneeId !== creatorId) {
-      recipients.push({ userId: assigneeId, role: 'assignee' })
+    const visibility = (idea.visibility as string) || 'team'
+
+    const { data: activeUsers, error: usersErr } = await admin
+      .from('app_users')
+      .select('id, name, email, active, access_level')
+      .eq('active', true)
+      .in('access_level', ['manager', 'member', 'master'])
+
+    if (usersErr) {
+      return new Response(JSON.stringify({ error: 'users_load_failed' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
     }
+
+    let eligible = activeUsers ?? []
+    if (visibility === 'master_private') {
+      eligible = eligible.filter((u) => u.id === creatorId)
+    } else if (visibility === 'managers_only') {
+      eligible = eligible.filter(
+        (u) => u.access_level === 'manager' || u.access_level === 'master',
+      )
+    }
+
+    const recipients: RecipientRole[] = eligible.map((u) => {
+      let role: RecipientRole['role'] = 'team'
+      if (u.id === creatorId) role = 'creator'
+      else if (u.id === assigneeId) role = 'assignee'
+      return { userId: u.id as string, role }
+    })
 
     if (recipients.length === 0) {
       return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'no_recipients' }), {
@@ -181,7 +211,18 @@ Deno.serve(async (req) => {
       })
     }
 
-    const title = (idea.title as string) || 'רעיון'
+    const recipientIds = recipients.map((r) => r.userId)
+    const { data: prefsRows } = await admin
+      .from('user_preferences')
+      .select('user_id, notify_email_completed')
+      .in('user_id', recipientIds)
+
+    const prefsByUser = new Map(
+      (prefsRows ?? []).map((p) => [p.user_id as string, p.notify_email_completed]),
+    )
+    const usersById = new Map(eligible.map((u) => [u.id as string, u]))
+
+    const title = (idea.title as string) || 'בקשה/רעיון'
     const description = (idea.description as string) || ''
     const actorName = (actor?.name as string) || 'משתמש'
     const ideaUrl = appPublicUrl
@@ -193,12 +234,7 @@ Deno.serve(async (req) => {
     const failed: { email: string; error: unknown }[] = []
 
     for (const { userId, role } of recipients) {
-      const { data: user } = await admin
-        .from('app_users')
-        .select('id, name, email, active')
-        .eq('id', userId)
-        .maybeSingle()
-
+      const user = usersById.get(userId)
       if (!user?.active) {
         skipped.push({ userId, reason: 'inactive' })
         continue
@@ -210,13 +246,8 @@ Deno.serve(async (req) => {
         continue
       }
 
-      const { data: prefs } = await admin
-        .from('user_preferences')
-        .select('notify_email_completed')
-        .eq('user_id', userId)
-        .maybeSingle()
-
-      if (prefs && prefs.notify_email_completed === false) {
+      const notifyPref = prefsByUser.get(userId)
+      if (notifyPref === false) {
         skipped.push({ userId, reason: 'prefs_off' })
         continue
       }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { emailNotifyUserMessage } from '../lib/emailNotifyFeedback'
 import { useChatNotifications } from '../context/ChatNotificationsContext'
 import { AppShell } from '../components/layout/AppShell'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
@@ -54,10 +55,18 @@ export function IdeaDetailPage() {
   const canAddSub = canAddSubIdea(user, idea)
 
   const handleUpdate = async (patch: Parameters<typeof updateIdea>[1]) => {
-    const ok = await updateIdea(idea.id, patch)
-    if (ok) toast.success('הבקשה/רעיון עודכן')
-    else toast.error('העדכון נכשל')
-    return ok
+    const result = await updateIdea(idea.id, patch)
+    if (result.ok) {
+      toast.success('הבקשה/רעיון עודכן')
+      const emailMsg = result.emailNotify && emailNotifyUserMessage(result.emailNotify)
+      if (emailMsg) {
+        if (result.emailNotify?.ok) toast.message(emailMsg)
+        else toast.warning(emailMsg)
+      }
+    } else {
+      toast.error('העדכון נכשל')
+    }
+    return result.ok
   }
 
   const handleDelete = () => {
@@ -97,7 +106,21 @@ export function IdeaDetailPage() {
             canEdit={canEdit(idea)}
             canDelete={canDelete(idea)}
             isContainer={isContainerIdea(idea)}
-            onComplete={() => void markCompleted(idea.id).then(() => toast.success('סומן כהושלם'))}
+            onComplete={() =>
+              void markCompleted(idea.id).then((result) => {
+                if (!result.ok) {
+                  toast.error('העדכון נכשל')
+                  return
+                }
+                toast.success('סומן כהושלם')
+                const emailMsg =
+                  result.emailNotify && emailNotifyUserMessage(result.emailNotify)
+                if (emailMsg) {
+                  if (result.emailNotify?.ok) toast.message(emailMsg)
+                  else toast.warning(emailMsg)
+                }
+              })
+            }
             onDelete={handleDelete}
             onUpdate={(patch) => void handleUpdate(patch)}
           />
