@@ -55,7 +55,7 @@ export function IdeaDetailPage() {
 
   const handleUpdate = async (patch: Parameters<typeof updateIdea>[1]) => {
     const ok = await updateIdea(idea.id, patch)
-    if (ok) toast.success('הרעיון עודכן')
+    if (ok) toast.success('הבקשה/רעיון עודכן')
     else toast.error('העדכון נכשל')
     return ok
   }
@@ -72,7 +72,7 @@ export function IdeaDetailPage() {
     setDeleteOpen(false)
     void (async () => {
       if (await deleteIdea(idea.id)) {
-        toast.success('הרעיון נמחק')
+        toast.success('הבקשה/רעיון נמחק')
         navigate(ROUTES.ideas)
       } else {
         toast.error('המחיקה נכשלה. נסו לרענן את הדף.')
@@ -106,8 +106,8 @@ export function IdeaDetailPage() {
 
       <ConfirmModal
         open={deleteOpen}
-        title="מחיקת רעיון"
-        message="האם למחוק את הרעיון? פעולה זו אינה ניתנת לביטול."
+        title="מחיקת בקשה/רעיון"
+        message="האם למחוק את הבקשה/רעיון? פעולה זו אינה ניתנת לביטול."
         confirmLabel="מחק"
         variant="danger"
         onConfirm={confirmDelete}
@@ -117,7 +117,7 @@ export function IdeaDetailPage() {
       <ConfirmModal
         open={permissionOpen}
         title="אין הרשאה"
-        message="אין לך הרשאה למחוק רעיון זה."
+        message="אין לך הרשאה למחוק בקשה/רעיון זה."
         confirmLabel="הבנתי"
         cancelLabel="סגור"
         onConfirm={() => setPermissionOpen(false)}

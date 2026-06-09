@@ -6,11 +6,11 @@ export function friendlyIdeasLoadError(err: unknown, hasLocalFallback: boolean):
   if (msg.includes('network') || msg.includes('fetch')) {
     return 'בעיית חיבור לרשת. בדקו את האינטרנט ורעננו את הדף.'
   }
-  return 'לא הצלחנו לטעון את הרעיונות. נסו לרענן את הדף.'
+  return 'לא הצלחנו לטעון את הבקשות/רעיונות. נסו לרענן את הדף.'
 }
 
 export function friendlyIdeasEmptyCloudMessage(): string {
-  return 'לא נמצאו רעיונות. צרו רעיון חדש או פנו למנהל המערכת.'
+  return 'לא נמצאו בקשות/רעיונות. צרו בקשה/רעיון חדש או פנו למנהל המערכת.'
 }
 
 export function friendlySupabaseConfigMessage(): string {

@@ -35,6 +35,13 @@ export function formatUserSaveError(error: unknown): string {
     return 'סיסמה חייבת להכיל לפחות 4 תווים'
   }
 
+  if (msg.includes('password_already_used_by:')) {
+    const names = msg.split('password_already_used_by:')[1]?.trim() ?? ''
+    return names
+      ? `סיסמה זו כבר בשימוש אצל: ${names}. כל משתמש חייב סיסמה ייחודית (ההתחברות לפי סיסמה בלבד).`
+      : 'סיסמה זו כבר בשימוש אצל משתמש אחר. כל משתמש חייב סיסמה ייחודית.'
+  }
+
   if (msg.includes('u.phone does not exist') || (msg.includes('column') && msg.includes('phone'))) {
     return 'חסרה עמודת טלפון — הרץ migrations/025_add_phone_column.sql ב-Supabase SQL Editor'
   }

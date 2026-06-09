@@ -29,11 +29,11 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
             <GitBranch className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h2 className="font-display text-headline-md text-on-surface">תת-רעיונות</h2>
+            <h2 className="font-display text-headline-md text-on-surface">תת-בקשות/רעיונות</h2>
             <p className="font-label-sm text-secondary">
               {subIdeas.length === 0
-                ? 'טרם נוספו תת-רעיונות למארז זה'
-                : `${subIdeas.length} רעיונות במארז`}
+                ? 'טרם נוספו תת-בקשות/רעיונות למארז זה'
+                : `${subIdeas.length} בקשות/רעיונות במארז`}
             </p>
           </div>
         </div>
@@ -44,7 +44,7 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
             className="btn-boutique inline-flex items-center gap-2"
           >
             <CirclePlus className="h-5 w-5" />
-            תת-רעיון חדש
+            תת-בקשה/רעיון חדש
           </button>
         )}
       </div>
@@ -59,7 +59,7 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
 
       {subIdeas.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border-light bg-surface-subtle/80 p-8 text-center font-body-md text-secondary">
-          הוסיפו תת-רעיונות כדי לפרק את המארז לשלבים ברורים.
+          הוסיפו תת-בקשות/רעיונות כדי לפרק את המארז לשלבים ברורים.
         </p>
       ) : (
         <ul className="space-y-3">
@@ -87,7 +87,7 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
                   {sub.description}
                 </p>
                 <span className="inline-flex items-center gap-1 font-label-md text-primary">
-                  פרטי תת-רעיון
+                  פרטי תת-בקשה/רעיון
                   <ArrowLeft className="h-4 w-4" />
                 </span>
               </Link>

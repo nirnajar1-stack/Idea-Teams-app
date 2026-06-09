@@ -12,7 +12,7 @@ export interface IdeaSourceSelectProps {
 export function IdeaSourceSelect({ value, onChange, disabled = false }: IdeaSourceSelectProps) {
   return (
     <div className="space-y-3">
-      <span className="block font-label-md text-secondary">מקור הרעיון</span>
+      <span className="block font-label-md text-secondary">מקור הבקשה/רעיון</span>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {IDEA_SOURCES.map((source) => (
           <label

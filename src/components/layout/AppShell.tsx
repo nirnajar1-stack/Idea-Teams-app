@@ -37,7 +37,7 @@ export function AppShell({
       <Navbar connectedAs={connectedAs ?? user?.name} shareUrl={shareUrl} {...navbarProps} />
       <main
         className={cn(
-          'relative mx-auto px-margin-mobile pb-12 pt-24 md:px-margin-desktop',
+          'relative mx-auto px-margin-mobile pb-12 pt-[7.25rem] md:px-margin-desktop md:pt-24',
           maxWidthClass,
         )}
       >

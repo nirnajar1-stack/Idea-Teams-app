@@ -31,7 +31,7 @@ export function TimelineDayColumn({
   return (
     <div
       className={cn(
-        'flex min-h-[420px] w-[min(100%,220px)] shrink-0 flex-col rounded-xl border transition-colors',
+        'flex min-h-[320px] w-[min(88vw,240px)] shrink-0 snap-center flex-col rounded-xl border transition-colors sm:min-h-[420px] sm:w-[min(100%,220px)]',
         isToday ? 'border-primary/30 bg-primary/5' : 'border-border-light bg-surface-container-low/50',
         isDropTarget && 'border-primary bg-primary/10 ring-2 ring-primary/20',
       )}
@@ -54,7 +54,9 @@ export function TimelineDayColumn({
         )}
       >
         <p className="font-label-md text-on-surface">{timelineDayHeading(dateKey)}</p>
-        <p className="mt-0.5 font-label-sm text-secondary">{ideas.length} משימות</p>
+        <p className="mt-0.5 font-label-sm text-secondary">
+          {ideas.length} בקשות/רעיונות
+        </p>
       </header>
       <div className="flex flex-1 flex-col gap-2 p-2">
         {ideas.map((idea) => (

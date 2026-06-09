@@ -94,7 +94,7 @@ export function IdeaDetailSidebar({
             {idea.sendToMaybeInbox ? (
               <>
                 <Rocket className="h-5 w-5" />
-                החזר לרעיונות פעילים
+                החזר לבקשות/רעיונות פעילים
               </>
             ) : (
               <>
@@ -111,7 +111,7 @@ export function IdeaDetailSidebar({
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light bg-surface-container-low/80 py-4 font-label-md text-secondary transition-all hover:bg-surface-container active:scale-95"
             >
               <Pencil className="h-5 w-5" />
-              עריכת רעיון
+              עריכת בקשה/רעיון
             </button>
           )}
           {canDelete && (
@@ -121,7 +121,7 @@ export function IdeaDetailSidebar({
               className="flex w-full items-center justify-center gap-2 rounded-lg py-2 font-label-md text-error transition-colors hover:bg-error/5"
             >
               <Trash2 className="h-5 w-5" />
-              מחיקת רעיון
+              מחיקת בקשה/רעיון
             </button>
           )}
         </div>

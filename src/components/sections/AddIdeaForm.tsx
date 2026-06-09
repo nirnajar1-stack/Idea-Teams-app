@@ -84,12 +84,12 @@ export function AddIdeaForm() {
   return (
     <>
       <div className="mb-10 animate-fade-up text-right">
-        <span className="section-eyebrow">רעיון חדש</span>
+        <span className="section-eyebrow">בקשה/רעיון חדש</span>
         <h1 className="mb-2 font-display text-headline-lg text-on-surface">
-          הוספת רעיון חדש
+          הוספת בקשה/רעיון חדש
         </h1>
         <p className="font-body-md text-secondary">
-          יש לך רעיון מבריק? שתף אותו עם הצוות — הרעיון יירשם בשם{' '}
+          יש לך בקשה או רעיון מבריק? שתף עם הצוות — הבקשה/רעיון יירשם בשם{' '}
           <strong className="text-on-surface">{user?.name}</strong>.
         </p>
       </div>
@@ -97,7 +97,7 @@ export function AddIdeaForm() {
       <div className="glass-card animate-fade-up p-6 md:p-8" style={{ animationDelay: '80ms' }}>
         <form className="space-y-8" onSubmit={handleSubmit}>
           <Input
-            label="כותרת הרעיון"
+            label="כותרת הבקשה/רעיון"
             name="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -128,11 +128,11 @@ export function AddIdeaForm() {
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
 
           <Textarea
-            label="תיאור הרעיון"
+            label="תיאור הבקשה/רעיון"
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="פרט כאן את המהות של הרעיון, את הבעיה שהוא פותר ואיך הוא ייושם..."
+            placeholder="פרט כאן את המהות של הבקשה/רעיון, את הבעיה שהוא פותר ואיך הוא ייושם..."
             rows={5}
             required
           />
@@ -142,7 +142,7 @@ export function AddIdeaForm() {
             name="targetStartDate"
             value={targetStartDate}
             onChange={(e) => setTargetStartDate(e.target.value)}
-            hint="מתי מתוכנן להתחיל לעבוד על הרעיון?"
+            hint="מתי מתוכנן להתחיל לעבוד על הבקשה/רעיון?"
             required
           />
 
@@ -197,23 +197,23 @@ export function AddIdeaForm() {
               {submitState === 'loading' && (
                 <>
                   <Loader2 className="h-6 w-6 animate-spin" />
-                  שולח רעיון...
+                  שולח בקשה/רעיון...
                 </>
               )}
               {submitState === 'success' && (
                 <>
                   <CheckCircle2 className="h-6 w-6" />
-                  הרעיון נוסף בהצלחה!
+                  הבקשה/רעיון נוסף בהצלחה!
                 </>
               )}
               {submitState === 'idle' && (
                 <>
                   <CirclePlus className="h-6 w-6" />
                   {isContainer
-                    ? 'צור מארז תת-רעיונות'
+                    ? 'צור מארז תת-בקשות/רעיונות'
                     : sendToMaybeInbox
                       ? 'שמירה ל-Inbox'
-                      : 'הוסף רעיון למערכת'}
+                      : 'הוסף בקשה/רעיון למערכת'}
                 </>
               )}
             </button>

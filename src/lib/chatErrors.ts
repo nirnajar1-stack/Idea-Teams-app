@@ -38,7 +38,7 @@ export function formatChatSendError(error: unknown): string {
 
   if (code === '23503') {
     if (msg.includes('idea_id') || msg.includes('ideas')) {
-      return 'הרעיון לא נמצא בענן. שמור את הרעיון מחדש או רענן את הדף.'
+      return 'הבקשה/רעיון לא נמצא בענן. שמור מחדש או רענן את הדף.'
     }
     if (msg.includes('sender_user_id') || msg.includes('app_users')) {
       return 'המשתמש לא נמצא ב-Supabase. ודא שמשתמשי הדמו קיימים בטבלת app_users.'
@@ -46,7 +46,7 @@ export function formatChatSendError(error: unknown): string {
     if (msg.includes('reply_to_user_id')) {
       return 'נמען התגובה לא קיים במערכת.'
     }
-    return 'נתונים לא תואמים לענן (קישור למשתמש/רעיון).'
+    return 'נתונים לא תואמים לענן (קישור למשתמש/בקשה-רעיון).'
   }
 
   if (msg) return `שליחת ההודעה נכשלה: ${msg}`

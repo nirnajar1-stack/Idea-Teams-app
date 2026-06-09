@@ -81,9 +81,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isSupabaseEnabled()) {
         const cloud = await loginWithPasswordCloud(trimmed)
         if (cloud.error === 'ambiguous') {
+          const who = cloud.conflictNames?.trim()
           return {
             ok: false,
-            error: 'סיסמה זו משויכת ליותר ממשתמש אחד. פנו למנהל.',
+            error: who
+              ? `סיסמה זו משויכת ליותר ממשתמש אחד (${who}). כל משתמש חייב סיסמה ייחודית — פנו למנהל לשינוי.`
+              : 'סיסמה זו משויכת ליותר ממשתמש אחד. כל משתמש חייב סיסמה ייחודית — פנו למנהל.',
           }
         }
         if (cloud.ok && cloud.userId) {
@@ -102,16 +105,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       const account = await findUserByPassword(trimmed)
-      if (account === 'ambiguous') {
+      if (account.kind === 'ambiguous') {
         return {
           ok: false,
-          error: 'סיסמה זו משויכת ליותר ממשתמש אחד. פנו למנהל.',
+          error: `סיסמה זו משויכת ליותר ממשתמש אחד (${account.names}). כל משתמש חייב סיסמה ייחודית — פנו למנהל לשינוי.`,
         }
       }
-      if (!account) {
+      if (account.kind === 'not_found') {
         return { ok: false, error: 'סיסמה שגויה' }
       }
-      const next: AuthSession = { userId: account.id }
+      const next: AuthSession = { userId: account.user.id }
       saveSession(next)
       setSession(next)
       return { ok: true }

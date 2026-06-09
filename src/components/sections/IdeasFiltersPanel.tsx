@@ -91,7 +91,7 @@ export function IdeasFiltersPanel({
         </div>
 
         <div className="rounded-2xl border border-border-light bg-surface-container-lowest p-6 shadow-sm">
-          <h3 className="mb-4 font-label-md text-on-surface">מקור הרעיון</h3>
+          <h3 className="mb-4 font-label-md text-on-surface">מקור הבקשה/רעיון</h3>
           <div className="space-y-2">
             {IDEA_SOURCES.map((source) => (
               <label
@@ -122,7 +122,7 @@ export function IdeasFiltersPanel({
               onChange={(e) => onOnlyMineChange(e.target.checked)}
               className="h-4 w-4 rounded text-primary focus:ring-primary"
             />
-            <span className="font-body-md">רק הרעיונות שלי ({userName})</span>
+            <span className="font-body-md">רק הבקשות/רעיונות שלי ({userName})</span>
           </label>
         </div>
 

@@ -1,4 +1,4 @@
-/** הודעת שגיאה ידידותית לשמירת רעיון */
+/** הודעת שגיאה ידידותית לשמירת בקשה/רעיון */
 export function formatIdeaSaveError(error: unknown): string {
   const err = error as { code?: string; message?: string; details?: string }
   const msg = [err?.message, err?.details].filter(Boolean).join(' ')
@@ -34,9 +34,9 @@ export function formatIdeaSaveError(error: unknown): string {
   }
 
   if (code === '23505' || msg.includes('ideas_external_id_unique')) {
-    return 'מזהה רעיון כבר קיים — נסה שוב'
+    return 'מזהה בקשה/רעיון כבר קיים — נסה שוב'
   }
 
-  if (msg) return `שמירת הרעיון נכשלה: ${msg}`
-  return 'שמירת הרעיון נכשלה'
+  if (msg) return `שמירת הבקשה/רעיון נכשלה: ${msg}`
+  return 'שמירת הבקשה/רעיון נכשלה'
 }

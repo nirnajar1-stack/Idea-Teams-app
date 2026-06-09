@@ -24,15 +24,15 @@ export function WelcomeHero() {
           <p className="max-w-lg font-body-md text-secondary">
             ברוכים הבאים ל-{APP_NAME_FULL}
             {user?.accessLevel === 'guest'
-              ? ` — כניסה כ${ACCESS_LEVEL_LABELS.guest}, רואים רק רעיונות מסשן זה.`
-              : '. רעיונות חדשים נרשמים תחת שמך, עם תאריך יעד להתחלה ואפשרות שמירה ל-Inbox.'}
+              ? ` — כניסה כ${ACCESS_LEVEL_LABELS.guest}, רואים רק בקשות/רעיונות מסשן זה.`
+              : '. בקשות/רעיונות חדשים נרשמים תחת שמך, עם תאריך יעד להתחלה ואפשרות שמירה ל-Inbox.'}
           </p>
           {stats.inboxCount > 0 && (
             <Link
               to={ROUTES.inbox}
               className="mt-4 inline-flex items-center gap-2 rounded-full border border-inbox/25 bg-inbox-soft px-4 py-2 font-label-md text-inbox transition-colors hover:bg-inbox/15"
             >
-              {stats.inboxCount} רעיונות ב-Inbox · אולי בהמשך
+              {stats.inboxCount} בקשות/רעיונות ב-Inbox · אולי בהמשך
             </Link>
           )}
         </div>
@@ -42,7 +42,7 @@ export function WelcomeHero() {
           className="btn-boutique inline-flex shrink-0 items-center gap-2"
         >
           <Plus className="h-5 w-5" aria-hidden />
-          רעיון חדש
+          בקשה/רעיון חדש
         </button>
       </div>
     </header>

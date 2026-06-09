@@ -52,12 +52,12 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
         targetStartDate,
       })
       if (!ok) {
-        toast.error('אין הרשאה לערוך רעיון זה')
+        toast.error('אין הרשאה לערוך בקשה/רעיון זה')
         setSubmitState('idle')
         return
       }
       setSubmitState('success')
-      toast.success('הרעיון עודכן בהצלחה')
+      toast.success('הבקשה/רעיון עודכן בהצלחה')
       await new Promise((r) => setTimeout(r, 600))
       navigate(ROUTES.ideaDetail(idea.id))
     } catch (err) {
@@ -69,7 +69,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
   return (
     <>
       <div className="mb-10 animate-fade-up text-right">
-        <span className="section-eyebrow">עריכת רעיון</span>
+        <span className="section-eyebrow">עריכת בקשה/רעיון</span>
         <h1 className="mb-2 font-display text-headline-lg text-on-surface">
           {idea.title}
         </h1>
@@ -79,7 +79,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
       <div className="glass-card animate-fade-up p-6 md:p-8" style={{ animationDelay: '80ms' }}>
         <form className="space-y-8" onSubmit={handleSubmit}>
           <Input
-            label="כותרת הרעיון"
+            label="כותרת הבקשה/רעיון"
             name="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -109,7 +109,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
 
           <Textarea
-            label="תיאור הרעיון"
+            label="תיאור הבקשה/רעיון"
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}

@@ -26,7 +26,7 @@ export function WorkflowStatusSelect({
 }: WorkflowStatusSelectProps) {
   return (
     <div className="space-y-2">
-      <span className="block font-label-md text-secondary">סטטוס משימה</span>
+      <span className="block font-label-md text-secondary">סטטוס בקשה/רעיון</span>
       <div className="grid grid-cols-3 gap-2">
         {OPTIONS.map(({ value: opt, icon: Icon, color }) => (
           <button

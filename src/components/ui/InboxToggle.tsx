@@ -38,7 +38,7 @@ export function InboxToggle({ checked, onChange }: InboxToggleProps) {
             שלח ל-Inbox — אולי בהמשך
           </p>
           <p className="font-body-md text-secondary">
-            הרעיון יישמר בנפרד מלוח הפעיל, לבחינה עתידית בלי לחץ ביצוע.
+            הבקשה/רעיון יישמר בנפרד מלוח הפעיל, לבחינה עתידית בלי לחץ ביצוע.
           </p>
         </div>
         <div

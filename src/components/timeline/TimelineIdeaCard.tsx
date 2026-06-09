@@ -9,6 +9,7 @@ import type { Idea } from '../../types/idea'
 interface TimelineIdeaCardProps {
   idea: Idea
   assigneeName?: string
+  compact?: boolean
   onDragStart?: () => void
   onDragEnd?: () => void
 }
@@ -16,6 +17,7 @@ interface TimelineIdeaCardProps {
 export function TimelineIdeaCard({
   idea,
   assigneeName,
+  compact = false,
   onDragStart,
   onDragEnd,
 }: TimelineIdeaCardProps) {
@@ -29,25 +31,36 @@ export function TimelineIdeaCard({
       }}
       onDragEnd={onDragEnd}
       className={cn(
-        'group cursor-grab rounded-lg border border-border-light bg-surface-container-lowest p-3 shadow-card transition-shadow active:cursor-grabbing hover:shadow-boutique',
+        'group cursor-grab rounded-lg border border-border-light bg-surface-container-lowest shadow-card transition-shadow active:cursor-grabbing hover:shadow-boutique',
+        compact ? 'p-1' : 'p-3',
         idea.priority === 'high' && 'border-priority-high/30',
       )}
     >
-      <div className="mb-1.5 flex items-start gap-1.5">
-        <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-secondary/50 group-hover:text-secondary" />
+      <div className={cn('flex items-start gap-1', compact ? 'gap-0.5' : 'gap-1.5 mb-1.5')}>
+        {!compact && (
+          <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-secondary/50 group-hover:text-secondary" />
+        )}
         <Link
           to={ROUTES.ideaDetail(idea.id)}
           onClick={(e) => e.stopPropagation()}
-          className="min-w-0 flex-1 font-label-md leading-snug text-on-surface hover:text-primary"
+          className={cn(
+            'min-w-0 flex-1 text-on-surface hover:text-primary',
+            compact
+              ? 'truncate font-label-sm leading-tight'
+              : 'font-label-md leading-snug',
+          )}
+          title={idea.title}
         >
           {idea.title}
         </Link>
       </div>
-      <div className="flex flex-wrap items-center gap-2 ps-5 font-label-sm text-secondary">
-        <span>#{idea.externalId}</span>
-        <span className="text-primary/80">{PRIORITY_LABELS[idea.priority]}</span>
-        {assigneeName && <span>· {assigneeName}</span>}
-      </div>
+      {!compact && (
+        <div className="flex flex-wrap items-center gap-2 ps-5 font-label-sm text-secondary">
+          <span>#{idea.externalId}</span>
+          <span className="text-primary/80">{PRIORITY_LABELS[idea.priority]}</span>
+          {assigneeName && <span>· {assigneeName}</span>}
+        </div>
+      )}
     </div>
   )
 }

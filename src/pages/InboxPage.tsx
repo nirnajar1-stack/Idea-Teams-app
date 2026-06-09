@@ -56,7 +56,7 @@ export function InboxPage() {
           אולי בהמשך
         </h1>
         <p className="max-w-2xl font-body-md text-secondary">
-          רעיונות ששמרתם לבחינה עתידית — בלי לחץ ביצוע. החזירו אותם ללוח הפעיל בלחיצה
+          בקשות/רעיונות ששמרתם לבחינה עתידית — בלי לחץ ביצוע. החזירו אותם ללוח הפעיל בלחיצה
           אחת.
         </p>
         <Link
@@ -64,7 +64,7 @@ export function InboxPage() {
           className="mt-4 inline-flex items-center gap-1 font-label-md text-primary hover:underline"
         >
           <ArrowLeft className="h-4 w-4" />
-          חזרה לרעיונות פעילים
+          חזרה לבקשות/רעיונות פעילים
         </Link>
       </header>
 
@@ -95,7 +95,7 @@ export function InboxPage() {
           <Archive className="mx-auto mb-4 h-12 w-12 text-inbox/50" />
           <p className="font-body-lg text-on-surface">ה-Inbox ריק כרגע</p>
           <p className="mt-2 font-body-md text-secondary">
-            בעת הוספת רעיון, סמנו &quot;שלח ל-Inbox — אולי בהמשך&quot;
+            בעת הוספת בקשה/רעיון, סמנו &quot;שלח ל-Inbox — אולי בהמשך&quot;
           </p>
         </div>
       ) : (

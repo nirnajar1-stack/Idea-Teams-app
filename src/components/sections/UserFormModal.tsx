@@ -149,7 +149,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
               dir="ltr"
             />
             <p className="mt-1 font-label-sm text-secondary">
-              לקבלת הודעה אוטומטית כשמשימה מוקצית מסומנת כהושלמה
+              לקבלת הודעה אוטומטית כשבקשה/רעיון מוקצה מסומן כהושלם
             </p>
           </div>
           <div>

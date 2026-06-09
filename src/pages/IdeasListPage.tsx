@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
 import { CompletedIdeasSection } from '../components/sections/CompletedIdeasSection'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
+import { IdeasExportModal } from '../components/sections/IdeasExportModal'
 import { IdeasFiltersPanel } from '../components/sections/IdeasFiltersPanel'
 import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
+import { useUsers } from '../context/UsersContext'
 import { ROUTES } from '../constants/app'
+import { IDEA_TERM } from '../constants/terminology'
+import { isMaster } from '../lib/permissions'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
 import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
 import type { IdeaCategory, IdeaFilters, IdeaPriority, IdeaSource, IdeasViewPrefs } from '../types/idea'
@@ -19,6 +23,8 @@ export function IdeasListPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { visibleIdeas } = useIdeas()
+  const { users } = useUsers()
+  const [exportOpen, setExportOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState<IdeaCategory[]>([
     'development',
@@ -80,6 +86,13 @@ export function IdeasListPage() {
     )
   }
 
+  const assigneeNames = useMemo(
+    () => new Map(users.map((u) => [u.id, u.name])),
+    [users],
+  )
+
+  const masterUser = isMaster(user)
+
   return (
     <AppShell
       variant="ideas"
@@ -89,17 +102,15 @@ export function IdeasListPage() {
       <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div>
           <h2 className="mb-2 font-display text-headline-lg text-on-surface">
-            רשימת רעיונות
+            {IDEA_TERM.listTitle}
           </h2>
-          <p className="font-body-md text-secondary">
-            נהלו ותעדפו את הרעיונות המרכזיים של הצוות שלכם.
-          </p>
+          <p className="font-body-md text-secondary">{IDEA_TERM.listSubtitle}</p>
         </div>
         <Button
           icon={<Plus className="h-5 w-5" />}
           onClick={() => navigate(ROUTES.addIdea)}
         >
-          הוסף רעיון חדש
+          {IDEA_TERM.addNew}
         </Button>
       </div>
 
@@ -139,6 +150,8 @@ export function IdeasListPage() {
             onCompactChange={(compact) => updateViewPrefs({ compact })}
             activeCount={activeIdeas.length}
             completedCount={completedIdeas.length}
+            showExport={masterUser}
+            onExportClick={() => setExportOpen(true)}
           />
 
           <div
@@ -150,7 +163,7 @@ export function IdeasListPage() {
           >
             {activeIdeas.length === 0 ? (
               <p className="rounded-xl border border-border-light bg-surface-container-lowest p-8 text-center font-body-md text-secondary">
-                לא נמצאו רעיונות פעילים התואמים את החיפוש
+                {IDEA_TERM.noActiveMatch}
               </p>
             ) : (
               activeIdeas.map((idea, i) => (
@@ -168,6 +181,22 @@ export function IdeasListPage() {
           <CompletedIdeasSection ideas={completedIdeas} compact={viewPrefs.compact} />
         </div>
       </div>
+
+      {masterUser && (
+        <IdeasExportModal
+          open={exportOpen}
+          onClose={() => setExportOpen(false)}
+          ideas={visibleIdeas}
+          assigneeNames={assigneeNames}
+          initialSearch={search}
+          initialCategories={categories}
+          initialSources={sources}
+          initialPriority={priority}
+          initialOnlyMine={onlyMine}
+          currentUserId={user?.id}
+          initialSort={viewPrefs.sort}
+        />
+      )}
     </AppShell>
   )
 }

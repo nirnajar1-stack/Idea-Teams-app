@@ -25,10 +25,10 @@ export function ContainerKindToggle({ checked, onChange }: ContainerKindTogglePr
       <div className="flex-1">
         <div className="mb-1 flex items-center gap-2 font-label-md text-on-surface">
           <Layers className="h-5 w-5 text-primary" />
-          רעיון עם תת-רעיונות
+          בקשה/רעיון עם תת-בקשות/רעיונות
         </div>
         <p className="font-label-sm text-secondary">
-          מארז שמאגד מספר רעיונות קשורים. לאחר היצירה תוכלו להוסיף תת-רעיונות בדף
+          מארז שמאגד מספר בקשות/רעיונות קשורים. לאחר היצירה תוכלו להוסיף תת-בקשות/רעיונות בדף
           הפרטים. אפשרות זו זמינה למנהל בלבד.
         </p>
       </div>

@@ -30,7 +30,7 @@ export const IDEAS_VIEW_PREFS_KEY = 'ideaflow-ideas-view-v1'
 
 export const NAV_LABELS = {
   home: 'לוח בקרה',
-  ideas: 'רעיונות',
+  ideas: 'בקשות/רעיונות',
   inbox: 'Inbox',
   profile: 'פרופיל',
   add: 'חדש',

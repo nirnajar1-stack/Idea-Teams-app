@@ -30,7 +30,7 @@ interface UsersContextValue {
   isReady: boolean
   usingCloud: boolean
   getUserById: (id: string) => StoredUser | undefined
-  findUserByPassword: (password: string) => Promise<StoredUser | 'ambiguous' | null>
+  findUserByPassword: (password: string) => Promise<FindUserByPasswordResult>
   createUser: (input: UserFormInput, actorUserId?: string) => Promise<StoredUser>
   updateUser: (id: string, input: UserUpdateInput, actorUserId?: string) => Promise<StoredUser>
   deleteUser: (id: string, actorUserId?: string) => Promise<void>
@@ -39,8 +39,30 @@ interface UsersContextValue {
 
 const UsersContext = createContext<UsersContextValue | null>(null)
 
+export type FindUserByPasswordResult =
+  | { kind: 'user'; user: StoredUser }
+  | { kind: 'ambiguous'; names: string }
+  | { kind: 'not_found' }
+
 function persistUsersLocal(users: StoredUser[]) {
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users))
+}
+
+function passwordHashConflictNames(
+  users: StoredUser[],
+  passwordHash: string,
+  exceptUserId?: string,
+): string | null {
+  const names = users
+    .filter(
+      (u) =>
+        u.active &&
+        u.accessLevel !== 'guest' &&
+        u.passwordHash === passwordHash &&
+        u.id !== exceptUserId,
+    )
+    .map((u) => u.name)
+  return names.length > 0 ? names.join(', ') : null
 }
 
 export function UsersProvider({ children }: { children: ReactNode }) {
@@ -113,15 +135,17 @@ export function UsersProvider({ children }: { children: ReactNode }) {
   )
 
   const findUserByPassword = useCallback(
-    async (password: string): Promise<StoredUser | 'ambiguous' | null> => {
+    async (password: string): Promise<FindUserByPasswordResult> => {
       const matches: StoredUser[] = []
       for (const u of users) {
         if (!u.active || u.accessLevel === 'guest' || !u.passwordHash) continue
         if (await verifyPassword(password, u.passwordHash)) matches.push(u)
       }
-      if (matches.length === 0) return null
-      if (matches.length > 1) return 'ambiguous'
-      return matches[0]
+      if (matches.length === 0) return { kind: 'not_found' }
+      if (matches.length > 1) {
+        return { kind: 'ambiguous', names: matches.map((u) => u.name).join(', ') }
+      }
+      return { kind: 'user', user: matches[0] }
     },
     [users],
   )
@@ -140,6 +164,10 @@ export function UsersProvider({ children }: { children: ReactNode }) {
         return created
       }
       const passwordHash = await hashPassword(input.password)
+      const conflict = passwordHashConflictNames(users, passwordHash)
+      if (conflict) {
+        throw new Error(`password_already_used_by: ${conflict}`)
+      }
       const newUser: StoredUser = {
         id: `user-${Date.now().toString(36)}`,
         name: input.name.trim(),
@@ -161,7 +189,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
       })
       return newUser
     },
-    [usingCloud],
+    [usingCloud, users],
   )
 
   const updateUser = useCallback(
@@ -179,6 +207,13 @@ export function UsersProvider({ children }: { children: ReactNode }) {
       const passwordHash = input.password?.trim()
         ? await hashPassword(input.password)
         : undefined
+
+      if (passwordHash) {
+        const conflict = passwordHashConflictNames(users, passwordHash, id)
+        if (conflict) {
+          throw new Error(`password_already_used_by: ${conflict}`)
+        }
+      }
 
       let updated!: StoredUser
       setUsers((prev) => {
@@ -204,7 +239,7 @@ export function UsersProvider({ children }: { children: ReactNode }) {
       })
       return updated!
     },
-    [usingCloud, usersById],
+    [usingCloud, users, usersById],
   )
 
   const deleteUser = useCallback(

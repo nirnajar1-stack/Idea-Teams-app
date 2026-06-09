@@ -14,7 +14,7 @@ export function StatsBentoSection() {
     >
       <StatCard
         className="animate-fade-up md:col-span-4"
-        label="רעיונות פעילים"
+        label="בקשות/רעיונות פעילים"
         value={stats.activeCount}
         trendPercent={`${stats.monthGrowthPercent}%`}
         trendLabel="מהחודש האחרון"
@@ -31,7 +31,7 @@ export function StatsBentoSection() {
           </p>
         </div>
         <p className="mt-6 font-label-sm text-secondary transition-colors group-hover:text-inbox">
-          רעיונות לבחינה עתידית ←
+          בקשות/רעיונות לבחינה עתידית ←
         </p>
       </Link>
       <StatusDistributionCard

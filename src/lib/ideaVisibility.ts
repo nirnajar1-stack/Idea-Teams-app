@@ -8,7 +8,7 @@ export const IDEA_VISIBILITY_LABELS: Record<IdeaVisibility, string> = {
 }
 
 export const IDEA_VISIBILITY_HINTS: Record<IdeaVisibility, string> = {
-  team: 'כל המשתמשים והמנהלים יראו את הרעיון',
+  team: 'כל המשתמשים והמנהלים יראו את הבקשה/רעיון',
   managers_only: 'רק מנהלים (ומאסטר) יראו — לא משתמשים רגילים',
   master_private: 'אף אחד לא יראה, כולל מנהלים — עד שתחזיר להרשאות רגילות',
 }

@@ -107,7 +107,7 @@ export function ProfilePage() {
 
       {isGuest && (
         <p className="mb-8 rounded-xl border border-inbox/20 bg-inbox-soft/50 p-4 font-body-md text-on-surface-variant">
-          כ{ACCESS_LEVEL_LABELS.guest} אתם רואים רק רעיונות שנוצרו בכניסה הנוכחית. לאחר
+          כ{ACCESS_LEVEL_LABELS.guest} אתם רואים רק בקשות/רעיונות שנוצרו בכניסה הנוכחית. לאחר
           יציאה הסשן מתאפס.
         </p>
       )}
@@ -115,11 +115,11 @@ export function ProfilePage() {
       <div className="mb-10 grid grid-cols-1 gap-gutter sm:grid-cols-3">
         <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
           <Lightbulb className="mb-2 h-8 w-8 text-primary" />
-          <p className="font-label-md text-secondary">הרעיונות שלי</p>
+          <p className="font-label-md text-secondary">הבקשות/רעיונות שלי</p>
           <p className="font-display text-display-lg text-primary">{myIdeas.length}</p>
         </div>
         <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
-          <p className="font-label-md text-secondary">רעיונות גלויים לי</p>
+          <p className="font-label-md text-secondary">בקשות/רעיונות גלויים לי</p>
           <p className="font-display text-display-lg text-primary">{stats.total}</p>
         </div>
         <div className="rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
@@ -141,11 +141,11 @@ export function ProfilePage() {
           <ul className="space-y-3">
             {(
               [
-                ['notifyIdeaChat', 'התראות צ\'אט רעיון'],
+                ['notifyIdeaChat', 'התראות צ\'אט בקשה/רעיון'],
                 ['notifyGeneralMentions', 'תיוגים בצ\'אט כללי'],
                 ['notifyReplies', 'תגובות ישירות'],
                 ['notifyTargetDate', 'תזכורות תאריך יעד'],
-                ['notifyEmailCompleted', 'מייל כשמשימה הושלמה (פותח / מוקצה)'],
+                ['notifyEmailCompleted', 'מייל כשבקשה/רעיון הושלם (פותח / מוקצה)'],
               ] as const
             ).map(([key, label]) => (
               <li key={key} className="flex items-center justify-between gap-4">
@@ -171,7 +171,7 @@ export function ProfilePage() {
       {myIdeas.length > 0 && (
         <section className="mb-10 rounded-xl border border-border-light bg-surface-container-lowest p-6 shadow-card">
           <h2 className="mb-4 font-display text-headline-md text-on-surface">
-            רעיונות שפתחתי
+            בקשות/רעיונות שפתחתי
           </h2>
           <ul className="space-y-3">
             {myIdeas.map((idea) => (
@@ -195,7 +195,7 @@ export function ProfilePage() {
       <section className="rounded-xl border border-border-light bg-surface-container-low p-6">
         <h2 className="mb-4 font-display text-headline-md text-on-surface">קהילת {APP_NAME_FULL}</h2>
         <p className="font-body-md text-on-surface-variant">
-          שתפו משוב, הצביעו על רעיונות חדשים והשפיעו על מפת הדרכים. ערוץ Slack ייעודי
+          שתפו משוב, הצביעו על בקשות/רעיונות חדשים והשפיעו על מפת הדרכים. ערוץ Slack ייעודי
           פעיל לשאלות מוצר ותיאום עם צוותי הפיתוח והבקרה.
         </p>
       </section>

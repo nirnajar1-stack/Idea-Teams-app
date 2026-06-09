@@ -24,28 +24,28 @@ export function RecentIdeasSection() {
   const recent = getRecentIdeas(3, sort)
 
   return (
-    <section className="glass-card overflow-hidden animate-fade-up" aria-label="רעיונות אחרונים">
+    <section className="glass-card overflow-hidden animate-fade-up" aria-label="בקשות/רעיונות אחרונים">
       <div className="flex items-center justify-between border-b border-border-light p-6 md:p-8">
         <h3 className="font-display text-headline-md text-on-surface">
-          רעיונות אחרונים
+          בקשות/רעיונות אחרונים
         </h3>
         <Link
           to={ROUTES.ideas}
           className="font-label-md text-primary transition-colors hover:underline"
         >
-          צפה בכל הרעיונות
+          צפה בכל הבקשות/רעיונות
         </Link>
       </div>
 
       {recent.length === 0 ? (
         <div className="p-12 text-center">
           <Lightbulb className="mx-auto mb-4 h-10 w-10 text-primary/40" />
-          <p className="font-body-md text-secondary">עדיין אין רעיונות פעילים</p>
+          <p className="font-body-md text-secondary">עדיין אין בקשות/רעיונות פעילים</p>
           <Link
             to={ROUTES.addIdea}
             className="mt-3 inline-block font-label-md text-primary hover:underline"
           >
-            הוסף רעיון ראשון
+            הוסף בקשה/רעיון ראשון
           </Link>
         </div>
       ) : (
@@ -54,7 +54,7 @@ export function RecentIdeasSection() {
             <thead className="bg-surface-subtle">
               <tr>
                 <th className="px-4 py-4 font-label-md text-secondary md:px-8">
-                  שם הרעיון
+                  שם הבקשה/רעיון
                 </th>
                 <th className="hidden px-8 py-4 font-label-md text-secondary sm:table-cell">
                   קטגוריה

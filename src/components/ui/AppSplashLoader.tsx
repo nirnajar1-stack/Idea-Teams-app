@@ -30,7 +30,7 @@ export function AppSplashLoader({ exiting = false }: AppSplashLoaderProps) {
         </div>
 
         <div className="text-center">
-          <p className="font-body-md text-secondary">טוען רעיונות וצוות…</p>
+          <p className="font-body-md text-secondary">טוען בקשות/רעיונות וצוות…</p>
         </div>
 
         <div className="flex gap-2">

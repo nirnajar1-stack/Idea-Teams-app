@@ -14,13 +14,13 @@ export function IdeaChatSection({ idea }: IdeaChatSectionProps) {
     <section id="idea-chat" className="glass-card scroll-mt-28 p-6 md:p-8">
       <span className="section-eyebrow">
         <MessagesSquare className="h-3.5 w-3.5" />
-        צ'אט רעיון
+        צ'אט בקשה/רעיון
       </span>
       <ChatPanel
         scope="idea"
         ideaId={idea.id}
         title={`דיון: ${idea.title}`}
-        subtitle="הודעות המקושרות לרעיון זה בלבד"
+        subtitle="הודעות המקושרות לבקשה/רעיון זה בלבד"
       />
     </section>
   )

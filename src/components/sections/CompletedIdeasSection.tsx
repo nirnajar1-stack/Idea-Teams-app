@@ -17,7 +17,7 @@ export function CompletedIdeasSection({ ideas, compact }: CompletedIdeasSectionP
   return (
     <section
       className="mt-10 border-t border-border-light pt-8"
-      aria-label="משימות שהושלמו"
+      aria-label="בקשות/רעיונות שהושלמו"
     >
       <button
         type="button"
@@ -27,7 +27,7 @@ export function CompletedIdeasSection({ ideas, compact }: CompletedIdeasSectionP
       >
         <span className="flex items-center gap-2 font-display text-headline-md text-on-surface">
           <CheckCircle2 className="h-6 w-6 text-success-vibrant" />
-          משימות שהושלמו
+          בקשות/רעיונות שהושלמו
           <span className="rounded-full bg-success-vibrant/15 px-2.5 py-0.5 font-label-sm text-success-vibrant">
             {ideas.length}
           </span>

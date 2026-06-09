@@ -70,7 +70,7 @@ export function buildIdeaNotifications(
     const latest = sorted[0]
     notifications.push({
       ideaId,
-      ideaTitle: ideasById.get(ideaId)?.title ?? 'רעיון',
+      ideaTitle: ideasById.get(ideaId)?.title ?? 'בקשה/רעיון',
       unreadCount: msgs.length,
       latestBody: latest.body,
       latestAuthorName: latest.authorName,

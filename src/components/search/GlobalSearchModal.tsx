@@ -82,7 +82,7 @@ export function GlobalSearchModal({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="חיפוש רעיונות, תיאורים, צ'אט…"
+            placeholder="חיפוש בקשות/רעיונות, תיאורים, צ'אט…"
             className="flex-1 bg-transparent font-body-md outline-none"
           />
           <button type="button" onClick={onClose} aria-label="סגירה" className="rounded-lg p-1 hover:bg-surface-container">
@@ -104,7 +104,7 @@ export function GlobalSearchModal({
 
           {!loading && results.ideas.length > 0 && (
             <section className="mb-2">
-              <h3 className="px-3 py-2 font-label-sm uppercase text-secondary">רעיונות</h3>
+              <h3 className="px-3 py-2 font-label-sm uppercase text-secondary">בקשות/רעיונות</h3>
               {results.ideas.map(({ idea, snippet }) => (
                 <button
                   key={idea.id}

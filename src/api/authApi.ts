@@ -5,6 +5,7 @@ export interface CloudLoginResult {
   userId?: string
   email?: string
   error?: 'empty_password' | 'ambiguous' | 'invalid' | 'network'
+  conflictNames?: string
 }
 
 export async function loginWithPasswordCloud(password: string): Promise<CloudLoginResult> {
@@ -18,11 +19,18 @@ export async function loginWithPasswordCloud(password: string): Promise<CloudLog
     console.warn('login_with_password RPC failed', error.message)
     return { ok: false, error: 'network' }
   }
-  const result = data as { ok: boolean; userId?: string; email?: string; error?: string }
+  const result = data as {
+    ok: boolean
+    userId?: string
+    email?: string
+    error?: string
+    conflictNames?: string
+  }
   if (!result.ok) {
     return {
       ok: false,
       error: (result.error as CloudLoginResult['error']) ?? 'invalid',
+      conflictNames: result.conflictNames,
     }
   }
   return { ok: true, userId: result.userId, email: result.email }

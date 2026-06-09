@@ -128,7 +128,7 @@ export function ChatPanel({
           <p className="py-8 text-center font-body-md text-secondary">
             {scope === 'general'
               ? 'אין הודעות עדיין — התחילו שיחה כללית עם @תיוג.'
-              : 'אין הודעות ברעיון — כתבו עדכון, תייגו עם @שם והגיבו.'}
+              : 'אין הודעות בבקשה/רעיון — כתבו עדכון, תייגו עם @שם והגיבו.'}
           </p>
         )}
 

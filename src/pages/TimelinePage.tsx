@@ -10,7 +10,7 @@ export function TimelinePage() {
   const handleSchedule = async (ideaId: string, plannedDate: string | null) => {
     const ok = await scheduleIdeaOnTimeline(ideaId, plannedDate)
     if (ok) {
-      toast.success(plannedDate ? 'המשימה תוכננה ליום שנבחר' : 'הוסר מהתכנון')
+      toast.success(plannedDate ? 'הבקשה/רעיון תוכנן ליום שנבחר' : 'הוסר מהתכנון')
     } else {
       toast.error('לא ניתן לעדכן את התאריך')
     }
@@ -24,7 +24,8 @@ export function TimelinePage() {
           <h1 className="font-display text-headline-lg text-on-surface">טיימליין תכנון</h1>
         </div>
         <p className="max-w-2xl font-body-md text-secondary">
-          גרור רעיונות ומשימות לימים שבהם תרצה לבצע אותם. רק משתמשי מאסטר רואים מסך זה.
+          תכנון שבועי או חודשי — גרור בקשות/רעיונות לימים הרצויים. רק משתמשי מאסטר רואים
+          מסך זה.
         </p>
       </div>
 

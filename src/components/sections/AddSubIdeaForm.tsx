@@ -73,12 +73,12 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
         >
           ← חזרה למארז: {parent.title}
         </Link>
-        <span className="section-eyebrow">תת-רעיון</span>
+        <span className="section-eyebrow">תת-בקשה/רעיון</span>
         <h1 className="mb-2 font-display text-headline-lg text-on-surface">
-          הוספת תת-רעיון
+          הוספת תת-בקשה/רעיון
         </h1>
         <p className="font-body-md text-secondary">
-          התת-רעיון יתווסף תחת המארז &quot;{parent.title}&quot; ·{' '}
+          התת-בקשה/רעיון יתווסף תחת המארז &quot;{parent.title}&quot; ·{' '}
           <strong className="text-on-surface">{user?.name}</strong>
         </p>
       </div>
@@ -86,11 +86,11 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
       <div className="glass-card animate-fade-up p-6 md:p-8">
         <form className="space-y-8" onSubmit={handleSubmit}>
           <Input
-            label="כותרת תת-רעיון"
+            label="כותרת תת-בקשה/רעיון"
             name="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="שלב או רעיון משנה"
+            placeholder="שלב או בקשה/רעיון משנה"
             required
           />
 
@@ -170,7 +170,7 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
             {submitState === 'idle' && (
               <>
                 <CirclePlus className="h-6 w-6" />
-                הוסף תת-רעיון
+                הוסף תת-בקשה/רעיון
               </>
             )}
           </button>

@@ -1,13 +1,17 @@
 import { useMemo, useState } from 'react'
-import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react'
+import { CalendarDays, CalendarRange, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useUsers } from '../../context/UsersContext'
-import { buildTimelineDays, timelineDragMime } from '../../lib/timelineUtils'
+import {
+  buildMonthGrid,
+  buildWeekDays,
+  type TimelineViewMode,
+  weekRangeLabel,
+} from '../../lib/timelineUtils'
 import { cn } from '../../lib/cn'
 import type { Idea } from '../../types/idea'
+import { TimelineBacklog } from './TimelineBacklog'
 import { TimelineDayColumn } from './TimelineDayColumn'
-import { TimelineIdeaCard } from './TimelineIdeaCard'
-
-const DAYS_PER_VIEW = 7
+import { TimelineMonthGrid } from './TimelineMonthGrid'
 
 interface TimelineBoardProps {
   ideas: Idea[]
@@ -16,7 +20,9 @@ interface TimelineBoardProps {
 
 export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
   const { usersById } = useUsers()
-  const [offset, setOffset] = useState(0)
+  const [viewMode, setViewMode] = useState<TimelineViewMode>('week')
+  const [weekOffset, setWeekOffset] = useState(0)
+  const [monthOffset, setMonthOffset] = useState(0)
   const [dropTarget, setDropTarget] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
 
@@ -36,18 +42,42 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
     [activeIdeas],
   )
 
-  const days = useMemo(() => buildTimelineDays(offset, DAYS_PER_VIEW), [offset])
+  const weekDays = useMemo(() => buildWeekDays(weekOffset), [weekOffset])
+  const monthGrid = useMemo(() => buildMonthGrid(monthOffset), [monthOffset])
+
+  const visibleDateKeys = useMemo(
+    () => (viewMode === 'week' ? weekDays : monthGrid.daysInMonth),
+    [viewMode, weekDays, monthGrid.daysInMonth],
+  )
 
   const byDate = useMemo(() => {
     const map = new Map<string, Idea[]>()
-    for (const day of days) map.set(day, [])
+    for (const day of visibleDateKeys) map.set(day, [])
     for (const idea of activeIdeas) {
       if (!idea.plannedDate) continue
       const list = map.get(idea.plannedDate)
       if (list) list.push(idea)
     }
     return map
-  }, [activeIdeas, days])
+  }, [activeIdeas, visibleDateKeys])
+
+  const periodLabel =
+    viewMode === 'week' ? weekRangeLabel(weekOffset) : monthGrid.label
+
+  const goToday = () => {
+    setWeekOffset(0)
+    setMonthOffset(0)
+  }
+
+  const goPrev = () => {
+    if (viewMode === 'week') setWeekOffset((o) => o - 1)
+    else setMonthOffset((o) => o - 1)
+  }
+
+  const goNext = () => {
+    if (viewMode === 'week') setWeekOffset((o) => o + 1)
+    else setMonthOffset((o) => o + 1)
+  }
 
   const handleDropOnDate = async (ideaId: string, dateKey: string) => {
     setDropTarget(null)
@@ -62,98 +92,131 @@ export function TimelineBoard({ ideas, onSchedule }: TimelineBoardProps) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={() => setOffset((o) => o - DAYS_PER_VIEW)}
-          className="flex items-center gap-1 rounded-xl border border-border-light px-3 py-2 font-label-md text-secondary hover:bg-surface-container"
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:gap-4">
+        <div
+          className="flex rounded-xl border border-border-light bg-surface-container-low p-1"
+          role="tablist"
+          aria-label="תצוגת טיימליין"
         >
-          <ChevronRight className="h-4 w-4" />
-          שבוע קודם
-        </button>
-        <button
-          type="button"
-          onClick={() => setOffset(0)}
-          className="rounded-xl px-3 py-2 font-label-md text-primary hover:bg-primary/10"
-        >
-          חזרה להיום
-        </button>
-        <button
-          type="button"
-          onClick={() => setOffset((o) => o + DAYS_PER_VIEW)}
-          className="flex items-center gap-1 rounded-xl border border-border-light px-3 py-2 font-label-md text-secondary hover:bg-surface-container"
-        >
-          שבוע הבא
-          <ChevronLeft className="h-4 w-4" />
-        </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={viewMode === 'week'}
+            onClick={() => setViewMode('week')}
+            className={cn(
+              'flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 font-label-md transition-colors',
+              viewMode === 'week'
+                ? 'bg-primary text-on-primary shadow-sm'
+                : 'text-secondary hover:text-on-surface',
+            )}
+          >
+            <CalendarRange className="h-4 w-4" />
+            שבועי
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={viewMode === 'month'}
+            onClick={() => setViewMode('month')}
+            className={cn(
+              'flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 font-label-md transition-colors',
+              viewMode === 'month'
+                ? 'bg-primary text-on-primary shadow-sm'
+                : 'text-secondary hover:text-on-surface',
+            )}
+          >
+            <CalendarDays className="h-4 w-4" />
+            חודשי
+          </button>
+        </div>
+
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={goPrev}
+            className="flex items-center gap-1 rounded-xl border border-border-light px-2.5 py-2 font-label-md text-secondary hover:bg-surface-container sm:px-3"
+          >
+            <ChevronRight className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              {viewMode === 'week' ? 'שבוע קודם' : 'חודש קודם'}
+            </span>
+            <span className="sm:hidden">קודם</span>
+          </button>
+
+          <div className="min-w-0 flex-1 px-1 text-center">
+            <p className="truncate font-label-md text-on-surface sm:font-display sm:text-headline-md">
+              {periodLabel}
+            </p>
+            <button
+              type="button"
+              onClick={goToday}
+              className="mt-0.5 font-label-sm text-primary hover:underline"
+            >
+              חזרה להיום
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={goNext}
+            className="flex items-center gap-1 rounded-xl border border-border-light px-2.5 py-2 font-label-md text-secondary hover:bg-surface-container sm:px-3"
+          >
+            <span className="hidden sm:inline">
+              {viewMode === 'week' ? 'שבוע הבא' : 'חודש הבא'}
+            </span>
+            <span className="sm:hidden">הבא</span>
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <aside
-          className={cn(
-            'w-full shrink-0 rounded-xl border border-border-light bg-surface-container-lowest p-4 lg:w-64',
-            dropTarget === 'backlog' && 'border-primary ring-2 ring-primary/20',
-          )}
-          onDragOver={(e) => {
-            e.preventDefault()
-            setDropTarget('backlog')
-          }}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-6">
+        <TimelineBacklog
+          backlog={backlog}
+          assigneeNames={assigneeNames}
+          isDropTarget={dropTarget === 'backlog'}
+          onDropBacklog={handleDropBacklog}
+          onDragOver={() => setDropTarget('backlog')}
           onDragLeave={() => setDropTarget(null)}
-          onDrop={(e) => {
-            e.preventDefault()
-            const ideaId = e.dataTransfer.getData(timelineDragMime())
-            if (ideaId) void handleDropBacklog(ideaId)
-          }}
-        >
-          <div className="mb-3 flex items-center gap-2">
-            <Inbox className="h-5 w-5 text-primary" />
-            <h2 className="font-display text-headline-md text-on-surface">לא מתוכנן</h2>
-            <span className="rounded-full bg-surface-container-high px-2 py-0.5 font-label-sm text-secondary">
-              {backlog.length}
-            </span>
-          </div>
-          <p className="mb-4 font-label-sm text-secondary">
-            גרור משימות לימים בלוח, או החזר לכאן להסרת תאריך.
-          </p>
-          <div className="flex max-h-[60vh] flex-col gap-2 overflow-y-auto lg:max-h-[calc(100vh-16rem)]">
-            {backlog.map((idea) => (
-              <TimelineIdeaCard
-                key={idea.id}
-                idea={idea}
-                assigneeName={
-                  idea.assigneeUserId ? assigneeNames.get(idea.assigneeUserId) : undefined
-                }
-                onDragStart={() => setDragging(true)}
-                onDragEnd={() => setDragging(false)}
-              />
-            ))}
-            {backlog.length === 0 && (
-              <p className="py-6 text-center font-label-sm text-secondary">הכל מתוכנן</p>
-            )}
-          </div>
-        </aside>
+          onDragStart={() => setDragging(true)}
+          onDragEnd={() => setDragging(false)}
+        />
 
         <div
           className={cn(
-            'min-w-0 flex-1 overflow-x-auto pb-2',
+            'min-w-0 flex-1',
+            viewMode === 'week' &&
+              '-mx-4 overflow-x-auto px-4 pb-2 snap-x snap-mandatory sm:mx-0 sm:px-0.5',
             dragging && 'cursor-grabbing',
           )}
         >
-          <div className="flex gap-3">
-            {days.map((dateKey) => (
-              <TimelineDayColumn
-                key={dateKey}
-                dateKey={dateKey}
-                ideas={byDate.get(dateKey) ?? []}
-                assigneeNames={assigneeNames}
-                isDropTarget={dropTarget === dateKey}
-                onDrop={handleDropOnDate}
-                onDragOver={setDropTarget}
-                onDragLeave={() => setDropTarget(null)}
-              />
-            ))}
-          </div>
+          {viewMode === 'week' ? (
+            <div className="flex gap-3">
+              {weekDays.map((dateKey) => (
+                <TimelineDayColumn
+                  key={dateKey}
+                  dateKey={dateKey}
+                  ideas={byDate.get(dateKey) ?? []}
+                  assigneeNames={assigneeNames}
+                  isDropTarget={dropTarget === dateKey}
+                  onDrop={handleDropOnDate}
+                  onDragOver={setDropTarget}
+                  onDragLeave={() => setDropTarget(null)}
+                />
+              ))}
+            </div>
+          ) : (
+            <TimelineMonthGrid
+              grid={monthGrid}
+              byDate={byDate}
+              assigneeNames={assigneeNames}
+              dropTarget={dropTarget}
+              onDrop={handleDropOnDate}
+              onDragOver={setDropTarget}
+              onDragLeave={() => setDropTarget(null)}
+            />
+          )}
         </div>
       </div>
     </div>

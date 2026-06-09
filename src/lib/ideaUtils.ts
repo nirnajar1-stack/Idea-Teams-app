@@ -107,7 +107,7 @@ export function sortIdeas(ideas: Idea[], sort: IdeaSortOption): Idea[] {
 export const IDEA_SORT_LABELS: Record<IdeaSortOption, string> = {
   date_desc: 'תאריך פתיחה (חדש למעלה)',
   priority_desc: 'חשיבות (גבוהה למעלה)',
-  author_asc: 'פותח המשימה (א–ת)',
+  author_asc: 'פותח הבקשה/רעיון (א–ת)',
 }
 
 export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
@@ -231,8 +231,8 @@ export const IDEA_SOURCE_LABELS: Record<IdeaSource, string> = {
 }
 
 export const IDEA_KIND_LABELS: Record<IdeaKind, string> = {
-  standard: 'רעיון',
-  container: 'רעיון עם תת-רעיונות',
+  standard: 'בקשה/רעיון',
+  container: 'בקשה/רעיון עם תת-בקשות/רעיונות',
 }
 
 export function containerProgress(subIdeas: Idea[]): {
@@ -240,7 +240,7 @@ export function containerProgress(subIdeas: Idea[]): {
   stepLabel: string
 } {
   if (subIdeas.length === 0) {
-    return { percent: 0, stepLabel: 'אין תת-רעיונות עדיין' }
+    return { percent: 0, stepLabel: 'אין תת-בקשות/רעיונות עדיין' }
   }
   const avg = Math.round(
     subIdeas.reduce((s, i) => s + i.progress, 0) / subIdeas.length,
@@ -248,7 +248,7 @@ export function containerProgress(subIdeas: Idea[]): {
   const done = subIdeas.filter((i) => i.workflowStatus === 'completed').length
   return {
     percent: avg,
-    stepLabel: `${done} מתוך ${subIdeas.length} תת-רעיונות הושלמו`,
+    stepLabel: `${done} מתוך ${subIdeas.length} תת-בקשות/רעיונות הושלמו`,
   }
 }
 

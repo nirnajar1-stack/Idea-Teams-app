@@ -309,7 +309,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         ...author,
         tags: [
           isContainer
-            ? 'תת-רעיונות'
+            ? 'תת-בקשות/רעיונות'
             : input.category === 'development'
               ? 'פיתוח'
               : 'בקרה',
@@ -317,7 +317,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         goals: [],
         attachments: [],
         progress: 0,
-        progressStep: isContainer ? 'ממתין לתת-רעיונות' : 'שלב 1 מתוך 5',
+        progressStep: isContainer ? 'ממתין לתת-בקשות/רעיונות' : 'שלב 1 מתוך 5',
         visibility: resolveVisibilityOnCreate(user, input.visibility),
       }
 

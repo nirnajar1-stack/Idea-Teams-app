@@ -52,7 +52,7 @@ export function IdeaListCard({
       onClick={(e) => {
         e.preventDefault()
         onRestoreFromInbox(idea.id)
-        toast.success('הוחזר לרעיונות פעילים')
+        toast.success('הוחזר לבקשות/רעיונות פעילים')
       }}
       className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-primary/20 bg-primary/5 px-2.5 py-1.5 font-label-sm text-primary transition-colors hover:bg-primary/10"
     >

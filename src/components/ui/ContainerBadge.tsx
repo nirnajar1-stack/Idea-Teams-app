@@ -18,8 +18,8 @@ export function ContainerBadge({ subCount, compact, className }: ContainerBadgeP
     >
       <Layers className={cn(compact ? 'h-3 w-3' : 'h-3.5 w-3.5')} aria-hidden />
       {subCount != null && subCount > 0
-        ? `${subCount} תת-רעיונות`
-        : 'עם תת-רעיונות'}
+        ? `${subCount} תת-בקשות/רעיונות`
+        : 'עם תת-בקשות/רעיונות'}
     </span>
   )
 }

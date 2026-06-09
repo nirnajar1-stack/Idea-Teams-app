@@ -70,7 +70,7 @@ export function IdeaDetailContent({
             <ContainerBadge subCount={subIdeas.length} />
           )}
           {isSubIdea(idea) && (
-            <Badge variant="surface">תת-רעיון</Badge>
+            <Badge variant="surface">תת-בקשה/רעיון</Badge>
           )}
           {idea.sendToMaybeInbox && <InboxBadge />}
           <IdeaSourceBadge source={idea.ideaSource} />
@@ -97,7 +97,7 @@ export function IdeaDetailContent({
         <div className="grid grid-cols-1 gap-6 rounded-xl border border-border-light bg-surface-subtle p-6 md:grid-cols-2">
           <div>
             <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">
-              יוצר הרעיון
+              יוצר הבקשה/רעיון
             </h3>
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-container font-bold text-primary">
@@ -111,7 +111,7 @@ export function IdeaDetailContent({
           </div>
           <div>
             <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">
-              מקור הרעיון
+              מקור הבקשה/רעיון
             </h3>
             <IdeaSourceBadge source={idea.ideaSource} />
           </div>

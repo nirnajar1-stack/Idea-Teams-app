@@ -22,7 +22,7 @@ export function IdeaVisibilitySelect({
 
   return (
     <div>
-      <label className="mb-2 block font-label-md text-secondary">מי יראה את הרעיון?</label>
+      <label className="mb-2 block font-label-md text-secondary">מי יראה את הבקשה/רעיון?</label>
       <select
         value={value}
         disabled={disabled}
