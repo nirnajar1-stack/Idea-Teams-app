@@ -28,6 +28,7 @@ import {
   friendlySupabaseConfigMessage,
 } from '../lib/userFriendlyErrors'
 import {
+  categoryDepartment,
   computeStats,
   filterIdeas,
   generateExternalId,
@@ -38,14 +39,17 @@ import {
   isRootIdea,
   normalizeIdea,
   sortIdeas,
+  todayDateKey,
 } from '../lib/ideaUtils'
 import {
   canDeleteIdea,
   canEditIdea,
+  canManageMasterWorkflow,
   canScheduleOnTimeline,
   canViewIdea,
   filterVisibleIdeas,
 } from '../lib/permissions'
+import type { IdeaCheckCadence } from '../types/idea'
 import { authorFieldsFromUser } from '../lib/userUtils'
 import { resolveVisibilityOnCreate } from '../lib/ideaVisibility'
 import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats, IdeaSortOption } from '../types/idea'
@@ -70,6 +74,9 @@ interface IdeasContextValue {
   deleteIdea: (id: string) => Promise<boolean>
   markCompleted: (id: string) => Promise<UpdateIdeaResult>
   scheduleIdeaOnTimeline: (id: string, plannedDate: string | null) => Promise<boolean>
+  toggleSentToExecution: (id: string, send: boolean) => Promise<boolean>
+  setCheckCadence: (id: string, cadence: IdeaCheckCadence | null) => Promise<boolean>
+  markRoutineCheckDone: (id: string) => Promise<boolean>
   getIdeaById: (id: string) => Idea | undefined
   getFilteredIdeas: (filters: IdeaFilters) => Idea[]
   getRecentIdeas: (limit?: number, sort?: IdeaSortOption) => Idea[]
@@ -302,7 +309,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         title: input.title.trim(),
         description: input.description.trim(),
         category: input.category,
-        department: input.category === 'development' ? 'פיתוח' : 'בקרה',
+        department: categoryDepartment(input.category),
         ideaSource: input.ideaSource,
         priority: input.priority,
         workflowStatus: 'pending',
@@ -315,9 +322,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         tags: [
           isContainer
             ? 'תת-בקשות/רעיונות'
-            : input.category === 'development'
-              ? 'פיתוח'
-              : 'בקרה',
+            : categoryDepartment(input.category),
         ],
         goals: [],
         attachments: [],
@@ -491,6 +496,75 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
     [applyLocalIdeas, ideas, user, usingCloud],
   )
 
+  const toggleSentToExecution = useCallback(
+    async (id: string, send: boolean): Promise<boolean> => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canManageMasterWorkflow(user, idea)) return false
+
+      const patch: Partial<Idea> = send
+        ? {
+            sentToExecution: true,
+            sentToExecutionAt: new Date().toISOString(),
+          }
+        : { sentToExecution: false, sentToExecutionAt: null }
+
+      if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
+
+      applyLocalIdeas((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, ...patch } : i)),
+      )
+
+      return true
+    },
+    [applyLocalIdeas, ideas, user, usingCloud],
+  )
+
+  const setCheckCadence = useCallback(
+    async (id: string, cadence: IdeaCheckCadence | null): Promise<boolean> => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canManageMasterWorkflow(user, idea)) return false
+
+      const patch: Partial<Idea> = cadence
+        ? { checkCadence: cadence, plannedDate: null }
+        : { checkCadence: null }
+
+      if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
+
+      applyLocalIdeas((prev) =>
+        prev.map((i) => {
+          if (i.id !== id) return i
+          if (!cadence) {
+            const { checkCadence: _c, lastCheckedAt: _l, ...rest } = i
+            return rest
+          }
+          const { plannedDate: _p, ...rest } = i
+          return { ...rest, checkCadence: cadence }
+        }),
+      )
+
+      return true
+    },
+    [applyLocalIdeas, ideas, user, usingCloud],
+  )
+
+  const markRoutineCheckDone = useCallback(
+    async (id: string): Promise<boolean> => {
+      const idea = ideas.find((i) => i.id === id)
+      if (!idea || !canManageMasterWorkflow(user, idea) || !idea.checkCadence) return false
+
+      const patch: Partial<Idea> = { lastCheckedAt: todayDateKey() }
+
+      if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
+
+      applyLocalIdeas((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, ...patch } : i)),
+      )
+
+      return true
+    },
+    [applyLocalIdeas, ideas, user, usingCloud],
+  )
+
   const value = useMemo(
     () => ({
       ideas,
@@ -505,6 +579,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       deleteIdea,
       markCompleted,
       scheduleIdeaOnTimeline,
+      toggleSentToExecution,
+      setCheckCadence,
+      markRoutineCheckDone,
       getIdeaById,
       getFilteredIdeas,
       getRecentIdeas,
@@ -526,6 +603,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       deleteIdea,
       markCompleted,
       scheduleIdeaOnTimeline,
+      toggleSentToExecution,
+      setCheckCadence,
+      markRoutineCheckDone,
       getIdeaById,
       getFilteredIdeas,
       getRecentIdeas,

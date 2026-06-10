@@ -28,6 +28,10 @@ export interface IdeaRow {
   target_start_date: string
   planned_date: string | null
   send_to_maybe_inbox: boolean
+  sent_to_execution: boolean
+  sent_to_execution_at: string | null
+  check_cadence: Idea['checkCadence']
+  last_checked_at: string | null
   created_by_user_id: string
   guest_session_id: string | null
   author_name: string
@@ -107,6 +111,10 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     targetStartDate: row.target_start_date,
     plannedDate: row.planned_date ?? undefined,
     sendToMaybeInbox: row.send_to_maybe_inbox,
+    sentToExecution: row.sent_to_execution ?? false,
+    sentToExecutionAt: row.sent_to_execution_at ?? undefined,
+    checkCadence: row.check_cadence ?? undefined,
+    lastCheckedAt: row.last_checked_at ?? undefined,
     createdByUserId: row.created_by_user_id,
     guestSessionId: row.guest_session_id ?? undefined,
     authorName: row.author_name,
@@ -140,6 +148,10 @@ export function ideaToRow(idea: Idea): IdeaRow {
     target_start_date: idea.targetStartDate,
     planned_date: idea.plannedDate ?? null,
     send_to_maybe_inbox: idea.sendToMaybeInbox,
+    sent_to_execution: idea.sentToExecution ?? false,
+    sent_to_execution_at: idea.sentToExecutionAt ?? null,
+    check_cadence: idea.checkCadence ?? null,
+    last_checked_at: idea.lastCheckedAt ?? null,
     created_by_user_id: idea.createdByUserId,
     guest_session_id: idea.guestSessionId ?? null,
     author_name: idea.authorName,
@@ -172,6 +184,10 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.targetStartDate !== undefined) row.target_start_date = patch.targetStartDate
   if (patch.plannedDate !== undefined) row.planned_date = patch.plannedDate ?? null
   if (patch.sendToMaybeInbox !== undefined) row.send_to_maybe_inbox = patch.sendToMaybeInbox
+  if (patch.sentToExecution !== undefined) row.sent_to_execution = patch.sentToExecution
+  if (patch.sentToExecutionAt !== undefined) row.sent_to_execution_at = patch.sentToExecutionAt ?? null
+  if (patch.checkCadence !== undefined) row.check_cadence = patch.checkCadence ?? null
+  if (patch.lastCheckedAt !== undefined) row.last_checked_at = patch.lastCheckedAt ?? null
   if (patch.createdByUserId !== undefined) row.created_by_user_id = patch.createdByUserId
   if (patch.guestSessionId !== undefined) row.guest_session_id = patch.guestSessionId ?? null
   if (patch.authorName !== undefined) row.author_name = patch.authorName

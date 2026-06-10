@@ -49,10 +49,17 @@ export function StatsBentoSection() {
             percent: stats.monitoringPercent,
             barClassName: 'bg-surface-container-high',
           },
+          {
+            label: 'טכני',
+            count: stats.technicalCount,
+            percent: stats.technicalPercent,
+            barClassName: 'bg-teal-action',
+          },
         ]}
         legend={[
           { label: 'פיתוח', colorClass: 'bg-primary-container' },
           { label: 'בקרה', colorClass: 'bg-tertiary-container' },
+          { label: 'טכני', colorClass: 'bg-teal-action' },
         ]}
       />
     </section>

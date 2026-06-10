@@ -49,6 +49,13 @@ export function canScheduleOnTimeline(user: AppUser | null, idea: Idea): boolean
   return true
 }
 
+/** מאסטר — שליחה לתור ביצוע / בדיקות שוטפות */
+export function canManageMasterWorkflow(user: AppUser | null, idea: Idea): boolean {
+  if (!isMaster(user)) return false
+  if (idea.visibility === 'master_private' && idea.createdByUserId !== user!.id) return false
+  return true
+}
+
 export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
   if (!user) return false
   if (isOthersMasterPrivate(user, idea) && user.accessLevel === 'manager') return false

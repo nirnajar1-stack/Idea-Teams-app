@@ -1,4 +1,4 @@
-import { Archive, ArrowLeft, Code, Rocket, Verified } from 'lucide-react'
+import { Archive, ArrowLeft, Code, ListTodo, Rocket, Verified, Wrench } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ROUTES } from '../../constants/app'
@@ -14,6 +14,7 @@ import { cn } from '../../lib/cn'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
+import { ExecutionBadge } from '../ui/ExecutionBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
@@ -24,6 +25,8 @@ export interface IdeaListCardProps {
   completed?: boolean
   showInboxActions?: boolean
   onRestoreFromInbox?: (ideaId: string) => void
+  showMasterExecutionToggle?: boolean
+  onExecutionToggle?: (ideaId: string, send: boolean) => void
 }
 
 const priorityVariant: Record<
@@ -41,10 +44,33 @@ export function IdeaListCard({
   completed = false,
   showInboxActions = false,
   onRestoreFromInbox,
+  showMasterExecutionToggle = false,
+  onExecutionToggle,
 }: IdeaListCardProps) {
   const { getSubIdeas } = useIdeas()
-  const CategoryIcon = idea.category === 'development' ? Code : Verified
+  const CategoryIcon =
+    idea.category === 'development'
+      ? Code
+      : idea.category === 'technical'
+        ? Wrench
+        : Verified
   const subCount = isContainerIdea(idea) ? getSubIdeas(idea.id).length : 0
+
+  const executionToggleButton = showMasterExecutionToggle && onExecutionToggle && (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault()
+        const send = !idea.sentToExecution
+        onExecutionToggle(idea.id, send)
+        toast.success(send ? 'סומן לביצוע' : 'הוסר תיוג לביצוע')
+      }}
+      className="inline-flex shrink-0 items-center gap-1 border border-primary/20 bg-primary/5 px-2.5 py-1.5 font-label-sm text-primary transition-colors hover:bg-primary/10"
+    >
+      <ListTodo className="h-3.5 w-3.5" />
+      {idea.sentToExecution ? 'הסר לביצוע' : 'תייג לביצוע'}
+    </button>
+  )
 
   const restoreButton = showInboxActions && onRestoreFromInbox && (
     <button
@@ -82,6 +108,7 @@ export function IdeaListCard({
               {PRIORITY_LABELS[idea.priority]}
             </Badge>
             {showInboxActions && <InboxBadge />}
+            {idea.sentToExecution && <ExecutionBadge compact />}
             <IdeaSourceBadge source={idea.ideaSource} compact />
             {completed && (
               <Badge variant="surface" className="!py-0 text-[10px] text-success-vibrant">
@@ -94,6 +121,7 @@ export function IdeaListCard({
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
+          {executionToggleButton}
           {restoreButton}
           <Link
             to={ROUTES.ideaDetail(idea.id)}
@@ -138,6 +166,7 @@ export function IdeaListCard({
               <ContainerBadge subCount={subCount} compact />
             )}
             {!showInboxActions && idea.sendToMaybeInbox && <InboxBadge />}
+            {idea.sentToExecution && <ExecutionBadge />}
             <IdeaSourceBadge source={idea.ideaSource} />
             <TargetDateBadge targetStartDate={idea.targetStartDate} compact />
             <span className="mr-auto font-label-sm text-secondary md:mr-0">
@@ -160,6 +189,7 @@ export function IdeaListCard({
               </span>
             </div>
             <div className="flex items-center gap-2">
+              {executionToggleButton}
               {restoreButton}
               <Link
                 to={ROUTES.ideaDetail(idea.id)}

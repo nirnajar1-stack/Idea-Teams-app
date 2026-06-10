@@ -12,13 +12,16 @@
       ;(function () {
         var k = 'ideaflow-theme-v1'
         var s = localStorage.getItem(k)
-        var dark = s !== 'light'
+        var theme = s === 'light' || s === 'dim' ? s : 'dark'
         var root = document.documentElement
-        if (dark) root.classList.add('dark')
-        root.dataset.theme = dark ? 'dark' : 'light'
-        root.style.colorScheme = dark ? 'dark' : 'light'
+        root.classList.remove('dark', 'dim')
+        if (theme === 'dark') root.classList.add('dark')
+        if (theme === 'dim') root.classList.add('dim')
+        root.dataset.theme = theme
+        root.style.colorScheme = theme === 'dark' ? 'dark' : 'light'
+        var colors = { light: '#f8f8f8', dim: '#e3d8c8', dark: '#000000' }
         var meta = document.querySelector('meta[name="theme-color"]')
-        if (meta) meta.setAttribute('content', dark ? '#000000' : '#f8f8f8')
+        if (meta) meta.setAttribute('content', colors[theme])
       })()
     </script>
   </head>

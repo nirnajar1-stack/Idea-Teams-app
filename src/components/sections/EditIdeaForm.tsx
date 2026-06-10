@@ -1,9 +1,4 @@
-import {
-  Activity,
-  CheckCircle2,
-  Code,
-  Loader2,
-} from 'lucide-react'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
@@ -11,7 +6,8 @@ import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
 import type { Idea, IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
-import { CategoryCard } from '../ui/CategoryCard'
+import { CategoryPicker } from '../ui/CategoryPicker'
+import { categoryDepartment } from '../../lib/ideaUtils'
 import { DateInput } from '../ui/DateInput'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
@@ -46,7 +42,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
         title: title.trim(),
         description: description.trim(),
         category,
-        department: category === 'development' ? 'פיתוח' : 'בקרה',
+        department: categoryDepartment(category),
         ideaSource,
         priority,
         targetStartDate,
@@ -88,22 +84,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
 
           <div className="space-y-3">
             <span className="block font-label-md text-secondary">קטגוריה</span>
-            <div className="grid grid-cols-2 gap-4">
-              <CategoryCard
-                category="development"
-                label="פיתוח"
-                icon={Code}
-                selected={category === 'development'}
-                onSelect={() => setCategory('development')}
-              />
-              <CategoryCard
-                category="monitoring"
-                label="בקרה"
-                icon={Activity}
-                selected={category === 'monitoring'}
-                onSelect={() => setCategory('monitoring')}
-              />
-            </div>
+            <CategoryPicker value={category} onChange={setCategory} />
           </div>
 
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />

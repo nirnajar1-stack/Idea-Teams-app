@@ -1,4 +1,4 @@
-export type IdeaCategory = 'development' | 'monitoring'
+export type IdeaCategory = 'development' | 'monitoring' | 'technical'
 
 /** מקור הרעיון — יחידה/גורם מייצר */
 export type IdeaSource =
@@ -23,6 +23,11 @@ export type IdeaPriority = 'low' | 'medium' | 'high'
 export type IdeaWorkflowStatus = 'in_progress' | 'completed' | 'pending'
 
 export type IdeaPipeline = 'active' | 'inbox' | 'all'
+
+/** תדירות בדיקה שוטפת — ללא תלות ביום ספציפי בטיימליין */
+export type IdeaCheckCadence = 'daily' | 'every_3_days' | 'weekly'
+
+export const IDEA_CHECK_CADENCES: IdeaCheckCadence[] = ['daily', 'every_3_days', 'weekly']
 
 /** active — לא הושלמו | completed — הושלמו בלבד | all — הכל */
 export type IdeaWorkflowFilter = 'active' | 'completed' | 'all'
@@ -63,6 +68,12 @@ export interface Idea {
   /** תאריך תכנון בטיימליין מאסטר (גרירה ליום ביצוע) */
   plannedDate?: string | null
   sendToMaybeInbox: boolean
+  /** מאסטר — נשלח לתור ביצוע */
+  sentToExecution?: boolean
+  sentToExecutionAt?: string | null
+  /** מאסטר — בדיקה שוטפת ללא יום קבוע בלוח */
+  checkCadence?: IdeaCheckCadence | null
+  lastCheckedAt?: string | null
   createdByUserId: string
   guestSessionId?: string
   authorName: string
@@ -105,6 +116,8 @@ export interface IdeaFilters {
   currentUserId?: string
   pipeline?: IdeaPipeline
   workflow?: IdeaWorkflowFilter
+  /** מאסטר — הצג רק בקשות/רעיונות שסומנו לביצוע */
+  onlySentToExecution?: boolean
 }
 
 export interface IdeasStats {
@@ -113,7 +126,9 @@ export interface IdeasStats {
   inboxCount: number
   developmentCount: number
   monitoringCount: number
+  technicalCount: number
   developmentPercent: number
   monitoringPercent: number
+  technicalPercent: number
   monthGrowthPercent: number
 }

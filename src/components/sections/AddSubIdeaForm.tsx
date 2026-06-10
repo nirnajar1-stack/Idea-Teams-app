@@ -1,17 +1,11 @@
-import {
-  Activity,
-  CheckCircle2,
-  CirclePlus,
-  Code,
-  Loader2,
-} from 'lucide-react'
+import { CheckCircle2, CirclePlus, Loader2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import type { Idea, IdeaCategory, IdeaPriority } from '../../types/idea'
-import { CategoryCard } from '../ui/CategoryCard'
+import { CategoryPicker } from '../ui/CategoryPicker'
 import { DateInput } from '../ui/DateInput'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
@@ -96,22 +90,7 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
 
           <div className="space-y-3">
             <span className="block font-label-md text-secondary">קטגוריה</span>
-            <div className="grid grid-cols-2 gap-4">
-              <CategoryCard
-                category="development"
-                label="פיתוח"
-                icon={Code}
-                selected={category === 'development'}
-                onSelect={() => setCategory('development')}
-              />
-              <CategoryCard
-                category="monitoring"
-                label="בקרה"
-                icon={Activity}
-                selected={category === 'monitoring'}
-                onSelect={() => setCategory('monitoring')}
-              />
-            </div>
+            <CategoryPicker value={category} onChange={setCategory} name="sub-category" />
           </div>
 
           <Textarea

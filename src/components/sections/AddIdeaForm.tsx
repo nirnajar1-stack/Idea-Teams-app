@@ -1,11 +1,4 @@
-import {
-  Activity,
-  CheckCircle2,
-  CirclePlus,
-  Code,
-  Lightbulb,
-  Loader2,
-} from 'lucide-react'
+import { CheckCircle2, CirclePlus, Lightbulb, Loader2 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
@@ -18,7 +11,7 @@ import { resolveVisibilityOnCreate } from '../../lib/ideaVisibility'
 import type { IdeaCategory, IdeaPriority, IdeaSource, IdeaVisibility } from '../../types/idea'
 import { DEFAULT_IDEA_SOURCE } from '../../types/idea'
 import { ContainerKindToggle } from '../ui/ContainerKindToggle'
-import { CategoryCard } from '../ui/CategoryCard'
+import { CategoryPicker } from '../ui/CategoryPicker'
 import { DateInput } from '../ui/DateInput'
 import { InboxToggle } from '../ui/InboxToggle'
 import { Input } from '../ui/Input'
@@ -107,22 +100,7 @@ export function AddIdeaForm() {
 
           <div className="space-y-3">
             <span className="block font-label-md text-secondary">קטגוריה</span>
-            <div className="grid grid-cols-2 gap-4">
-              <CategoryCard
-                category="development"
-                label="פיתוח"
-                icon={Code}
-                selected={category === 'development'}
-                onSelect={() => setCategory('development')}
-              />
-              <CategoryCard
-                category="monitoring"
-                label="בקרה"
-                icon={Activity}
-                selected={category === 'monitoring'}
-                onSelect={() => setCategory('monitoring')}
-              />
-            </div>
+            <CategoryPicker value={category} onChange={setCategory} />
           </div>
 
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />

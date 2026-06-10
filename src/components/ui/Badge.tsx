@@ -5,6 +5,7 @@ export type BadgeVariant =
   | 'primary'
   | 'development'
   | 'monitoring'
+  | 'technical'
   | 'priority-high'
   | 'priority-medium'
   | 'priority-low'
@@ -22,6 +23,7 @@ const variantClasses: Record<BadgeVariant, string> = {
   primary: 'bg-primary/15 text-primary',
   development: 'bg-surface-container-high text-on-surface',
   monitoring: 'bg-surface-container-high text-secondary',
+  technical: 'bg-accent-soft text-teal-action',
   'priority-high': 'bg-error-container text-on-error-container',
   'priority-medium': 'bg-surface-container-high text-secondary',
   'priority-low': 'bg-surface-container-low text-tertiary',

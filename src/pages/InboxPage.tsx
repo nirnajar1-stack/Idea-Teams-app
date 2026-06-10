@@ -21,7 +21,7 @@ export function InboxPage() {
       sortIdeas(
         filterIdeas(visibleIdeas, {
           search,
-          categories: ['development', 'monitoring'],
+          categories: ['development', 'monitoring', 'technical'],
           sources: [...IDEA_SOURCES],
           priority: null,
           pipeline: 'inbox',

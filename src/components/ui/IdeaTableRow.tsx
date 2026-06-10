@@ -13,7 +13,7 @@ export interface IdeaTableRowProps {
   targetStartDate: string
   category: string
   status: string
-  statusVariant: 'development' | 'monitoring'
+  statusVariant: 'development' | 'monitoring' | 'technical'
   date: string
   icon: LucideIcon
   iconWrapperClassName: string

@@ -8,6 +8,7 @@ export interface CategoryCardProps {
   icon: LucideIcon
   selected: boolean
   onSelect: () => void
+  name?: string
 }
 
 export function CategoryCard({
@@ -16,25 +17,30 @@ export function CategoryCard({
   icon: Icon,
   selected,
   onSelect,
+  name = 'category',
 }: CategoryCardProps) {
   return (
-    <label className="relative cursor-pointer">
+    <label className="relative block cursor-pointer">
       <input
         type="radio"
-        name="category"
+        name={name}
         value={category}
         className="peer sr-only"
         checked={selected}
         onChange={onSelect}
+        aria-checked={selected}
       />
       <div
         className={cn(
-          'flex flex-col items-center justify-center border-2 border-transparent bg-surface-subtle p-6 transition-colors duration-200 hover:bg-surface-container-low',
-          selected && 'border-primary bg-primary/5',
+          'flex min-h-[5.5rem] flex-col items-center justify-center border-2 p-4 transition-all duration-200 sm:min-h-[6.5rem] sm:p-5',
+          'peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background',
+          selected
+            ? 'border-primary bg-primary text-on-primary'
+            : 'border-border-light bg-surface-subtle text-secondary hover:border-primary/40 hover:bg-surface-container-low',
         )}
       >
-        <Icon className="mb-2 h-8 w-8 text-primary" aria-hidden />
-        <span className="font-label-md text-on-surface">{label}</span>
+        <Icon className="mb-2 h-7 w-7 sm:h-8 sm:w-8" aria-hidden />
+        <span className="font-label-md">{label}</span>
       </div>
     </label>
   )

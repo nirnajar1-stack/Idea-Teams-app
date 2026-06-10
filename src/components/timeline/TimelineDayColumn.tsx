@@ -5,35 +5,41 @@ import {
   timelineDragMime,
 } from '../../lib/timelineUtils'
 import type { Idea } from '../../types/idea'
-import { TimelineIdeaCard } from './TimelineIdeaCard'
+import { TimelineCompactIdeaRow } from './TimelineCompactIdeaRow'
 
 interface TimelineDayColumnProps {
   dateKey: string
   ideas: Idea[]
-  assigneeNames: Map<string, string>
   isDropTarget: boolean
   onDrop: (ideaId: string, dateKey: string) => void
   onDragOver: (dateKey: string) => void
   onDragLeave: () => void
+  onDragStart?: () => void
+  onDragEnd?: () => void
+  onReturnToBacklog?: (ideaId: string) => void
 }
 
 export function TimelineDayColumn({
   dateKey,
   ideas,
-  assigneeNames,
   isDropTarget,
   onDrop,
   onDragOver,
   onDragLeave,
+  onDragStart,
+  onDragEnd,
+  onReturnToBacklog,
 }: TimelineDayColumnProps) {
   const { isToday } = formatTimelineDayLabel(dateKey)
+  const heading = timelineDayHeading(dateKey, true)
+  const weekday = formatTimelineDayLabel(dateKey).weekday.slice(0, 2)
 
   return (
     <div
       className={cn(
-        'flex min-h-[320px] w-[min(88vw,240px)] shrink-0 snap-center flex-col border transition-colors sm:min-h-[420px] sm:w-[min(100%,220px)]',
-        isToday ? 'lambo-today bg-surface-container-low' : 'border-border-light bg-surface-container-low',
-        isDropTarget && 'border-primary bg-surface-container',
+        'timeline-day flex aspect-square min-h-[6.5rem] min-w-0 flex-col',
+        isToday && 'timeline-day--today',
+        isDropTarget && 'timeline-day--drop',
       )}
       onDragOver={(e) => {
         e.preventDefault()
@@ -47,29 +53,28 @@ export function TimelineDayColumn({
         if (ideaId) onDrop(ideaId, dateKey)
       }}
     >
-      <header
-        className={cn(
-          'sticky top-0 z-10 border-b px-3 py-3 text-center',
-          isToday ? 'border-primary bg-surface-container-low' : 'border-border-light bg-surface-container-lowest',
+      <header className="timeline-day__head">
+        <span className="timeline-day__weekday">{weekday}</span>
+        <span className={cn('timeline-day__date', isToday && 'text-primary')}>
+          {heading}
+        </span>
+        {ideas.length > 0 && (
+          <span className="timeline-day__count">{ideas.length}</span>
         )}
-      >
-        <p className="font-label-md text-on-surface">{timelineDayHeading(dateKey)}</p>
-        <p className="mt-0.5 font-label-sm text-secondary">
-          {ideas.length} בקשות/רעיונות
-        </p>
       </header>
-      <div className="flex flex-1 flex-col gap-2 p-2">
+      <div className="timeline-day__body">
         {ideas.map((idea) => (
-          <TimelineIdeaCard
+          <TimelineCompactIdeaRow
             key={idea.id}
             idea={idea}
-            assigneeName={
-              idea.assigneeUserId ? assigneeNames.get(idea.assigneeUserId) : undefined
-            }
+            variant="cell"
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+            onReturnToBacklog={onReturnToBacklog}
           />
         ))}
         {ideas.length === 0 && (
-          <p className="py-8 text-center font-label-sm text-secondary/70">גרור לכאן</p>
+          <span className="timeline-day__placeholder">גרור לכאן</span>
         )}
       </div>
     </div>

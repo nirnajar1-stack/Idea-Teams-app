@@ -1,4 +1,13 @@
-import type { Idea, IdeaFilters, IdeaKind, IdeasStats, IdeaSortOption, IdeaSource } from '../types/idea'
+import type {
+  Idea,
+  IdeaCategory,
+  IdeaCheckCadence,
+  IdeaFilters,
+  IdeaKind,
+  IdeasStats,
+  IdeaSortOption,
+  IdeaSource,
+} from '../types/idea'
 import { DEFAULT_IDEA_SOURCE, IDEA_SOURCES } from '../types/idea'
 
 function addDays(isoDate: string, days: number): string {
@@ -20,6 +29,8 @@ export function normalizeIdea(idea: Idea): Idea {
     authorInitials: idea.authorInitials || (userId === 'nir' ? 'ניר' : 'גול'),
     targetStartDate: idea.targetStartDate ?? addDays(idea.createdAt, 14),
     sendToMaybeInbox: idea.sendToMaybeInbox ?? false,
+    sentToExecution: idea.sentToExecution ?? false,
+    checkCadence: idea.checkCadence ?? undefined,
     ideaKind: idea.ideaKind ?? (idea.parentId ? 'standard' : 'standard'),
     parentId: idea.parentId,
     visibility: idea.visibility ?? 'team',
@@ -46,11 +57,45 @@ export function isActiveIdea(idea: Idea): boolean {
   return !idea.sendToMaybeInbox
 }
 
+export function isRoutineCheckIdea(idea: Idea): boolean {
+  return !!idea.checkCadence
+}
+
+export const CHECK_CADENCE_LABELS: Record<IdeaCheckCadence, string> = {
+  daily: 'יומי',
+  every_3_days: 'כל 3 ימים',
+  weekly: 'שבועי',
+}
+
+const CHECK_CADENCE_DAYS: Record<IdeaCheckCadence, number> = {
+  daily: 1,
+  every_3_days: 3,
+  weekly: 7,
+}
+
+function daysBetweenIso(startIso: string, endIso: string): number {
+  const start = new Date(startIso.slice(0, 10))
+  const end = new Date(endIso.slice(0, 10))
+  return Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+export function todayDateKey(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+/** האם הגיע זמן לבדיקה שוטפת חוזרת */
+export function isRoutineCheckDue(idea: Idea, today = todayDateKey()): boolean {
+  if (!idea.checkCadence || idea.workflowStatus === 'completed') return false
+  const anchor = idea.lastCheckedAt ?? idea.createdAt
+  return daysBetweenIso(anchor, today) >= CHECK_CADENCE_DAYS[idea.checkCadence]
+}
+
 export function computeStats(ideas: Idea[]): IdeasStats {
   const active = ideas.filter(isActiveIdea)
   const inbox = ideas.filter((i) => i.sendToMaybeInbox)
   const developmentCount = active.filter((i) => i.category === 'development').length
   const monitoringCount = active.filter((i) => i.category === 'monitoring').length
+  const technicalCount = active.filter((i) => i.category === 'technical').length
   const activeTotal = active.length
 
   return {
@@ -59,11 +104,15 @@ export function computeStats(ideas: Idea[]): IdeasStats {
     inboxCount: inbox.length,
     developmentCount,
     monitoringCount,
+    technicalCount,
     developmentPercent: activeTotal
       ? Math.round((developmentCount / activeTotal) * 100)
       : 0,
     monitoringPercent: activeTotal
       ? Math.round((monitoringCount / activeTotal) * 100)
+      : 0,
+    technicalPercent: activeTotal
+      ? Math.round((technicalCount / activeTotal) * 100)
       : 0,
     monthGrowthPercent: 12,
   }
@@ -121,6 +170,7 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
 
     if (pipeline === 'active' && idea.sendToMaybeInbox) return false
     if (pipeline === 'inbox' && !idea.sendToMaybeInbox) return false
+    if (filters.onlySentToExecution && !idea.sentToExecution) return false
 
     if (workflow === 'active' && idea.workflowStatus === 'completed') return false
     if (workflow === 'completed' && idea.workflowStatus !== 'completed') return false
@@ -220,7 +270,12 @@ export const PRIORITY_LABELS = {
 export const CATEGORY_LABELS = {
   development: 'פיתוח',
   monitoring: 'בקרה',
-} as const
+  technical: 'טכני',
+} as const satisfies Record<IdeaCategory, string>
+
+export function categoryDepartment(category: IdeaCategory): string {
+  return CATEGORY_LABELS[category]
+}
 
 export const IDEA_SOURCE_LABELS: Record<IdeaSource, string> = {
   mitamim: 'מתמים',

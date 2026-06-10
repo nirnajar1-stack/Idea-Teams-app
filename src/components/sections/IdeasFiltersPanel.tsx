@@ -1,5 +1,7 @@
 import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { IDEA_CATEGORIES } from '../ui/CategoryPicker'
+import { CATEGORY_LABELS } from '../../lib/ideaUtils'
 import type { IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
 import { IDEA_SOURCES } from '../../types/idea'
 import { IDEA_SOURCE_LABELS } from '../../lib/ideaUtils'
@@ -15,6 +17,9 @@ export interface IdeasFiltersPanelProps {
   priority: IdeaPriority | null
   onPriorityChange: (value: IdeaPriority | null) => void
   userName?: string
+  showExecutionFilter?: boolean
+  onlyExecution?: boolean
+  onOnlyExecutionChange?: (value: boolean) => void
 }
 
 export function IdeasFiltersPanel({
@@ -27,6 +32,9 @@ export function IdeasFiltersPanel({
   priority,
   onPriorityChange,
   userName,
+  showExecutionFilter = false,
+  onlyExecution = false,
+  onOnlyExecutionChange,
 }: IdeasFiltersPanelProps) {
   const [open, setOpen] = useState(false)
 
@@ -36,8 +44,9 @@ export function IdeasFiltersPanel({
     if (sources.length < IDEA_SOURCES.length) n += 1
     if (onlyMine) n += 1
     if (priority) n += 1
+    if (onlyExecution) n += 1
     return n
-  }, [categories.length, sources.length, onlyMine, priority])
+  }, [categories.length, sources.length, onlyMine, priority, onlyExecution])
 
   return (
     <div className="sticky top-24">
@@ -68,7 +77,7 @@ export function IdeasFiltersPanel({
         <div className="border border-border-light bg-surface-container-lowest p-6">
           <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
           <div className="space-y-2">
-            {(['development', 'monitoring'] as IdeaCategory[]).map((cat) => (
+            {IDEA_CATEGORIES.map((cat) => (
               <label
                 key={cat}
                 className={cn(
@@ -76,9 +85,7 @@ export function IdeasFiltersPanel({
                   !categories.includes(cat) && 'opacity-50',
                 )}
               >
-                <span className="font-body-md">
-                  {cat === 'development' ? 'פיתוח' : 'בקרה'}
-                </span>
+                <span className="font-body-md">{CATEGORY_LABELS[cat]}</span>
                 <input
                   type="checkbox"
                   checked={categories.includes(cat)}
@@ -115,15 +122,28 @@ export function IdeasFiltersPanel({
 
         <div className="border border-border-light bg-surface-container-lowest p-6">
           <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
-          <label className="flex cursor-pointer items-center gap-3">
-            <input
-              type="checkbox"
-              checked={onlyMine}
-              onChange={(e) => onOnlyMineChange(e.target.checked)}
-              className="h-4 w-4 text-primary focus:ring-primary"
-            />
-            <span className="font-body-md">רק הבקשות/רעיונות שלי ({userName})</span>
-          </label>
+          <div className="space-y-3">
+            <label className="flex cursor-pointer items-center gap-3">
+              <input
+                type="checkbox"
+                checked={onlyMine}
+                onChange={(e) => onOnlyMineChange(e.target.checked)}
+                className="h-4 w-4 text-primary focus:ring-primary"
+              />
+              <span className="font-body-md">רק הבקשות/רעיונות שלי ({userName})</span>
+            </label>
+            {showExecutionFilter && onOnlyExecutionChange && (
+              <label className="flex cursor-pointer items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={onlyExecution}
+                  onChange={(e) => onOnlyExecutionChange(e.target.checked)}
+                  className="h-4 w-4 text-primary focus:ring-primary"
+                />
+                <span className="font-body-md">רק מסומנים לביצוע</span>
+              </label>
+            )}
+          </div>
         </div>
 
         <div className="border border-border-light bg-surface-container-lowest p-6">

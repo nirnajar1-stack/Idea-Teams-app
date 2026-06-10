@@ -60,6 +60,66 @@
   --selection-bg: rgba(255, 192, 0, 0.25);
 }
 
+/* ——— Warm parchment (ביניים) — sand + espresso, not gray ——— */
+.dim {
+  color-scheme: light;
+
+  --primary-rgb: 255 192 0;
+  --primary-fixed-rgb: 216 204 186;
+  --inbox-rgb: 139 119 101;
+  --inbox-soft-rgb: 232 222 208;
+  --error-rgb: 181 58 48;
+  --error-container-rgb: 248 224 218;
+  --accent-rgb: 74 124 140;
+  --accent-soft-rgb: 220 232 236;
+  --surface-subtle-rgb: 235 226 214;
+  --surface-rgb: 227 216 202;
+  --surface-container-low-rgb: 216 204 188;
+  --surface-container-lowest-rgb: 248 242 232;
+
+  --color-primary-deep: #8a6d1a;
+  --color-on-primary: #1a1408;
+  --color-primary-container: #ffc000;
+  --color-on-primary-container: #1a1408;
+  --color-primary-fixed-dim: #9a8b78;
+  --color-background: #e3d8c8;
+  --color-on-background: #3b3228;
+  --color-surface: #e3d8c8;
+  --color-on-surface: #3b3228;
+  --color-on-surface-variant: #6f6254;
+  --color-surface-container: #cfc0ad;
+  --color-surface-container-low: #d8cbb8;
+  --color-surface-container-high: #c0b09c;
+  --color-surface-container-lowest: #f8f2e8;
+  --color-surface-variant: #d8cbb8;
+  --color-border-light: #c4b5a2;
+  --color-outline-variant: #8a7d6e;
+  --color-secondary: #6f6254;
+  --color-tertiary: #8a7d6e;
+  --color-tertiary-container: #4a4238;
+  --color-success-vibrant: #2d8a5e;
+  --color-on-error-container: #9e2e24;
+  --color-glow: #e6b422;
+  --color-gold-text: #b8860b;
+  --color-link-hover: #3d5f8f;
+  --color-teal-action: #3a7f96;
+
+  --shadow-card: none;
+  --shadow-card-hover: none;
+  --shadow-nav: none;
+  --shadow-glow: none;
+  --shadow-boutique: none;
+  --shadow-inner-glow: none;
+
+  --bg-vignette: radial-gradient(
+    ellipse 130% 90% at 50% -10%,
+    rgba(210, 175, 120, 0.22) 0%,
+    rgba(227, 216, 200, 0) 58%
+  );
+  --bg-noise-opacity: 0.022;
+  --selection-bg: rgba(255, 192, 0, 0.32);
+}
+
 /* ——— Lamborghini dark (default) ——— */
 .dark {
   color-scheme: dark;
@@ -348,6 +408,166 @@
     border-bottom: 2px solid rgb(var(--primary-rgb)) !important;
   }
 
+  /* ——— Timeline ——— */
+  .timeline-shell {
+    @apply overflow-hidden border border-border-light bg-surface-container-lowest;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.04) inset;
+  }
+
+  .timeline-toolbar {
+    @apply border-b border-border-light px-4 py-4;
+    background: linear-gradient(
+      180deg,
+      rgb(var(--primary-rgb) / 0.04) 0%,
+      transparent 100%
+    );
+  }
+
+  .timeline-toolbar__nav-btn {
+    @apply flex items-center justify-center border border-border-light px-3 py-2 text-label-sm text-secondary transition-colors hover:border-primary/30 hover:text-on-surface;
+  }
+
+  .timeline-toolbar__period {
+    @apply truncate font-display text-headline-md text-on-background;
+  }
+
+  .timeline-backlog {
+    @apply min-h-[10rem];
+  }
+
+  .timeline-backlog--drop {
+    @apply bg-primary/5 ring-1 ring-inset ring-primary/35;
+  }
+
+  .timeline-backlog__head {
+    @apply mb-2 flex items-center gap-2;
+  }
+
+  .timeline-backlog__count {
+    @apply bg-surface-container-high px-2 py-0.5 text-label-sm tabular-nums text-secondary;
+  }
+
+  .timeline-backlog__hint {
+    @apply mb-3 text-label-sm leading-snug text-secondary;
+  }
+
+  .timeline-backlog__list {
+    @apply flex max-h-[min(50vh,24rem)] flex-col gap-1.5 overflow-y-auto lg:max-h-[calc(100vh-15rem)];
+  }
+
+  .timeline-backlog__empty {
+    @apply py-10 text-center text-label-sm text-secondary;
+  }
+
+  .timeline-row {
+    @apply relative flex cursor-grab items-center border border-transparent px-3 py-2 transition-colors active:cursor-grabbing;
+    background-color: rgb(var(--surface-container-low-rgb) / 0.6);
+  }
+
+  .timeline-row:hover {
+    @apply border-border-light bg-surface-container-low;
+  }
+
+  .timeline-row--backlog {
+    @apply bg-transparent py-2.5 pl-3;
+    border: 1px solid var(--color-border-light);
+    border-inline-start: 2px solid rgb(var(--primary-rgb) / 0.25);
+  }
+
+  .timeline-row--backlog:hover {
+    border-inline-start-color: rgb(var(--primary-rgb));
+    @apply bg-primary/5;
+  }
+
+  .timeline-row--priority-high {
+    border-inline-start: 2px solid rgb(var(--priority-high-rgb, 239 68 68) / 0.7);
+  }
+
+  .timeline-row--priority-medium {
+    border-inline-start: 2px solid rgb(var(--primary-rgb) / 0.45);
+  }
+
+  .timeline-row--priority-low {
+    border-inline-start: 2px solid rgb(255 255 255 / 0.12);
+  }
+
+  .timeline-day {
+    @apply border border-border-light transition-colors;
+    background-color: rgb(var(--surface-container-low-rgb) / 0.4);
+  }
+
+  .timeline-day--today {
+    @apply border-primary/45 bg-surface-container-low;
+    box-shadow: inset 0 2px 0 0 rgb(var(--primary-rgb));
+  }
+
+  .timeline-day--drop {
+    @apply border-primary bg-primary/5 ring-1 ring-primary/25;
+  }
+
+  .timeline-day__head {
+    @apply flex shrink-0 flex-col items-center border-b border-border-light px-2 py-2 text-center;
+    background-color: rgb(var(--surface-container-lowest-rgb) / 0.85);
+  }
+
+  .timeline-day--today .timeline-day__head {
+    @apply border-primary/25 bg-primary/5;
+  }
+
+  .timeline-day__weekday {
+    @apply text-label-sm uppercase tracking-wider text-secondary;
+  }
+
+  .timeline-day__date {
+    @apply font-display text-headline-md leading-none text-on-surface;
+  }
+
+  .timeline-day__count {
+    @apply mt-1 text-label-sm text-primary;
+  }
+
+  .timeline-day__body {
+    @apply flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-1.5;
+  }
+
+  .timeline-day__placeholder {
+    @apply flex flex-1 items-center justify-center py-3 text-center text-label-sm text-secondary;
+    opacity: 0.5;
+  }
+
+  .timeline-calendar {
+    @apply min-w-0 p-4 lg:p-5;
+  }
+
+  .timeline-calendar__grid {
+    @apply grid grid-cols-2 gap-2.5 sm:grid-cols-4;
+  }
+
+  .timeline-sidebar {
+    @apply border-e border-border-light p-4;
+    background-color: rgb(var(--surface-container-low-rgb) / 0.2);
+  }
+
+  .timeline-mobile-tabs {
+    @apply flex border-b border-border-light bg-surface-container-low p-1;
+  }
+
+  .timeline-mobile-tab {
+    @apply relative flex flex-1 items-center justify-center gap-1.5 px-2 py-2.5 text-label-sm transition-colors;
+  }
+
+  .timeline-mobile-tab--active {
+    @apply bg-primary text-on-primary;
+  }
+
+  .timeline-mobile-tab:not(.timeline-mobile-tab--active) {
+    @apply text-secondary hover:text-on-surface;
+  }
+
+  .timeline-ticker-chip {
+    backdrop-filter: blur(4px);
+  }
+
   .dog-avatar-bounce {
     animation: dogBounce 2.2s ease-in-out infinite;
   }
@@ -480,5 +700,103 @@
   }
   50% {
     opacity: 0.88;
+  }
+}
+
+/* טיימליין — פס עדכונים (משימות ללא שיוך לזמן) */
+.lambo-ticker {
+  display: flex;
+  align-items: stretch;
+  min-height: 4.25rem;
+  overflow: hidden;
+}
+
+.lambo-ticker__label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-shrink: 0;
+  border-inline-start: 3px solid var(--color-primary);
+  background: linear-gradient(
+    90deg,
+    rgb(255 192 0 / 0.1) 0%,
+    rgb(255 192 0 / 0.02) 100%
+  );
+  padding: 0.85rem 1.1rem;
+  min-width: 7rem;
+}
+
+.lambo-ticker__viewport {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.lambo-ticker__track {
+  width: 100%;
+  overflow: hidden;
+  direction: ltr;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 2.5rem,
+    black calc(100% - 2.5rem),
+    transparent
+  );
+}
+
+.lambo-ticker__track--static {
+  mask-image: none;
+}
+
+.lambo-ticker__measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  direction: rtl;
+}
+
+.lambo-ticker__rail {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  direction: rtl;
+  animation: lamboTickerScroll 55s linear infinite;
+}
+
+.lambo-ticker:hover .lambo-ticker__rail,
+.lambo-ticker:focus-within .lambo-ticker__rail,
+.lambo-ticker__rail--paused {
+  animation-play-state: paused;
+}
+
+.lambo-ticker__rail--static {
+  animation: none;
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+@keyframes lamboTickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lambo-ticker__rail {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    max-height: 8rem;
+    overflow-y: auto;
   }
 }

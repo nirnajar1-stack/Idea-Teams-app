@@ -19,6 +19,7 @@ export type IdeasExportSlice =
   | 'inbox'
   | 'development'
   | 'monitoring'
+  | 'technical'
   | 'all'
 
 export type IdeasExportLayout = 'single' | 'per_slice'
@@ -39,6 +40,7 @@ export const EXPORT_SLICE_LABELS: Record<IdeasExportSlice, string> = {
   inbox: 'Inbox',
   development: 'פיתוח',
   monitoring: 'בקרה',
+  technical: 'טכני',
   all: 'הכל',
 }
 
@@ -135,6 +137,8 @@ function matchesSlice(idea: Idea, slice: IdeasExportSlice): boolean {
       return idea.category === 'development'
     case 'monitoring':
       return idea.category === 'monitoring'
+    case 'technical':
+      return idea.category === 'technical'
     case 'all':
       return true
     default:

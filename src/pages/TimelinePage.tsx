@@ -5,7 +5,8 @@ import { TimelineBoard } from '../components/timeline/TimelineBoard'
 import { useIdeas } from '../context/IdeasContext'
 
 export function TimelinePage() {
-  const { visibleIdeas, scheduleIdeaOnTimeline } = useIdeas()
+  const { visibleIdeas, scheduleIdeaOnTimeline, markRoutineCheckDone, setCheckCadence } =
+    useIdeas()
 
   const handleSchedule = async (ideaId: string, plannedDate: string | null) => {
     const ok = await scheduleIdeaOnTimeline(ideaId, plannedDate)
@@ -18,18 +19,38 @@ export function TimelinePage() {
 
   return (
     <AppShell variant="main">
-      <div className="mb-8">
-        <div className="mb-2 flex items-center gap-3">
-          <CalendarRange className="h-8 w-8 text-primary" />
-          <h1 className="font-display text-headline-lg text-on-surface">טיימליין תכנון</h1>
-        </div>
-        <p className="max-w-2xl font-body-md text-secondary">
-          תכנון שבועי או חודשי — גרור בקשות/רעיונות לימים הרצויים. רק משתמשי מאסטר רואים
-          מסך זה.
+      <header className="mb-8 animate-fade-up">
+        <span className="section-eyebrow mb-4 border-primary/20 bg-primary/5 text-primary">
+          <CalendarRange className="h-3.5 w-3.5" />
+          תכנון מאסטר
+        </span>
+        <h1 className="mb-2 font-display text-headline-lg text-on-surface">טיימליין</h1>
+        <p className="max-w-xl font-body-md text-secondary">
+          גרור משימות לימים בלוח, למשימות צפות, או החזר ללא מתוכנן.
         </p>
-      </div>
+      </header>
 
-      <TimelineBoard ideas={visibleIdeas} onSchedule={handleSchedule} />
+      <TimelineBoard
+        ideas={visibleIdeas}
+        onSchedule={handleSchedule}
+        onMarkRoutineCheck={async (ideaId) => {
+          const ok = await markRoutineCheckDone(ideaId)
+          if (ok) toast.success('סומן כנבדק היום')
+          else toast.error('לא ניתן לעדכן')
+        }}
+        onAddToFloating={async (ideaId) => {
+          const ok = await setCheckCadence(ideaId, 'daily')
+          if (ok) toast.success('הועבר למשימות צפות (בדיקה יומית)')
+          else toast.error('לא ניתן להעביר')
+          return ok
+        }}
+        onRemoveFromFloating={async (ideaId) => {
+          const ok = await setCheckCadence(ideaId, null)
+          if (ok) toast.success('הוחזר ללא מתוכנן')
+          else toast.error('לא ניתן להחזיר')
+          return ok
+        }}
+      />
     </AppShell>
   )
 }

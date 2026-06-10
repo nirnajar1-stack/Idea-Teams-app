@@ -1,4 +1,5 @@
 import { Plus, Search } from 'lucide-react'
+import { toast } from 'sonner'
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
@@ -23,17 +24,19 @@ import { EmptyState } from '../components/ui/EmptyState'
 export function IdeasListPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { visibleIdeas } = useIdeas()
+  const { visibleIdeas, toggleSentToExecution } = useIdeas()
   const { users } = useUsers()
   const [exportOpen, setExportOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [categories, setCategories] = useState<IdeaCategory[]>([
     'development',
     'monitoring',
+    'technical',
   ])
   const [sources, setSources] = useState<IdeaSource[]>([...IDEA_SOURCES])
   const [priority, setPriority] = useState<IdeaPriority | null>(null)
   const [onlyMine, setOnlyMine] = useState(false)
+  const [onlyExecution, setOnlyExecution] = useState(false)
   const [viewPrefs, setViewPrefs] = useState<IdeasViewPrefs>(loadIdeasViewPrefs)
 
   const baseFilters = useMemo(
@@ -43,10 +46,11 @@ export function IdeasListPage() {
       sources,
       priority,
       onlyMine,
+      onlySentToExecution: onlyExecution || undefined,
       currentUserId: user?.id,
       pipeline: 'active',
     }),
-    [search, categories, sources, priority, onlyMine, user?.id],
+    [search, categories, sources, priority, onlyMine, onlyExecution, user?.id],
   )
 
   const activeIdeas = useMemo(
@@ -94,6 +98,14 @@ export function IdeasListPage() {
 
   const masterUser = isMaster(user)
 
+  const handleExecutionToggle = useCallback(
+    async (ideaId: string, send: boolean) => {
+      const ok = await toggleSentToExecution(ideaId, send)
+      if (!ok) toast.error('לא ניתן לעדכן תיוג לביצוע')
+    },
+    [toggleSentToExecution],
+  )
+
   return (
     <AppShell
       variant="ideas"
@@ -140,6 +152,9 @@ export function IdeasListPage() {
             priority={priority}
             onPriorityChange={setPriority}
             userName={user?.name}
+            showExecutionFilter={masterUser}
+            onlyExecution={onlyExecution}
+            onOnlyExecutionChange={setOnlyExecution}
           />
         </aside>
 
@@ -173,7 +188,12 @@ export function IdeasListPage() {
                   className="animate-fade-up"
                   style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
                 >
-                  <IdeaListCard idea={idea} compact={viewPrefs.compact} />
+                  <IdeaListCard
+                    idea={idea}
+                    compact={viewPrefs.compact}
+                    showMasterExecutionToggle={masterUser}
+                    onExecutionToggle={handleExecutionToggle}
+                  />
                 </div>
               ))
             )}

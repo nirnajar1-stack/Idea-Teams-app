@@ -11,7 +11,8 @@ import {
   type IdeasExportLayout,
   type IdeasExportSlice,
 } from '../../lib/ideasExcelExport'
-import { IDEA_SORT_LABELS, IDEA_SOURCE_LABELS } from '../../lib/ideaUtils'
+import { CATEGORY_LABELS, IDEA_SORT_LABELS, IDEA_SOURCE_LABELS } from '../../lib/ideaUtils'
+import { IDEA_CATEGORIES } from '../ui/CategoryPicker'
 import { cn } from '../../lib/cn'
 import type { Idea, IdeaCategory, IdeaPriority, IdeaSortOption, IdeaSource } from '../../types/idea'
 import { IDEA_SOURCES } from '../../types/idea'
@@ -23,6 +24,7 @@ const ALL_SLICES: IdeasExportSlice[] = [
   'inbox',
   'development',
   'monitoring',
+  'technical',
   'all',
 ]
 
@@ -46,7 +48,7 @@ export function IdeasExportModal({
   ideas,
   assigneeNames,
   initialSearch = '',
-  initialCategories = ['development', 'monitoring'],
+  initialCategories = ['development', 'monitoring', 'technical'],
   initialSources = [...IDEA_SOURCES],
   initialPriority = null,
   initialOnlyMine = false,
@@ -272,7 +274,7 @@ export function IdeasExportModal({
                 <div>
                   <span className="mb-1.5 block font-label-sm text-secondary">קטגוריה</span>
                   <div className="flex flex-wrap gap-2">
-                    {(['development', 'monitoring'] as const).map((cat) => (
+                    {IDEA_CATEGORIES.map((cat) => (
                       <button
                         key={cat}
                         type="button"
@@ -284,7 +286,7 @@ export function IdeasExportModal({
                             : 'border-border-light text-secondary',
                         )}
                       >
-                        {cat === 'development' ? 'פיתוח' : 'בקרה'}
+                        {CATEGORY_LABELS[cat]}
                       </button>
                     ))}
                   </div>

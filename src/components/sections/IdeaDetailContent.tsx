@@ -17,6 +17,7 @@ import { isContainerIdea, isSubIdea } from '../../lib/ideaUtils'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { ContainerBadge } from '../ui/ContainerBadge'
+import { ExecutionBadge } from '../ui/ExecutionBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { IdeaVisibilityBadge } from '../ui/IdeaVisibilityBadge'
 import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
@@ -73,6 +74,7 @@ export function IdeaDetailContent({
             <Badge variant="surface">תת-בקשה/רעיון</Badge>
           )}
           {idea.sendToMaybeInbox && <InboxBadge />}
+          {idea.sentToExecution && <ExecutionBadge />}
           <IdeaSourceBadge source={idea.ideaSource} />
           <IdeaVisibilityBadge visibility={idea.visibility ?? 'team'} />
           <TargetDateBadge targetStartDate={idea.targetStartDate} />

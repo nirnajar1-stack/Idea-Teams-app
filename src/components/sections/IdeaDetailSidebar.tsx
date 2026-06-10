@@ -7,6 +7,7 @@ import { DateInput } from '../ui/DateInput'
 import { ProgressBar } from '../ui/ProgressBar'
 import { AssigneeSelect } from './AssigneeSelect'
 import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
+import { MasterWorkflowActions } from './MasterWorkflowActions'
 import { WorkflowStatusSelect } from './WorkflowStatusSelect'
 import { useUsers } from '../../context/UsersContext'
 import { useAuth } from '../../context/AuthContext'
@@ -59,6 +60,10 @@ export function IdeaDetailSidebar({
       <div className="sticky top-24 glass-card p-6">
         <h3 className="mb-6 font-display text-headline-md text-on-surface">פעולות</h3>
         <div className="space-y-4">
+          {user && (
+            <MasterWorkflowActions user={user} idea={idea} isContainer={isContainer} />
+          )}
+
           {canEdit && !isContainer && (
             <WorkflowStatusSelect
               value={idea.workflowStatus}

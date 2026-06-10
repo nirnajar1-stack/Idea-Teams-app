@@ -1,9 +1,9 @@
-import { Bot, CreditCard, Lightbulb, Shield } from 'lucide-react'
+import { Bot, CreditCard, Lightbulb, Shield, Wrench } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { loadIdeasViewPrefs } from '../../lib/ideasViewPrefs'
-import { formatIdeaDate } from '../../lib/ideaUtils'
+import { CATEGORY_LABELS, formatIdeaDate } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
 import { IdeaTableRow } from '../ui/IdeaTableRow'
 import { EmptyState } from '../ui/EmptyState'
@@ -11,12 +11,13 @@ import { EmptyState } from '../ui/EmptyState'
 const iconMap = {
   development: { icon: CreditCard, className: 'bg-primary/10 text-primary' },
   monitoring: { icon: Shield, className: 'bg-tertiary/10 text-tertiary' },
+  technical: { icon: Wrench, className: 'bg-accent-soft text-teal-action' },
   ai: { icon: Bot, className: 'bg-primary/10 text-primary' },
 } as const
 
-function getRowMeta(idea: Idea, index: number) {
+function getRowMeta(idea: Idea) {
   if (idea.department.includes('AI')) return iconMap.ai
-  return index % 2 === 0 ? iconMap[idea.category] : iconMap.monitoring
+  return iconMap[idea.category] ?? iconMap.development
 }
 
 export function RecentIdeasSection() {
@@ -76,8 +77,8 @@ export function RecentIdeasSection() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-light">
-              {recent.map((idea, index) => {
-                const meta = getRowMeta(idea, index)
+              {recent.map((idea) => {
+                const meta = getRowMeta(idea)
                 return (
                   <IdeaTableRow
                     key={idea.id}
@@ -86,7 +87,7 @@ export function RecentIdeasSection() {
                     authorName={idea.authorName}
                     targetStartDate={idea.targetStartDate}
                     category={idea.department}
-                    status={idea.category === 'development' ? 'פיתוח' : 'בקרה'}
+                    status={CATEGORY_LABELS[idea.category]}
                     statusVariant={idea.category}
                     date={formatIdeaDate(idea.createdAt)}
                     icon={meta.icon}
