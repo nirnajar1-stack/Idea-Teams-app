@@ -49,7 +49,7 @@ export function IdeasFiltersPanel({
   }, [categories.length, sources.length, onlyMine, priority, onlyExecution])
 
   return (
-    <div className="sticky top-24">
+    <div className="sticky top-14 z-20 lg:top-24">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -73,8 +73,8 @@ export function IdeasFiltersPanel({
         />
       </button>
 
-      <div className={cn('space-y-8', open ? 'block' : 'hidden', 'lg:block')}>
-        <div className="border border-border-light bg-surface-container-lowest p-6">
+      <div className={cn('space-y-4 lg:space-y-8', open ? 'block' : 'hidden', 'lg:block')}>
+        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
           <div className="space-y-2">
             {IDEA_CATEGORIES.map((cat) => (
@@ -97,7 +97,7 @@ export function IdeasFiltersPanel({
           </div>
         </div>
 
-        <div className="border border-border-light bg-surface-container-lowest p-6">
+        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">מקור הבקשה/רעיון</h3>
           <div className="space-y-2">
             {IDEA_SOURCES.map((source) => (
@@ -120,7 +120,7 @@ export function IdeasFiltersPanel({
           </div>
         </div>
 
-        <div className="border border-border-light bg-surface-container-lowest p-6">
+        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
           <div className="space-y-3">
             <label className="flex cursor-pointer items-center gap-3">
@@ -146,7 +146,7 @@ export function IdeasFiltersPanel({
           </div>
         </div>
 
-        <div className="border border-border-light bg-surface-container-lowest p-6">
+        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">רמת חשיבות</h3>
           <div className="space-y-3">
             {(['high', 'medium', 'low'] as IdeaPriority[]).map((p) => (

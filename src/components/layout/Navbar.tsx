@@ -75,9 +75,8 @@ export function Navbar({
   return (
     <header
       className={cn(
-        'nav-glass fixed top-0 z-50 w-full',
+        'nav-glass fixed top-0 z-50 h-14 w-full md:h-16',
         scrolled && 'nav-glass--scrolled',
-        showMainNav ? 'md:h-16' : 'h-16',
       )}
     >
       <div className="nav-glass__scanline" aria-hidden />
@@ -165,17 +164,6 @@ export function Navbar({
           </button>
         </div>
       </div>
-
-      {showMainNav && (
-        <div className="border-t border-border-light px-2 py-2 md:hidden">
-          <NavTabs
-            items={navItems}
-            pathname={pathname}
-            inboxCount={stats.inboxCount}
-            compact
-          />
-        </div>
-      )}
 
       <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>

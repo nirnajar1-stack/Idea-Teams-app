@@ -213,9 +213,51 @@ export function TimelineBoard({
       />
 
       <div className="timeline-toolbar">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div
+          className="timeline-mobile-tabs mb-3 lg:hidden"
+          role="tablist"
+          aria-label="אזורי טיימליין"
+        >
+          {(
+            [
+              { id: 'calendar' as const, label: 'לוח ימים', icon: CalendarRange },
+              { id: 'backlog' as const, label: 'לא מתוכנן', icon: Inbox, count: backlog.length },
+            ] as const
+          ).map((tab) => {
+            const Icon = tab.icon
+            const active = mobilePanel === tab.id
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setMobilePanel(tab.id)}
+                className={cn(
+                  'timeline-mobile-tab',
+                  active && 'timeline-mobile-tab--active',
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="truncate">{tab.label}</span>
+                {'count' in tab && tab.count > 0 && (
+                  <span
+                    className={cn(
+                      'min-w-[1.1rem] shrink-0 px-1 text-[10px] font-bold tabular-nums',
+                      active ? 'bg-on-primary text-primary' : 'bg-surface-container-high text-secondary',
+                    )}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div
-            className="flex max-w-xs border border-border-light bg-surface-container-low p-0.5"
+            className="flex w-full border border-border-light bg-surface-container-low p-0.5 sm:max-w-xs"
             role="tablist"
             aria-label="תצוגת טיימליין"
           >
@@ -274,44 +316,6 @@ export function TimelineBoard({
         </div>
       </div>
 
-      <div className="timeline-mobile-tabs lg:hidden" role="tablist" aria-label="אזורי טיימליין">
-        {(
-          [
-            { id: 'calendar' as const, label: 'לוח ימים', icon: CalendarRange },
-            { id: 'backlog' as const, label: 'לא מתוכנן', icon: Inbox, count: backlog.length },
-          ] as const
-        ).map((tab) => {
-          const Icon = tab.icon
-          const active = mobilePanel === tab.id
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => setMobilePanel(tab.id)}
-              className={cn(
-                'timeline-mobile-tab',
-                active && 'timeline-mobile-tab--active',
-              )}
-            >
-              <Icon className="h-4 w-4" />
-              {tab.label}
-              {'count' in tab && tab.count > 0 && (
-                <span
-                  className={cn(
-                    'min-w-[1.1rem] px-1 text-[10px] font-bold tabular-nums',
-                    active ? 'bg-on-primary text-primary' : 'bg-surface-container-high text-secondary',
-                  )}
-                >
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          )
-        })}
-      </div>
-
       <div className="hidden lg:grid lg:grid-cols-[minmax(12rem,14rem)_1fr]">
         <div className="timeline-sidebar">{backlogPanel}</div>
         <div className="timeline-calendar">{calendar}</div>
@@ -319,9 +323,9 @@ export function TimelineBoard({
 
       <div className="lg:hidden">
         {mobilePanel === 'calendar' ? (
-          <div className="timeline-calendar p-3">{calendar}</div>
+          <div className="timeline-calendar timeline-calendar--mobile">{calendar}</div>
         ) : (
-          <div className="timeline-sidebar p-3">{backlogPanel}</div>
+          <div className="timeline-sidebar timeline-sidebar--mobile">{backlogPanel}</div>
         )}
       </div>
     </div>

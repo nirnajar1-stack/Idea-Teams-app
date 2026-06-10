@@ -329,7 +329,7 @@
   }
 
   .lambo-hero {
-    @apply relative overflow-hidden pb-14;
+    @apply relative overflow-hidden pb-10 md:pb-14;
   }
 
   .lambo-hero::after {
@@ -346,7 +346,7 @@
   }
 
   .lambo-section {
-    @apply mb-14;
+    @apply mb-10 md:mb-14;
   }
 
   .lambo-stagger > * {
@@ -415,7 +415,7 @@
   }
 
   .timeline-toolbar {
-    @apply border-b border-border-light px-4 py-4;
+    @apply border-b border-border-light px-3 py-3 md:px-4 md:py-4;
     background: linear-gradient(
       180deg,
       rgb(var(--primary-rgb) / 0.04) 0%,
@@ -452,7 +452,7 @@
   }
 
   .timeline-backlog__list {
-    @apply flex max-h-[min(50vh,24rem)] flex-col gap-1.5 overflow-y-auto lg:max-h-[calc(100vh-15rem)];
+    @apply flex max-h-[min(55vh,28rem)] flex-col gap-2 overflow-y-auto lg:max-h-[calc(100vh-15rem)];
   }
 
   .timeline-backlog__empty {
@@ -540,7 +540,15 @@
   }
 
   .timeline-calendar__grid {
-    @apply grid grid-cols-2 gap-2.5 sm:grid-cols-4;
+    @apply grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-2.5;
+  }
+
+  .timeline-calendar--mobile {
+    @apply p-3;
+  }
+
+  .timeline-sidebar--mobile {
+    @apply border-e-0 p-3;
   }
 
   .timeline-sidebar {
@@ -549,11 +557,11 @@
   }
 
   .timeline-mobile-tabs {
-    @apply flex border-b border-border-light bg-surface-container-low p-1;
+    @apply flex gap-1 rounded-sm border border-border-light bg-surface-container-low p-1;
   }
 
   .timeline-mobile-tab {
-    @apply relative flex flex-1 items-center justify-center gap-1.5 px-2 py-2.5 text-label-sm transition-colors;
+    @apply relative flex min-w-0 flex-1 items-center justify-center gap-1.5 px-2 py-2 text-label-sm transition-colors;
   }
 
   .timeline-mobile-tab--active {
@@ -806,5 +814,51 @@
     width: 100%;
     max-height: 8rem;
     overflow-y: auto;
+  }
+}
+
+.mobile-bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 767px) {
+  .lambo-ticker {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .lambo-ticker__label {
+    width: 100%;
+    min-width: 0;
+    border-inline-start: none;
+    border-top: 3px solid var(--color-primary);
+    padding: 0.65rem 1rem;
+  }
+
+  .lambo-ticker__viewport {
+    width: 100%;
+    min-height: 3.25rem;
+  }
+
+  .lambo-ticker__track {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 1rem,
+      black calc(100% - 1rem),
+      transparent
+    );
+  }
+
+  .timeline-day {
+    min-height: 5.5rem;
+  }
+
+  .timeline-day__date {
+    font-size: 1rem;
+  }
+
+  .timeline-toolbar__period {
+    font-size: 1rem;
   }
 }

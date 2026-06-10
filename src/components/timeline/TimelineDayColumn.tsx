@@ -37,7 +37,7 @@ export function TimelineDayColumn({
   return (
     <div
       className={cn(
-        'timeline-day flex aspect-square min-h-[6.5rem] min-w-0 flex-col',
+        'timeline-day flex min-h-[5.5rem] min-w-0 flex-col sm:aspect-square sm:min-h-[6.5rem]',
         isToday && 'timeline-day--today',
         isDropTarget && 'timeline-day--drop',
       )}

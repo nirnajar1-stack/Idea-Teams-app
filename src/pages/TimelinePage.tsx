@@ -19,17 +19,18 @@ export function TimelinePage() {
 
   return (
     <AppShell variant="main">
-      <header className="mb-8 animate-fade-up">
-        <span className="section-eyebrow mb-4 border-primary/20 bg-primary/5 text-primary">
+      <header className="mb-5 animate-fade-up md:mb-8">
+        <span className="section-eyebrow mb-3 border-primary/20 bg-primary/5 text-primary md:mb-4">
           <CalendarRange className="h-3.5 w-3.5" />
           תכנון מאסטר
         </span>
-        <h1 className="mb-2 font-display text-headline-lg text-on-surface">טיימליין</h1>
-        <p className="max-w-xl font-body-md text-secondary">
+        <h1 className="mb-1 font-display text-headline-lg text-on-surface md:mb-2">טיימליין</h1>
+        <p className="max-w-xl font-body-sm text-secondary md:font-body-md">
           גרור משימות לימים בלוח, למשימות צפות, או החזר ללא מתוכנן.
         </p>
       </header>
 
+      <div className="-mx-4 md:mx-0">
       <TimelineBoard
         ideas={visibleIdeas}
         onSchedule={handleSchedule}
@@ -51,6 +52,7 @@ export function TimelinePage() {
           return ok
         }}
       />
+      </div>
     </AppShell>
   )
 }

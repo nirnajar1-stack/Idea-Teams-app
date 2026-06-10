@@ -26,11 +26,11 @@ export function AppShell({
   }[maxWidth]
 
   return (
-    <div className="relative min-h-screen bg-background pb-24 md:pb-0">
+    <div className="relative min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar connectedAs={connectedAs ?? user?.name} shareUrl={shareUrl} {...navbarProps} />
       <main
         className={cn(
-          'relative mx-auto px-margin-mobile pb-12 pt-[7.25rem] md:px-margin-desktop md:pt-24',
+          'relative mx-auto px-4 pb-10 pt-16 md:px-margin-desktop md:pb-12 md:pt-24',
           maxWidthClass,
         )}
       >

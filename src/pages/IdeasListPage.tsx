@@ -112,7 +112,7 @@ export function IdeasListPage() {
       searchValue={search}
       onSearchChange={setSearch}
     >
-      <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+      <div className="mb-6 flex flex-col justify-between gap-4 md:mb-10 md:flex-row md:items-end md:gap-6">
         <div>
           <h2 className="mb-2 font-display text-headline-lg text-on-surface">
             {IDEA_TERM.listTitle}
@@ -127,7 +127,7 @@ export function IdeasListPage() {
         </Button>
       </div>
 
-      <div className="mb-6 md:hidden">
+      <div className="mb-5 md:hidden">
         <div className="relative w-full">
           <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
           <input
@@ -140,7 +140,7 @@ export function IdeasListPage() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-8 lg:flex-row">
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
         <aside className="w-full shrink-0 lg:w-64">
           <IdeasFiltersPanel
             categories={categories}

@@ -28,7 +28,7 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-24 start-4 z-40 md:bottom-6">
+    <div className="fixed bottom-mobile-nav start-4 z-40 md:bottom-6">
       {open && (
         <div className="mb-3 w-[min(100vw-2rem,22rem)] animate-fade-up">
           <ChatPanel

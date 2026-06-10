@@ -88,6 +88,7 @@ export default {
       spacing: {
         'margin-mobile': '1rem',
         'margin-desktop': '2.5rem',
+        'mobile-nav': 'calc(4.25rem + env(safe-area-inset-bottom, 0px))',
         gutter: '2rem',
         'container-max': '1440px',
         section: '3.5rem',
