@@ -745,10 +745,6 @@
   );
 }
 
-.lambo-ticker__track--static {
-  mask-image: none;
-}
-
 .lambo-ticker__measure {
   position: absolute;
   visibility: hidden;
@@ -766,7 +762,8 @@
   gap: 0.75rem;
   padding: 0.65rem 1rem;
   direction: rtl;
-  animation: lamboTickerScroll 55s linear infinite;
+  will-change: transform;
+  animation: lamboTickerDynamic var(--ticker-duration, 32s) linear infinite;
 }
 
 .lambo-ticker:hover .lambo-ticker__rail,
@@ -775,19 +772,30 @@
   animation-play-state: paused;
 }
 
-.lambo-ticker__rail--static {
-  animation: none;
-  width: 100%;
-  max-width: 100%;
-  flex-wrap: wrap;
+.lambo-ticker__rail--solo {
+  animation-name: lamboTickerSolo;
 }
 
-@keyframes lamboTickerScroll {
+.lambo-ticker__spacer {
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+@keyframes lamboTickerDynamic {
   0% {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translateX(var(--ticker-end, -50%));
+  }
+}
+
+@keyframes lamboTickerSolo {
+  0% {
+    transform: translateX(var(--ticker-solo-start, 100%));
+  }
+  100% {
+    transform: translateX(var(--ticker-solo-end, -100%));
   }
 }
 

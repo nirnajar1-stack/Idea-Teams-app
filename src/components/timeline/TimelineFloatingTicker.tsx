@@ -1,5 +1,11 @@
 import { CheckCheck, Inbox, Radio } from 'lucide-react'
-import { useLayoutEffect, useRef, useState, type DragEvent } from 'react'
+import {
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type DragEvent,
+} from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
 import {
@@ -9,6 +15,8 @@ import {
 import { timelineDragMime } from '../../lib/timelineUtils'
 import { cn } from '../../lib/cn'
 import type { Idea } from '../../types/idea'
+
+const TICKER_PX_PER_SEC = 48
 
 interface TimelineFloatingTickerProps {
   tasks: Idea[]
@@ -97,6 +105,8 @@ function TickerChip({
   )
 }
 
+type TickerMotion = 'solo' | 'loop' | 'loop-padded'
+
 export function TimelineFloatingTicker({
   tasks,
   assigneeNames,
@@ -118,18 +128,55 @@ export function TimelineFloatingTicker({
   })
 
   const dueCount = sorted.filter((i) => isRoutineCheckDue(i)).length
+  const taskKey = sorted.map((i) => i.id).join('|')
 
   const viewportRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLDivElement>(null)
-  const [shouldLoop, setShouldLoop] = useState(false)
+  const [motion, setMotion] = useState<TickerMotion>('loop')
+  const [spacerWidth, setSpacerWidth] = useState(0)
+  const [railStyle, setRailStyle] = useState<CSSProperties>({})
 
   useLayoutEffect(() => {
     const viewport = viewportRef.current
     const measure = measureRef.current
-    if (!viewport || !measure) return
+    if (!viewport || !measure || sorted.length === 0) return
 
     const update = () => {
-      setShouldLoop(measure.scrollWidth > viewport.clientWidth + 2)
+      const contentWidth = measure.scrollWidth
+      const viewportWidth = viewport.clientWidth
+      if (contentWidth <= 0 || viewportWidth <= 0) return
+
+      if (sorted.length === 1 && contentWidth < viewportWidth) {
+        const travel = viewportWidth + contentWidth
+        setMotion('solo')
+        setSpacerWidth(0)
+        setRailStyle({
+          '--ticker-solo-start': `${viewportWidth}px`,
+          '--ticker-solo-end': `-${contentWidth}px`,
+          '--ticker-duration': `${Math.max(14, travel / TICKER_PX_PER_SEC)}s`,
+        } as CSSProperties)
+        return
+      }
+
+      const overflows = contentWidth > viewportWidth + 2
+      if (overflows) {
+        setMotion('loop')
+        setSpacerWidth(0)
+        setRailStyle({
+          '--ticker-duration': `${Math.max(22, (contentWidth * 2) / TICKER_PX_PER_SEC)}s`,
+          '--ticker-end': '-50%',
+        } as CSSProperties)
+        return
+      }
+
+      const spacer = Math.max(viewportWidth - contentWidth + 64, 96)
+      const travel = contentWidth + spacer
+      setMotion('loop-padded')
+      setSpacerWidth(spacer)
+      setRailStyle({
+        '--ticker-duration': `${Math.max(18, (travel * 2) / TICKER_PX_PER_SEC)}s`,
+        '--ticker-end': `-${travel}px`,
+      } as CSSProperties)
     }
 
     update()
@@ -137,7 +184,7 @@ export function TimelineFloatingTicker({
     ro.observe(viewport)
     ro.observe(measure)
     return () => ro.disconnect()
-  }, [sorted.map((i) => i.id).join('|')])
+  }, [taskKey, sorted.length])
 
   const renderChips = (keySuffix = '') =>
     sorted.map((idea) => (
@@ -220,29 +267,30 @@ export function TimelineFloatingTicker({
             </p>
           </div>
         ) : (
-          <div
-            ref={viewportRef}
-            className={cn(
-              'lambo-ticker__track',
-              !shouldLoop && 'lambo-ticker__track--static',
-            )}
-          >
-            <div
-              ref={measureRef}
-              className="lambo-ticker__measure"
-              aria-hidden
-            >
+          <div ref={viewportRef} className="lambo-ticker__track">
+            <div ref={measureRef} className="lambo-ticker__measure" aria-hidden>
               {renderChips('-measure')}
             </div>
             <div
               className={cn(
                 'lambo-ticker__rail',
-                !shouldLoop && 'lambo-ticker__rail--static',
+                motion === 'solo' && 'lambo-ticker__rail--solo',
                 (isDropTarget || isDragging) && 'lambo-ticker__rail--paused',
               )}
+              style={railStyle}
             >
               {renderChips()}
-              {shouldLoop && renderChips('-loop')}
+              {motion === 'loop' && renderChips('-loop')}
+              {motion === 'loop-padded' && (
+                <>
+                  <div
+                    className="lambo-ticker__spacer shrink-0"
+                    style={{ width: spacerWidth }}
+                    aria-hidden
+                  />
+                  {renderChips('-loop')}
+                </>
+              )}
             </div>
           </div>
         )}
