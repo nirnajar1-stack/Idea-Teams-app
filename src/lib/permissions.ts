@@ -26,43 +26,11 @@ function isOthersMasterPrivate(user: AppUser, idea: Idea): boolean {
   return idea.visibility === 'master_private' && idea.createdByUserId !== user.id
 }
 
-export function canAddSubIdea(
-  user: AppUser | null,
-  parent: Idea,
-): boolean {
-  if (!user || parent.ideaKind !== 'container') return false
-  return canEditIdea(user, parent)
-}
-
-export function canDeleteIdea(user: AppUser | null, idea: Idea): boolean {
-  if (!user) return false
-  if (isOthersMasterPrivate(user, idea) && user.accessLevel === 'manager') return false
-  if (user.accessLevel === 'manager') return true
-  if (user.accessLevel === 'guest') return false
-  return idea.createdByUserId === user.id
-}
-
-/** טיימליין מאסטר — תכנון תאריך לרעיונות גלויים */
-export function canScheduleOnTimeline(user: AppUser | null, idea: Idea): boolean {
-  if (!isMaster(user)) return false
-  if (idea.visibility === 'master_private' && idea.createdByUserId !== user!.id) return false
-  return true
-}
-
-/** מאסטר — שליחה לתור ביצוע / בדיקות שוטפות */
-export function canManageMasterWorkflow(user: AppUser | null, idea: Idea): boolean {
-  if (!isMaster(user)) return false
-  if (idea.visibility === 'master_private' && idea.createdByUserId !== user!.id) return false
-  return true
-}
-
+/** מנהלים ומאסטר — עריכה, העברה וסימון הושלם לכל משימה גלויה (לא master_private של אחר) */
 export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
   if (!user) return false
-  if (isOthersMasterPrivate(user, idea) && user.accessLevel === 'manager') return false
-  if (user.accessLevel === 'manager') return true
-  if (user.accessLevel === 'master') {
-    return idea.createdByUserId === user.id || idea.assigneeUserId === user.id
-  }
+  if (isOthersMasterPrivate(user, idea)) return false
+  if (user.accessLevel === 'manager' || user.accessLevel === 'master') return true
   if (user.accessLevel === 'guest') {
     return (
       idea.createdByUserId === user.id &&
@@ -71,6 +39,38 @@ export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
     )
   }
   return idea.createdByUserId === user.id || idea.assigneeUserId === user.id
+}
+
+/** מחיקה — מאסטר לכל המשימות הגלויות; יוצר (משתמש רגיל) למשימות שלו בלבד */
+export function canDeleteIdea(user: AppUser | null, idea: Idea): boolean {
+  if (!user) return false
+  if (user.accessLevel === 'master') {
+    return !isOthersMasterPrivate(user, idea)
+  }
+  if (user.accessLevel === 'manager' || user.accessLevel === 'guest') return false
+  return idea.createdByUserId === user.id
+}
+
+export function canAddSubIdea(
+  user: AppUser | null,
+  parent: Idea,
+): boolean {
+  if (!user || parent.ideaKind !== 'container') return false
+  return canEditIdea(user, parent)
+}
+
+/** טיימליין מאסטר — תכנון תאריך לרעיונות גלויים */
+export function canScheduleOnTimeline(user: AppUser | null, idea: Idea): boolean {
+  if (!isMaster(user)) return false
+  if (isOthersMasterPrivate(user!, idea)) return false
+  return true
+}
+
+/** מאסטר — שליחה לתור ביצוע / בדיקות שוטפות */
+export function canManageMasterWorkflow(user: AppUser | null, idea: Idea): boolean {
+  if (!isMaster(user)) return false
+  if (isOthersMasterPrivate(user!, idea)) return false
+  return true
 }
 
 export function canViewIdea(

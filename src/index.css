@@ -747,73 +747,37 @@
   mask-image: linear-gradient(
     to right,
     transparent,
-    black 2.5rem,
-    black calc(100% - 2.5rem),
+    black 1.25rem,
+    black calc(100% - 1.25rem),
     transparent
   );
-}
-
-.lambo-ticker__measure {
-  position: absolute;
-  visibility: hidden;
-  pointer-events: none;
-  display: flex;
-  width: max-content;
-  gap: 0.75rem;
-  padding: 0.65rem 1rem;
-  direction: rtl;
 }
 
 .lambo-ticker__rail {
   display: flex;
   width: max-content;
-  gap: 0.75rem;
-  padding: 0.65rem 1rem;
   direction: rtl;
   will-change: transform;
-  animation: lamboTickerDynamic var(--ticker-duration, 32s) linear infinite;
 }
 
-.lambo-ticker:hover .lambo-ticker__rail,
-.lambo-ticker:focus-within .lambo-ticker__rail,
-.lambo-ticker__rail--paused {
-  animation-play-state: paused;
-}
-
-.lambo-ticker__rail--solo {
-  animation-name: lamboTickerSolo;
-}
-
-.lambo-ticker__spacer {
+.lambo-ticker__set {
+  display: flex;
   flex-shrink: 0;
-  align-self: stretch;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
 }
 
-@keyframes lamboTickerDynamic {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(var(--ticker-end, -50%));
-  }
-}
-
-@keyframes lamboTickerSolo {
-  0% {
-    transform: translateX(var(--ticker-solo-start, 100%));
-  }
-  100% {
-    transform: translateX(var(--ticker-solo-end, -100%));
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .lambo-ticker__rail {
-    animation: none;
     flex-wrap: wrap;
     width: 100%;
-    max-height: 8rem;
-    overflow-y: auto;
+    max-width: 100%;
+  }
+
+  .lambo-ticker__set {
+    flex-wrap: wrap;
+    width: 100%;
   }
 }
 

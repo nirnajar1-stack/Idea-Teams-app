@@ -1,11 +1,5 @@
 import { CheckCheck, Inbox, Radio } from 'lucide-react'
-import {
-  useLayoutEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type DragEvent,
-} from 'react'
+import { useLayoutEffect, useRef, useState, type DragEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
 import {
@@ -16,7 +10,7 @@ import { timelineDragMime } from '../../lib/timelineUtils'
 import { cn } from '../../lib/cn'
 import type { Idea } from '../../types/idea'
 
-const TICKER_PX_PER_SEC = 48
+const TICKER_PX_PER_SEC = 42
 
 interface TimelineFloatingTickerProps {
   tasks: Idea[]
@@ -105,8 +99,6 @@ function TickerChip({
   )
 }
 
-type TickerMotion = 'solo' | 'loop' | 'loop-padded'
-
 export function TimelineFloatingTicker({
   tasks,
   assigneeNames,
@@ -131,65 +123,15 @@ export function TimelineFloatingTicker({
   const taskKey = sorted.map((i) => i.id).join('|')
 
   const viewportRef = useRef<HTMLDivElement>(null)
-  const measureRef = useRef<HTMLDivElement>(null)
-  const [motion, setMotion] = useState<TickerMotion>('loop')
-  const [spacerWidth, setSpacerWidth] = useState(0)
-  const [railStyle, setRailStyle] = useState<CSSProperties>({})
+  const railRef = useRef<HTMLDivElement>(null)
+  const animRef = useRef<Animation | null>(null)
+  const hoverPausedRef = useRef(false)
+  const [loopDuplicate, setLoopDuplicate] = useState(false)
 
-  useLayoutEffect(() => {
-    const viewport = viewportRef.current
-    const measure = measureRef.current
-    if (!viewport || !measure || sorted.length === 0) return
-
-    const update = () => {
-      const contentWidth = measure.scrollWidth
-      const viewportWidth = viewport.clientWidth
-      if (contentWidth <= 0 || viewportWidth <= 0) return
-
-      if (sorted.length === 1 && contentWidth < viewportWidth) {
-        const travel = viewportWidth + contentWidth
-        setMotion('solo')
-        setSpacerWidth(0)
-        setRailStyle({
-          '--ticker-solo-start': `${viewportWidth}px`,
-          '--ticker-solo-end': `-${contentWidth}px`,
-          '--ticker-duration': `${Math.max(14, travel / TICKER_PX_PER_SEC)}s`,
-        } as CSSProperties)
-        return
-      }
-
-      const overflows = contentWidth > viewportWidth + 2
-      if (overflows) {
-        setMotion('loop')
-        setSpacerWidth(0)
-        setRailStyle({
-          '--ticker-duration': `${Math.max(22, (contentWidth * 2) / TICKER_PX_PER_SEC)}s`,
-          '--ticker-end': '-50%',
-        } as CSSProperties)
-        return
-      }
-
-      const spacer = Math.max(viewportWidth - contentWidth + 64, 96)
-      const travel = contentWidth + spacer
-      setMotion('loop-padded')
-      setSpacerWidth(spacer)
-      setRailStyle({
-        '--ticker-duration': `${Math.max(18, (travel * 2) / TICKER_PX_PER_SEC)}s`,
-        '--ticker-end': `-${travel}px`,
-      } as CSSProperties)
-    }
-
-    update()
-    const ro = new ResizeObserver(update)
-    ro.observe(viewport)
-    ro.observe(measure)
-    return () => ro.disconnect()
-  }, [taskKey, sorted.length])
-
-  const renderChips = (keySuffix = '') =>
+  const renderChips = (suffix = '') =>
     sorted.map((idea) => (
       <TickerChip
-        key={`${idea.id}${keySuffix}`}
+        key={`${idea.id}${suffix}`}
         idea={idea}
         assigneeName={
           idea.assigneeUserId ? assigneeNames.get(idea.assigneeUserId) : undefined
@@ -200,6 +142,87 @@ export function TimelineFloatingTicker({
         onDragEnd={onDragEnd}
       />
     ))
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current
+    const rail = railRef.current
+    if (!viewport || !rail || sorted.length === 0) {
+      setLoopDuplicate(false)
+      return
+    }
+
+    const firstSet = rail.querySelector<HTMLElement>('[data-ticker-set]')
+    if (!firstSet) return
+
+    const overflows = firstSet.offsetWidth > viewport.clientWidth + 4
+    setLoopDuplicate(overflows)
+  }, [taskKey, sorted.length])
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current
+    const rail = railRef.current
+    if (!viewport || !rail || sorted.length === 0) return
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    const syncPlayback = () => {
+      const anim = animRef.current
+      if (!anim) return
+      if (hoverPausedRef.current || isDropTarget || isDragging) anim.pause()
+      else anim.play()
+    }
+
+    const startAnimation = () => {
+      animRef.current?.cancel()
+      rail.style.transform = ''
+
+      if (reducedMotion) return
+
+      const viewW = viewport.clientWidth
+      const sets = rail.querySelectorAll<HTMLElement>('[data-ticker-set]')
+      const firstSet = sets[0]
+      if (!firstSet || viewW <= 0) return
+
+      const contentW = firstSet.offsetWidth
+      if (contentW <= 0) return
+
+      if (loopDuplicate && sets.length > 1) {
+        const half = rail.scrollWidth / 2
+        const duration = Math.max(18, (half * 2) / TICKER_PX_PER_SEC) * 1000
+        animRef.current = rail.animate(
+          [
+            { transform: 'translateX(0)' },
+            { transform: `translateX(-${half}px)` },
+          ],
+          { duration, iterations: Infinity, easing: 'linear' },
+        )
+      } else {
+        const travel = viewW + contentW
+        const duration = Math.max(14, travel / TICKER_PX_PER_SEC) * 1000
+        animRef.current = rail.animate(
+          [
+            { transform: `translateX(${viewW}px)` },
+            { transform: `translateX(-${contentW}px)` },
+          ],
+          { duration, iterations: Infinity, easing: 'linear' },
+        )
+      }
+
+      syncPlayback()
+    }
+
+    startAnimation()
+
+    const ro = new ResizeObserver(() => startAnimation())
+    ro.observe(viewport)
+    ro.observe(rail)
+
+    return () => {
+      ro.disconnect()
+      animRef.current?.cancel()
+      animRef.current = null
+    }
+  }, [taskKey, sorted.length, loopDuplicate, isDropTarget, isDragging])
 
   const dropHandlers = {
     onDragOver: (e: DragEvent) => {
@@ -223,6 +246,14 @@ export function TimelineFloatingTicker({
         isDragging && !isDropTarget && 'opacity-95',
       )}
       aria-label="משימות צפות ללא שיוך לזמן"
+      onMouseEnter={() => {
+        hoverPausedRef.current = true
+        animRef.current?.pause()
+      }}
+      onMouseLeave={() => {
+        hoverPausedRef.current = false
+        if (!isDropTarget && !isDragging) animRef.current?.play()
+      }}
       {...dropHandlers}
     >
       <div className="lambo-ticker__label">
@@ -268,28 +299,14 @@ export function TimelineFloatingTicker({
           </div>
         ) : (
           <div ref={viewportRef} className="lambo-ticker__track">
-            <div ref={measureRef} className="lambo-ticker__measure" aria-hidden>
-              {renderChips('-measure')}
-            </div>
-            <div
-              className={cn(
-                'lambo-ticker__rail',
-                motion === 'solo' && 'lambo-ticker__rail--solo',
-                (isDropTarget || isDragging) && 'lambo-ticker__rail--paused',
-              )}
-              style={railStyle}
-            >
-              {renderChips()}
-              {motion === 'loop' && renderChips('-loop')}
-              {motion === 'loop-padded' && (
-                <>
-                  <div
-                    className="lambo-ticker__spacer shrink-0"
-                    style={{ width: spacerWidth }}
-                    aria-hidden
-                  />
+            <div ref={railRef} className="lambo-ticker__rail">
+              <div data-ticker-set className="lambo-ticker__set">
+                {renderChips()}
+              </div>
+              {loopDuplicate && (
+                <div data-ticker-set className="lambo-ticker__set" aria-hidden>
                   {renderChips('-loop')}
-                </>
+                </div>
               )}
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canEditIdea, canManageUsers, canViewIdea, filterVisibleIdeas } from './permissions'
+import { canDeleteIdea, canEditIdea, canManageUsers, canViewIdea, filterVisibleIdeas } from './permissions'
 import type { Idea } from '../types/idea'
 import type { AppUser, StoredUser } from '../types/user'
 
@@ -122,6 +122,35 @@ describe('permissions', () => {
         { ...baseIdea, visibility: 'master_private', createdByUserId: 'master1' },
       ),
     ).toBe(false)
+  })
+
+  it('manager can edit team idea opened by member', () => {
+    expect(canEditIdea(manager, baseIdea)).toBe(true)
+  })
+
+  it('master can edit team idea opened by member', () => {
+    expect(canEditIdea(master, baseIdea)).toBe(true)
+  })
+
+  it('master cannot edit others master_private', () => {
+    expect(
+      canEditIdea(
+        master,
+        { ...baseIdea, visibility: 'master_private', createdByUserId: 'other-master' },
+      ),
+    ).toBe(false)
+  })
+
+  it('master can delete team idea opened by member', () => {
+    expect(canDeleteIdea(master, baseIdea)).toBe(true)
+  })
+
+  it('manager cannot delete others ideas', () => {
+    expect(canDeleteIdea(manager, baseIdea)).toBe(false)
+  })
+
+  it('member can delete own idea', () => {
+    expect(canDeleteIdea(member, { ...baseIdea, createdByUserId: 'golan' })).toBe(true)
   })
 
   it('assignee can edit', () => {
