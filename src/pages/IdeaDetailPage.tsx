@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
-import { emailNotifyUserMessage } from '../lib/emailNotifyFeedback'
+import { completionNotifyToasts } from '../lib/emailNotifyFeedback'
 import { useChatNotifications } from '../context/ChatNotificationsContext'
 import { AppShell } from '../components/layout/AppShell'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
@@ -9,7 +9,7 @@ import { IdeaDetailContent } from '../components/sections/IdeaDetailContent'
 import { IdeaDetailSidebar } from '../components/sections/IdeaDetailSidebar'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
-import { ROUTES } from '../constants/app'
+import { useAppRoutes } from '../context/EmbedModeContext'
 import { canAddSubIdea } from '../lib/permissions'
 import { isContainerIdea, isSubIdea } from '../lib/ideaUtils'
 
@@ -17,6 +17,7 @@ export function IdeaDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { hash } = useLocation()
   const navigate = useNavigate()
+  const routes = useAppRoutes()
   const { markIdeaRead } = useChatNotifications()
   const { user } = useAuth()
   const {
@@ -33,7 +34,7 @@ export function IdeaDetailPage() {
 
   const idea = id ? getIdeaById(id) : undefined
   const shareUrl = idea
-    ? `${window.location.origin}${ROUTES.ideaDetail(idea.id)}`
+    ? `${window.location.origin}${routes.ideaDetail(idea.id)}`
     : undefined
 
   useEffect(() => {
@@ -46,7 +47,7 @@ export function IdeaDetailPage() {
   }, [hash, idea, markIdeaRead])
 
   if (!idea) {
-    return <Navigate to={ROUTES.ideas} replace />
+    return <Navigate to={routes.ideas} replace />
   }
 
   const parent =
@@ -58,10 +59,11 @@ export function IdeaDetailPage() {
     const result = await updateIdea(idea.id, patch)
     if (result.ok) {
       toast.success('הבקשה/רעיון עודכן')
-      const emailMsg = result.emailNotify && emailNotifyUserMessage(result.emailNotify)
-      if (emailMsg) {
-        if (result.emailNotify?.ok) toast.message(emailMsg)
-        else toast.warning(emailMsg)
+      if (result.emailNotify) {
+        for (const t of completionNotifyToasts(result.emailNotify)) {
+          if (t.level === 'message') toast.message(t.text)
+          else toast.warning(t.text)
+        }
       }
     } else {
       toast.error('העדכון נכשל')
@@ -82,7 +84,7 @@ export function IdeaDetailPage() {
     void (async () => {
       if (await deleteIdea(idea.id)) {
         toast.success('הבקשה/רעיון נמחק')
-        navigate(ROUTES.ideas)
+        navigate(routes.ideas)
       } else {
         toast.error('המחיקה נכשלה. נסו לרענן את הדף.')
       }
@@ -113,11 +115,11 @@ export function IdeaDetailPage() {
                   return
                 }
                 toast.success('סומן כהושלם')
-                const emailMsg =
-                  result.emailNotify && emailNotifyUserMessage(result.emailNotify)
-                if (emailMsg) {
-                  if (result.emailNotify?.ok) toast.message(emailMsg)
-                  else toast.warning(emailMsg)
+                if (result.emailNotify) {
+                  for (const t of completionNotifyToasts(result.emailNotify)) {
+                    if (t.level === 'message') toast.message(t.text)
+                    else toast.warning(t.text)
+                  }
                 }
               })
             }

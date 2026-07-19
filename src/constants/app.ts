@@ -18,6 +18,15 @@ export const ROUTES = {
   timeline: '/timeline',
 } as const
 
+/** נתיבים לשילוב ב-Power BI (iframe) */
+export const EMBED_ROUTES = {
+  login: '/embed/login',
+  home: '/embed',
+  ideas: '/embed/ideas',
+  timeline: '/embed/timeline',
+  ideaDetail: (id: string) => `/embed/ideas/${id}`,
+} as const
+
 export const STORAGE_KEY = 'ideaflow-ideas-v1'
 export const CLOUD_MIGRATED_KEY = 'ideaflow-cloud-migrated-v1'
 export const SESSION_STORAGE_KEY = 'ideaflow-session-v1'

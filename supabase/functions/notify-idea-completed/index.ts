@@ -99,6 +99,157 @@ async function sendResendEmail(
   return { ok: true, id: json.id }
 }
 
+interface WhatsAppNotifyOutcome {
+  ok: boolean
+  skipped?: boolean
+  reason?: string
+  sent?: { phone: string; id?: string }
+  error?: string
+  details?: unknown
+}
+
+async function sendWhatsAppMessage(
+  accessToken: string,
+  phoneNumberId: string,
+  toE164: string,
+  templateName: string,
+  templateParams: [string, string, string],
+  useText: boolean,
+  freeTextBody: string,
+): Promise<{ ok: boolean; id?: string; error?: unknown }> {
+  const url = `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`
+  const body = useText
+    ? {
+        messaging_product: 'whatsapp',
+        to: toE164,
+        type: 'text',
+        text: { body: freeTextBody },
+      }
+    : {
+        messaging_product: 'whatsapp',
+        to: toE164,
+        type: 'template',
+        template: {
+          name: templateName,
+          language: { code: 'he' },
+          components: [
+            {
+              type: 'body',
+              parameters: templateParams.map((text) => ({
+                type: 'text',
+                text: truncate(text, 1024),
+              })),
+            },
+          ],
+        },
+      }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    console.error('WhatsApp API error', json)
+    return { ok: false, error: json }
+  }
+  const messageId = (json as { messages?: { id?: string }[] }).messages?.[0]?.id
+  return { ok: true, id: messageId }
+}
+
+function normalizePhoneE164(raw: string): string {
+  const digits = raw.replace(/\D/g, '')
+  if (!digits) return ''
+  if (digits.startsWith('972')) return digits
+  if (digits.startsWith('0')) return `972${digits.slice(1)}`
+  if (digits.length >= 9) return `972${digits}`
+  return digits
+}
+
+async function notifyAssigneeWhatsApp(
+  admin: ReturnType<typeof createClient>,
+  idea: Record<string, unknown>,
+  actorName: string,
+): Promise<WhatsAppNotifyOutcome> {
+  const waToken = Deno.env.get('WHATSAPP_ACCESS_TOKEN')
+  const waPhoneId = Deno.env.get('WHATSAPP_PHONE_NUMBER_ID')
+  const waTemplate = Deno.env.get('WHATSAPP_TEMPLATE_NAME') ?? 'idea_completed'
+  const waUseText = Deno.env.get('WHATSAPP_USE_TEXT') === 'true'
+
+  if (!waToken || !waPhoneId) {
+    return { ok: false, skipped: true, reason: 'whatsapp_not_configured' }
+  }
+
+  const assigneeId = idea.assignee_user_id as string | null
+  if (!assigneeId) {
+    return { ok: false, skipped: true, reason: 'no_assignee' }
+  }
+
+  const { data: assignee, error: assigneeErr } = await admin
+    .from('app_users')
+    .select('id, name, phone, active')
+    .eq('id', assigneeId)
+    .maybeSingle()
+
+  if (assigneeErr || !assignee) {
+    return { ok: false, skipped: true, reason: 'assignee_not_found' }
+  }
+
+  if (!assignee.active) {
+    return { ok: false, skipped: true, reason: 'inactive' }
+  }
+
+  const phoneRaw = (assignee.phone as string | null)?.trim()
+  if (!phoneRaw) {
+    return { ok: false, skipped: true, reason: 'no_phone' }
+  }
+
+  const phoneE164 = normalizePhoneE164(phoneRaw)
+  if (!/^972\d{8,9}$/.test(phoneE164)) {
+    return { ok: false, skipped: true, reason: 'invalid_phone' }
+  }
+
+  const { data: prefs } = await admin
+    .from('user_preferences')
+    .select('notify_whatsapp_completed')
+    .eq('user_id', assigneeId)
+    .maybeSingle()
+
+  if (prefs?.notify_whatsapp_completed === false) {
+    return { ok: false, skipped: true, reason: 'prefs_off' }
+  }
+
+  const recipientName = (assignee.name as string) || 'משתמש'
+  const title = (idea.title as string) || 'בקשה/רעיון'
+  const description = truncate((idea.description as string) || 'ללא תיאור', 500)
+  const templateParams: [string, string, string] = [recipientName, title, description]
+  const freeTextBody = `שלום ${recipientName},\n\nהרעיון שלך הושלם בהצלחה ✅\n\n*${title}*\n\n${description}\n\nסומן כהושלם על ידי: ${actorName}\n— Ogen`
+
+  const result = await sendWhatsAppMessage(
+    waToken,
+    waPhoneId,
+    phoneE164,
+    waTemplate,
+    templateParams,
+    waUseText,
+    freeTextBody,
+  )
+
+  if (result.ok) {
+    return { ok: true, sent: { phone: phoneE164, id: result.id } }
+  }
+
+  return {
+    ok: false,
+    error: 'whatsapp_send_failed',
+    details: result.error,
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -108,13 +259,7 @@ Deno.serve(async (req) => {
     const resendKey = Deno.env.get('RESEND_API_KEY')
     const emailFrom = Deno.env.get('EMAIL_FROM')
     const appPublicUrl = Deno.env.get('APP_PUBLIC_URL') ?? ''
-
-    if (!resendKey || !emailFrom) {
-      return new Response(
-        JSON.stringify({ ok: false, skipped: true, reason: 'email_not_configured' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      )
-    }
+    const emailConfigured = !!(resendKey && emailFrom)
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -173,113 +318,130 @@ Deno.serve(async (req) => {
       })
     }
 
-    const visibility = (idea.visibility as string) || 'team'
-
-    const { data: activeUsers, error: usersErr } = await admin
-      .from('app_users')
-      .select('id, name, email, active, access_level')
-      .eq('active', true)
-      .in('access_level', ['manager', 'member', 'master'])
-
-    if (usersErr) {
-      return new Response(JSON.stringify({ error: 'users_load_failed' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    let eligible = activeUsers ?? []
-    if (visibility === 'master_private') {
-      eligible = eligible.filter((u) => u.id === creatorId)
-    } else if (visibility === 'managers_only') {
-      eligible = eligible.filter(
-        (u) => u.access_level === 'manager' || u.access_level === 'master',
-      )
-    }
-
-    const recipients: RecipientRole[] = eligible.map((u) => {
-      let role: RecipientRole['role'] = 'team'
-      if (u.id === creatorId) role = 'creator'
-      else if (u.id === assigneeId) role = 'assignee'
-      return { userId: u.id as string, role }
-    })
-
-    if (recipients.length === 0) {
-      return new Response(JSON.stringify({ ok: false, skipped: true, reason: 'no_recipients' }), {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    const recipientIds = recipients.map((r) => r.userId)
-    const { data: prefsRows } = await admin
-      .from('user_preferences')
-      .select('user_id, notify_email_completed')
-      .in('user_id', recipientIds)
-
-    const prefsByUser = new Map(
-      (prefsRows ?? []).map((p) => [p.user_id as string, p.notify_email_completed]),
-    )
-    const usersById = new Map(eligible.map((u) => [u.id as string, u]))
-
-    const title = (idea.title as string) || 'בקשה/רעיון'
-    const description = (idea.description as string) || ''
     const actorName = (actor?.name as string) || 'משתמש'
-    const ideaUrl = appPublicUrl
-      ? `${appPublicUrl.replace(/\/$/, '')}/ideas/${ideaId}`
-      : null
 
     const sent: { email: string; role: string; id?: string }[] = []
     const skipped: { userId: string; reason: string }[] = []
     const failed: { email: string; error: unknown }[] = []
 
-    for (const { userId, role } of recipients) {
-      const user = usersById.get(userId)
-      if (!user?.active) {
-        skipped.push({ userId, reason: 'inactive' })
-        continue
+    if (!emailConfigured) {
+      skipped.push({ userId: '_email', reason: 'email_not_configured' })
+    } else {
+      const visibility = (idea.visibility as string) || 'team'
+
+      const { data: activeUsers, error: usersErr } = await admin
+        .from('app_users')
+        .select('id, name, email, active, access_level')
+        .eq('active', true)
+        .in('access_level', ['manager', 'member', 'master'])
+
+      if (usersErr) {
+        return new Response(JSON.stringify({ error: 'users_load_failed' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
       }
 
-      const email = (user.email as string)?.trim()
-      if (!email) {
-        skipped.push({ userId, reason: 'no_email' })
-        continue
+      let eligible = activeUsers ?? []
+      if (visibility === 'master_private') {
+        eligible = eligible.filter((u) => u.id === creatorId)
+      } else if (visibility === 'managers_only') {
+        eligible = eligible.filter(
+          (u) => u.access_level === 'manager' || u.access_level === 'master',
+        )
       }
 
-      const notifyPref = prefsByUser.get(userId)
-      if (notifyPref === false) {
-        skipped.push({ userId, reason: 'prefs_off' })
-        continue
-      }
-
-      const recipientName = (user.name as string) || 'משתמש'
-      const subject = `✅ הושלם: ${truncate(title, 80)} — Ogen`
-      const html = buildEmailHtml({
-        recipientName,
-        role,
-        title,
-        description,
-        actorName,
-        ideaUrl,
+      const recipients: RecipientRole[] = eligible.map((u) => {
+        let role: RecipientRole['role'] = 'team'
+        if (u.id === creatorId) role = 'creator'
+        else if (u.id === assigneeId) role = 'assignee'
+        return { userId: u.id as string, role }
       })
 
-      const result = await sendResendEmail(resendKey, emailFrom, email, subject, html)
-      if (result.ok) {
-        sent.push({ email, role, id: result.id })
+      if (recipients.length === 0) {
+        skipped.push({ userId: '_email', reason: 'no_recipients' })
       } else {
-        failed.push({ email, error: result.error })
+        const recipientIds = recipients.map((r) => r.userId)
+        const { data: prefsRows } = await admin
+          .from('user_preferences')
+          .select('user_id, notify_email_completed')
+          .in('user_id', recipientIds)
+
+        const prefsByUser = new Map(
+          (prefsRows ?? []).map((p) => [p.user_id as string, p.notify_email_completed]),
+        )
+        const usersById = new Map(eligible.map((u) => [u.id as string, u]))
+
+        const title = (idea.title as string) || 'בקשה/רעיון'
+        const description = (idea.description as string) || ''
+        const ideaUrl = appPublicUrl
+          ? `${appPublicUrl.replace(/\/$/, '')}/ideas/${ideaId}`
+          : null
+
+        for (const { userId, role } of recipients) {
+          const user = usersById.get(userId)
+          if (!user?.active) {
+            skipped.push({ userId, reason: 'inactive' })
+            continue
+          }
+
+          const email = (user.email as string)?.trim()
+          if (!email) {
+            skipped.push({ userId, reason: 'no_email' })
+            continue
+          }
+
+          const notifyPref = prefsByUser.get(userId)
+          if (notifyPref === false) {
+            skipped.push({ userId, reason: 'prefs_off' })
+            continue
+          }
+
+          const recipientName = (user.name as string) || 'משתמש'
+          const subject = `✅ הושלם: ${truncate(title, 80)} — Ogen`
+          const html = buildEmailHtml({
+            recipientName,
+            role,
+            title,
+            description,
+            actorName,
+            ideaUrl,
+          })
+
+          const result = await sendResendEmail(resendKey!, emailFrom!, email, subject, html)
+          if (result.ok) {
+            sent.push({ email, role, id: result.id })
+          } else {
+            failed.push({ email, error: result.error })
+          }
+        }
       }
     }
 
-    if (sent.length === 0 && failed.length > 0) {
+    const whatsapp = await notifyAssigneeWhatsApp(admin, idea, actorName)
+
+    if (emailConfigured && sent.length === 0 && failed.length > 0) {
       return new Response(
-        JSON.stringify({ ok: false, error: 'email_send_failed', failed, skipped }),
+        JSON.stringify({
+          ok: false,
+          error: 'email_send_failed',
+          sent,
+          failed,
+          skipped,
+          whatsapp,
+        }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       )
     }
 
     return new Response(
-      JSON.stringify({ ok: true, sent, skipped, failed: failed.length ? failed : undefined }),
+      JSON.stringify({
+        ok: whatsapp.ok || sent.length > 0 || (!emailConfigured && whatsapp.skipped),
+        sent,
+        skipped,
+        failed: failed.length ? failed : undefined,
+        whatsapp,
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     )
   } catch (err) {

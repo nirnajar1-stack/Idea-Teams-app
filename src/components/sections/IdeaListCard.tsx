@@ -1,7 +1,7 @@
 import { Archive, ArrowLeft, Code, ListTodo, Rocket, Verified, Wrench } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
-import { ROUTES } from '../../constants/app'
+import { useAppRoutes } from '../../context/EmbedModeContext'
 import { useIdeas } from '../../context/IdeasContext'
 import {
   CATEGORY_LABELS,
@@ -47,6 +47,7 @@ export function IdeaListCard({
   showMasterExecutionToggle = false,
   onExecutionToggle,
 }: IdeaListCardProps) {
+  const routes = useAppRoutes()
   const { getSubIdeas } = useIdeas()
   const CategoryIcon =
     idea.category === 'development'
@@ -124,7 +125,7 @@ export function IdeaListCard({
           {executionToggleButton}
           {restoreButton}
           <Link
-            to={ROUTES.ideaDetail(idea.id)}
+            to={routes.ideaDetail(idea.id)}
             className="p-2 text-primary transition-colors hover:bg-primary/10"
             aria-label={`פרטים — ${idea.title}`}
           >
@@ -192,7 +193,7 @@ export function IdeaListCard({
               {executionToggleButton}
               {restoreButton}
               <Link
-                to={ROUTES.ideaDetail(idea.id)}
+                to={routes.ideaDetail(idea.id)}
                 className="flex items-center gap-1 font-label-md text-primary hover:underline decoration-2 underline-offset-4"
               >
                 פרטים נוספים

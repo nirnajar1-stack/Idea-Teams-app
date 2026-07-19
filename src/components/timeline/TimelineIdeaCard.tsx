@@ -1,6 +1,6 @@
 import { GripVertical } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '../../constants/app'
+import { useAppRoutes } from '../../context/EmbedModeContext'
 import { PRIORITY_LABELS } from '../../lib/ideaUtils'
 import { timelineDragMime } from '../../lib/timelineUtils'
 import { cn } from '../../lib/cn'
@@ -21,6 +21,8 @@ export function TimelineIdeaCard({
   onDragStart,
   onDragEnd,
 }: TimelineIdeaCardProps) {
+  const routes = useAppRoutes()
+
   return (
     <div
       draggable
@@ -41,7 +43,7 @@ export function TimelineIdeaCard({
           <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-secondary/50 group-hover:text-secondary" />
         )}
         <Link
-          to={ROUTES.ideaDetail(idea.id)}
+          to={routes.ideaDetail(idea.id)}
           onClick={(e) => e.stopPropagation()}
           className={cn(
             'min-w-0 flex-1 text-on-surface hover:text-primary',

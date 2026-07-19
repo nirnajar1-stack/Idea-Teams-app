@@ -1,7 +1,7 @@
 import { CheckCheck, Inbox, Radio } from 'lucide-react'
 import { useLayoutEffect, useRef, useState, type DragEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '../../constants/app'
+import { useAppRoutes } from '../../context/EmbedModeContext'
 import {
   CHECK_CADENCE_LABELS,
   isRoutineCheckDue,
@@ -41,6 +41,7 @@ function TickerChip({
   onDragStart?: () => void
   onDragEnd?: () => void
 }) {
+  const routes = useAppRoutes()
   const due = isRoutineCheckDue(idea)
 
   return (
@@ -62,7 +63,7 @@ function TickerChip({
       )}
       <div className="min-w-0 max-w-[12rem] sm:max-w-[16rem]">
         <Link
-          to={ROUTES.ideaDetail(idea.id)}
+          to={routes.ideaDetail(idea.id)}
           draggable={false}
           onDragStart={(e) => e.preventDefault()}
           className="block truncate font-label-sm text-on-surface hover:text-primary"

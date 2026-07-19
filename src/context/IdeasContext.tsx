@@ -54,6 +54,7 @@ import { authorFieldsFromUser } from '../lib/userUtils'
 import { resolveVisibilityOnCreate } from '../lib/ideaVisibility'
 import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats, IdeaSortOption } from '../types/idea'
 import { useAuth } from './AuthContext'
+import { useEmbedMode } from './EmbedModeContext'
 import { useUsers } from './UsersContext'
 
 export interface UpdateIdeaResult {
@@ -129,17 +130,18 @@ async function syncIdeasToCloud(ideas: Idea[], appUserId: string): Promise<void>
 
 export function IdeasProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
+  const { isEmbed } = useEmbedMode()
   const { usersById, isReady: usersReady } = useUsers()
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [isReady, setIsReady] = useState(false)
   const skipSplash = useMemo(
-    () => sessionStorage.getItem(SPLASH_SHOWN_KEY) === '1',
-    [],
+    () => isEmbed || sessionStorage.getItem(SPLASH_SHOWN_KEY) === '1',
+    [isEmbed],
   )
   const [splashExiting, setSplashExiting] = useState(false)
   const [showSplash, setShowSplash] = useState(!skipSplash)
   const [showDailyVideo, setShowDailyVideo] = useState(
-    () => !!(user && shouldShowDailyIntroVideo(user)),
+    () => !isEmbed && !!(user && shouldShowDailyIntroVideo(user)),
   )
   const [usingCloud, setUsingCloud] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -203,12 +205,12 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   }, [usersReady, cloudConfigured, user?.id])
 
   useEffect(() => {
-    if (!user) {
+    if (!user || isEmbed) {
       setShowDailyVideo(false)
       return
     }
     setShowDailyVideo(shouldShowDailyIntroVideo(user))
-  }, [user])
+  }, [user, isEmbed])
 
   useEffect(() => {
     if (!isReady) return

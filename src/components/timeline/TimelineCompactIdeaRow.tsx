@@ -1,6 +1,6 @@
 import { Inbox } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '../../constants/app'
+import { useAppRoutes } from '../../context/EmbedModeContext'
 import { timelineDragMime } from '../../lib/timelineUtils'
 import { cn } from '../../lib/cn'
 import type { Idea, IdeaPriority } from '../../types/idea'
@@ -26,6 +26,7 @@ export function TimelineCompactIdeaRow({
   onDragEnd,
   onReturnToBacklog,
 }: TimelineCompactIdeaRowProps) {
+  const routes = useAppRoutes()
   const isBacklog = variant === 'backlog'
   const showReturn = !isBacklog && onReturnToBacklog
 
@@ -46,7 +47,7 @@ export function TimelineCompactIdeaRow({
       title={idea.title}
     >
       <Link
-        to={ROUTES.ideaDetail(idea.id)}
+        to={routes.ideaDetail(idea.id)}
         onClick={(e) => e.stopPropagation()}
         className={cn(
           'min-w-0 flex-1 truncate text-on-surface transition-colors hover:text-primary',

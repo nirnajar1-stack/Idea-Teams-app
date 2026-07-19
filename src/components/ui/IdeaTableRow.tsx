@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { MoreVertical } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '../../constants/app'
+import { useAppRoutes } from '../../context/EmbedModeContext'
 import { Badge } from './Badge'
 import { TargetDateBadge } from './TargetDateBadge'
 import { cn } from '../../lib/cn'
@@ -31,11 +31,13 @@ export function IdeaTableRow({
   icon: Icon,
   iconWrapperClassName,
 }: IdeaTableRowProps) {
+  const routes = useAppRoutes()
+
   return (
     <tr className="group transition-colors hover:bg-surface-subtle">
       <td className="px-4 py-5 md:px-8">
         <Link
-          to={ROUTES.ideaDetail(ideaId)}
+          to={routes.ideaDetail(ideaId)}
           className="flex items-center gap-3"
         >
           <div
@@ -70,7 +72,7 @@ export function IdeaTableRow({
       </td>
       <td className="px-4 py-5 text-left md:px-8">
         <Link
-          to={ROUTES.ideaDetail(ideaId)}
+          to={routes.ideaDetail(ideaId)}
           className="inline-flex p-2 opacity-100 transition-colors hover:bg-surface-container md:opacity-0 md:group-hover:opacity-100"
           aria-label={`פעולות עבור ${title}`}
         >

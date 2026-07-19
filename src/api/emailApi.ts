@@ -1,11 +1,20 @@
 import { getSupabase, isSupabaseEnabled } from '../lib/supabaseClient'
 
+export interface WhatsAppNotifyResult {
+  ok: boolean
+  skipped?: boolean
+  reason?: string
+  error?: string
+  sent?: { phone: string; id?: string }
+}
+
 export interface EmailNotifyResult {
   ok: boolean
   skipped?: boolean
   reason?: string
   error?: string
   sent?: { email: string; role: string }[]
+  whatsapp?: WhatsAppNotifyResult
 }
 
 /** שולח מייל לכל המשתמשים הפעילים (לפי נראות הרעיון) כשבקשה/רעיון הושלם */

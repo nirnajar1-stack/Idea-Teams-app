@@ -12,7 +12,7 @@ import {
   WORKFLOW_LABELS,
 } from '../../lib/ideaUtils'
 import { Link } from 'react-router-dom'
-import { ROUTES } from '../../constants/app'
+import { useAppRoutes } from '../../context/EmbedModeContext'
 import { isContainerIdea, isSubIdea } from '../../lib/ideaUtils'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
@@ -54,6 +54,8 @@ export function IdeaDetailContent({
   canEdit = false,
   onUpdate,
 }: IdeaDetailContentProps) {
+  const routes = useAppRoutes()
+
   return (
     <div className="space-y-8 lg:col-span-8">
       <section className="glass-card p-6 md:p-8">
@@ -84,7 +86,7 @@ export function IdeaDetailContent({
         </div>
         {parent && (
           <Link
-            to={ROUTES.ideaDetail(parent.id)}
+            to={routes.ideaDetail(parent.id)}
             className="mb-3 inline-flex font-label-md text-primary hover:underline"
           >
             ← חלק ממארז: {parent.title}

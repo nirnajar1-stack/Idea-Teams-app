@@ -826,3 +826,23 @@
     font-size: 1rem;
   }
 }
+
+/* Power BI embed — מסך מלא בלי ניווט תחתון */
+html.embed-mode,
+html.embed-mode body,
+html.embed-mode #root {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+html.embed-mode body {
+  overflow-x: hidden;
+}
+
+.embed-shell {
+  min-height: 100dvh;
+}
+
+.embed-toolbar {
+  flex-shrink: 0;
+}
