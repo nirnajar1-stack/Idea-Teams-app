@@ -1,24 +1,6 @@
 {
   "headers": [
     {
-      "source": "/embed",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://app.powerbi.com https://*.powerbi.com https://msit.powerbi.com https://dxt.powerbi.com"
-        }
-      ]
-    },
-    {
-      "source": "/embed/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "frame-ancestors 'self' https://app.powerbi.com https://*.powerbi.com https://msit.powerbi.com https://dxt.powerbi.com"
-        }
-      ]
-    },
-    {
       "source": "/((?!embed).*)",
       "headers": [
         {
