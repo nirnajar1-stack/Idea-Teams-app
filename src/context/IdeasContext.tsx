@@ -55,6 +55,7 @@ import { resolveVisibilityOnCreate } from '../lib/ideaVisibility'
 import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats, IdeaSortOption } from '../types/idea'
 import { useAuth } from './AuthContext'
 import { useEmbedMode } from './EmbedModeContext'
+import { useGroups } from './GroupsContext'
 import { useUsers } from './UsersContext'
 
 export interface UpdateIdeaResult {
@@ -132,6 +133,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
   const { isEmbed } = useEmbedMode()
   const { usersById, isReady: usersReady } = useUsers()
+  const { myGroupIds } = useGroups()
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [isReady, setIsReady] = useState(false)
   const skipSplash = useMemo(
@@ -249,22 +251,25 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   )
 
   const visibleIdeas = useMemo(
-    () => filterVisibleIdeas(ideas, user, usersById),
-    [ideas, user, usersById],
+    () => filterVisibleIdeas(ideas, user, usersById, myGroupIds),
+    [ideas, user, usersById, myGroupIds],
   )
 
   const stats = useMemo(() => computeStats(visibleIdeas), [visibleIdeas])
 
   const canDelete = useCallback((idea: Idea) => canDeleteIdea(user, idea), [user])
-  const canEdit = useCallback((idea: Idea) => canEditIdea(user, idea), [user])
+  const canEdit = useCallback(
+    (idea: Idea) => canEditIdea(user, idea, myGroupIds),
+    [user, myGroupIds],
+  )
 
   const getIdeaById = useCallback(
     (id: string) => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !user || !canViewIdea(user, idea, usersById)) return undefined
+      if (!idea || !user || !canViewIdea(user, idea, usersById, myGroupIds)) return undefined
       return idea
     },
-    [ideas, user, usersById],
+    [ideas, user, usersById, myGroupIds],
   )
 
   const getFilteredIdeas = useCallback(
@@ -372,7 +377,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const updateIdea = useCallback(
     async (id: string, patch: Partial<Idea>): Promise<UpdateIdeaResult> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canEditIdea(user, idea)) return { ok: false }
+      if (!idea || !canEditIdea(user, idea, myGroupIds)) return { ok: false }
 
       if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
 
@@ -390,7 +395,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       if (user) {
         const action =
-          patch.assigneeUserId !== undefined
+          patch.assigneeUserId !== undefined ||
+          patch.assigneeUserIds !== undefined ||
+          patch.assigneeGroupIds !== undefined
             ? 'assignee_changed'
             : patch.workflowStatus !== undefined
               ? 'status_changed'
@@ -429,7 +436,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return { ok: true, emailNotify }
     },
-    [applyLocalIdeas, ideas, user, usingCloud],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds],
   )
 
   const deleteIdea = useCallback(

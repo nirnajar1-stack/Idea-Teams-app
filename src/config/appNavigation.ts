@@ -4,9 +4,11 @@ import {
   CalendarRange,
   LayoutDashboard,
   Lightbulb,
+  Mail,
   Tag,
   UserCog,
   UserRound,
+  Users,
   type LucideIcon,
 } from 'lucide-react'
 import { NAV_LABELS, ROUTES } from '../constants/app'
@@ -18,6 +20,8 @@ export type AppNavItemId =
   | 'openTasks'
   | 'timeline'
   | 'labels'
+  | 'groups'
+  | 'emailLog'
   | 'users'
   | 'profile'
 
@@ -84,6 +88,22 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
     icon: Tag,
     match: (p) => p === ROUTES.labels,
     visible: ({ isMaster }) => isMaster,
+  },
+  {
+    id: 'groups',
+    label: NAV_LABELS.groups,
+    to: ROUTES.groups,
+    icon: Users,
+    match: (p) => p === ROUTES.groups,
+    visible: ({ canManageUsers }) => canManageUsers,
+  },
+  {
+    id: 'emailLog',
+    label: NAV_LABELS.emailLog,
+    to: ROUTES.emailLog,
+    icon: Mail,
+    match: (p) => p === ROUTES.emailLog,
+    visible: ({ canManageUsers }) => canManageUsers,
   },
   {
     id: 'users',

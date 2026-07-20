@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Voralpen GmbH — Premium Gebrauchtwagen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes slowspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes slowspin-r { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
+    @keyframes pulse-ring { 0%,100% { opacity:.18; transform:scale(1); } 50% { opacity:.08; transform:scale(1.06); } }
+    .scroll-reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1); }
+    .scroll-reveal.is-revealed { opacity: 1; transform: translateY(0); }
+  </style>
+  <!-- aura-ga4-start -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2M6V79H761"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-2M6V79H761');
+  </script>
+  <!-- aura-ga4-end -->
+</head>
+<body class="bg-black text-[#f2f0e8] font-['Inter'] font-extralight min-h-screen overflow-x-hidden selection:bg-[#C9A84C] selection:text-black">
+  <!-- LOADER -->
+  <div id="loader" class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#0f0f0f] transition-opacity duration-700" aria-live="polite" aria-busy="true">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center opacity-[0.04]">
+      <div class="absolute w-[200vw] h-[1px] bg-[#f2f0e8] -rotate-[15deg] -translate-y-[15vh]"></div>
+      <div class="absolute w-[200vw] h-[2px] bg-[#c8a45a] -rotate-[15deg]"></div>
+      <div class="absolute w-[200vw] h-[1px] bg-[#f2f0e8] -rotate-[15deg] translate-y-[15vh]"></div>
+    </div>
+    <div class="relative z-10 flex flex-col items-center">
+      <div class="flex items-center justify-center">
+        <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/d8445f2e-9676-4e06-98f1-3e45ab87571a_3840w.png" alt="Auto Voralpen" class="h-16 md:h-24 w-auto object-contain">
+      </div>
+      <div class="w-64 h-[2px] bg-[#333] mt-6 overflow-hidden">
+        <div id="loader-progress" class="h-full bg-[#c8a45a] w-0"></div>
+      </div>
+      <span id="loader-percentage" class="font-['Inter'] text-[#f2f0e8]/50 text-xs mt-3 tracking-widest font-light">0%</span>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav id="mainNav" class="fixed top-4 left-0 right-0 z-[100] px-4 md:px-6 transition-transform duration-300 ease-in-out" aria-label="Hauptnavigation">
+    <div class="bg-black/50 max-w-5xl border-white/10 border rounded-2xl ring-white/5 ring-1 mx-auto px-5 md:px-6 relative shadow-lg backdrop-blur-lg">
+      <div class="flex h-20 items-center justify-between">
+        <a href="#slide-1" onclick="scrollToSection('slide-1')" class="group flex items-center">
+          <div class="transition-all group-hover:scale-105 flex items-center justify-center">
+            <img src="https://hoirqrkdgbmvpwutwuwj.supabase.co/storage/v1/object/public/assets/assets/d8445f2e-9676-4e06-98f1-3e45ab87571a_3840w.png" alt="Auto Voralpen" class="h-16 sm:h-20 md:h-24 lg:h-28 w-auto object-contain max-h-full">
+          </div>
+        </a>
+        <nav class="hidden md:flex items-center gap-4 lg:gap-6">
+          <a href="#slide-1" onclick="scrollToSection('slide-1')" class="text-xs font-normal transition-colors duration-200 text-[#f2f0e8]/70 hover:text-[#C9A84C] tracking-normal" dir="rtl">שקף 1</a>
+          <a href="#vorteile" onclick="scrollToSection('vorteile')" class="text-xs font-normal transition-colors duration-200 text-[#f2f0e8]/70 hover:text-[#C9A84C] tracking-normal" dir="rtl">שקף 2</a>
+          <a href="#philosophie" onclick="scrollToSection('philosophie')" class="text-xs font-normal transition-colors duration-200 text-[#f2f0e8]/70 hover:text-[#C9A84C] tracking-normal" dir="rtl">שקף 3</a>
+          <a href="#service" onclick="scrollToSection('service')" class="text-xs font-normal transition-colors duration-200 text-[#f2f0e8]/70 hover:text-[#C9A84C] tracking-normal" dir="rtl">שקף 4</a>
+          <a href="#cta" onclick="scrollToSection('cta')" class="text-xs font-normal transition-colors duration-200 text-[#f2f0e8]/70 hover:text-[#C9A84C] tracking-normal" dir="rtl">שקף 5</a>
+        </nav>
+        <a href="#contact" onclick="scrollToSection('contact')" class="hidden md:inline-flex items-center justify-center hover:bg-white/5 hover:text-[#C9A84C] transition-all duration-300 cursor-pointer text-xs font-semibold text-black tracking-normal bg-[#C9A84C] border-[#C9A84C] border rounded-xl px-5 py-2.5" dir="rtl">שקף 6</a>
+        <button id="mobileMenuBtn" class="md:hidden rounded-xl border p-2.5 bg-white/5 border-white/10 hover:border-[#C9A84C] text-[#f2f0e8] hover:text-[#C9A84C] transition-colors flex items-center justify-center" aria-label="Menü öffnen">
+          <iconify-icon icon="solar:hamburger-menu-linear" style="stroke-width: 1.5;" width="20" height="20"></iconify-icon>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div id="mobileMenu" class="fixed inset-0 z-[110] bg-black transform -translate-y-full transition-transform duration-500 ease-in-out flex flex-col items-center justify-center">
+    <button id="closeMenuBtn" class="absolute top-6 right-6 p-2 text-[#f2f0e8] hover:text-[#C9A84C] transition-colors flex items-center justify-center" aria-label="Menü schließen">
+      <iconify-icon icon="solar:close-circle-linear" style="stroke-width: 1.5;" width="40" height="40"></iconify-icon>
+    </button>
+    <div class="flex flex-col gap-8 text-center">
+      <a onclick="scrollToSection('slide-1');closeMobileMenu()" class="cursor-pointer font-['Bebas_Neue'] text-5xl tracking-tight text-[#f2f0e8] hover:text-[#C9A84C] transition-colors uppercase">שקף 1</a>
+      <a onclick="scrollToSection('vorteile');closeMobileMenu()" class="cursor-pointer font-['Bebas_Neue'] text-5xl tracking-tight text-[#f2f0e8] hover:text-[#C9A84C] transition-colors uppercase">שקף 2</a>
+      <a onclick="scrollToSection('philosophie');closeMobileMenu()" class="cursor-pointer font-['Bebas_Neue'] text-5xl tracking-tight text-[#f2f0e8] hover:text-[#C9A84C] transition-colors uppercase">שקף 3</a>
+      <a onclick="scrollToSection('service');closeMobileMenu()" class="cursor-pointer font-['Bebas_Neue'] text-5xl tracking-tight text-[#f2f0e8] hover:text-[#C9A84C] transition-colors uppercase">שקף 4</a>
+      <a onclick="scrollToSection('cta');closeMobileMenu()" class="cursor-pointer font-['Bebas_Neue'] text-5xl tracking-tight text-[#f2f0e8] hover:text-[#C9A84C] transition-colors uppercase">שקף 5</a>
+      <a onclick="scrollToSection('contact');closeMobileMenu()" class="cursor-pointer font-['Bebas_Neue'] text-5xl tracking-tight text-[#C9A84C] hover:text-[#e0c266] transition-colors uppercase">שקף 6</a>
+    </div>
+  </div>
+
+  <!-- VIDEO BACKGROUND -->
+  <video id="scrollVideo" muted autoplay loop playsinline preload="auto" tabindex="-1" disableremoteplayback aria-label="Markenfilm" class="fixed top-0 left-0 w-screen h-screen object-contain z-0 bg-black">
+    <source src="assets/intro-video.mp4" type="video/mp4">
+  </video>
+
+  <!-- GRAIN -->
+  <svg class="fixed top-0 left-0 w-screen h-screen z-10 pointer-events-none opacity-10 mix-blend-overlay" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 1920 1080">
+    <defs>
+      <filter id="grainFilter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" result="noise"></feTurbulence>
+        <feColorMatrix in="noise" type="saturate" values="0" result="grey"></feColorMatrix>
+      </filter>
+    </defs>
+    <rect x="0" y="0" width="1920" height="1080" filter="url(#grainFilter)" fill="#ffffff"></rect>
+  </svg>
+
+  <!-- VIDEO STAGE -->
+  <div id="slide-1" class="relative h-[300vh] z-20 pointer-events-none" data-slide="1" aria-hidden="true"></div>
+
+  <!-- HERO OVERLAYS -->
+  <div class="fixed inset-0 z-30 pointer-events-none" id="heroOverlays">
+    <div class="absolute bottom-0 left-0 w-full h-[60vh] bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none"></div>
+    <div class="absolute top-32 left-6 md:left-10 text-xs tracking-normal font-medium text-[#C9A84C]" dir="rtl">שקף 1</div>
+    <div class="overlay-block absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-all duration-700 ease-in-out opacity-100 scale-100 pointer-events-auto" data-start="0" data-end="0.18">
+      <h1 class="font-['Bebas_Neue'] text-6xl md:text-8xl lg:text-9xl leading-none tracking-tight text-[#f2f0e8] uppercase">Auto Voralpen</h1>
+    </div>
+    <div class="overlay-block absolute inset-0 flex flex-col items-center md:items-start justify-center p-6 md:pl-[12%] text-center md:text-left transition-all duration-700 ease-in-out opacity-0 scale-95" data-start="0.25" data-end="0.44">
+      <h2 class="font-['Bebas_Neue'] text-4xl md:text-6xl lg:text-7xl leading-tight tracking-tight text-[#f2f0e8] max-w-[14ch] uppercase">Exklusive Fahrzeuge.<br>Eine erstklassige Adresse.</h2>
+    </div>
+    <div class="overlay-block absolute inset-0 flex flex-col items-center md:items-end justify-center p-6 md:pr-[12%] text-center md:text-right transition-all duration-700 ease-in-out opacity-0 scale-95" data-start="0.5" data-end="0.69">
+      <h2 class="font-['Bebas_Neue'] text-4xl md:text-6xl lg:text-7xl leading-tight tracking-tight text-[#f2f0e8] max-w-[14ch] uppercase">Jedes Fahrzeug geprüft.<br>Jedes Detail perfektioniert.</h2>
+    </div>
+    <div class="overlay-block absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-all duration-700 ease-in-out opacity-0 scale-95" data-start="0.76" data-end="0.95">
+      <h2 class="font-['Bebas_Neue'] text-4xl md:text-6xl lg:text-7xl tracking-tight text-[#f2f0e8] uppercase">Finden Sie Ihr Traumauto.</h2>
+      <a class="pointer-events-auto inline-flex items-center justify-center uppercase hover:bg-transparent hover:text-[#C9A84C] transition-all duration-500 cursor-pointer text-xs font-bold text-black tracking-[0.1em] bg-[#C9A84C] border-[#C9A84C] border mt-8 px-8 py-4" onclick="scrollToSection('contact')">Kontakt aufnehmen</a>
+    </div>
+  </div>
+
+  <!-- USP -->
+  <section id="vorteile" class="relative w-full z-40 bg-[#0a0a0a]" data-slide="2">
+    <div id="usp-pin-wrap" class="hidden md:block h-[450vh]">
+      <div class="sticky top-0 h-screen w-full overflow-hidden flex flex-col">
+        <div class="max-w-7xl mx-auto w-full px-6 md:px-10 flex items-center justify-between pt-10 pb-0 shrink-0">
+          <p class="text-xs tracking-normal text-[#C9A84C]" dir="rtl">שקף 2 · Vorteile</p>
+          <div class="flex gap-2.5 items-center usp-dots">
+            <div class="usp-dot h-[2px] w-8 bg-[#C9A84C] transition-all duration-500 rounded-full"></div>
+            <div class="usp-dot h-[2px] w-2 bg-white/20 transition-all duration-500 rounded-full"></div>
+            <div class="usp-dot h-[2px] w-2 bg-white/20 transition-all duration-500 rounded-full"></div>
+          </div>
+        </div>
+        <div class="relative flex-1 overflow-hidden">
+          <div id="usp-track" class="flex h-full will-change-transform w-[300vw]">
+            <div class="usp-panel relative flex-shrink-0 h-full w-[100vw]">
+              <div class="usp-ghost-num pointer-events-none select-none absolute top-0 right-0 font-['Bebas_Neue'] leading-none text-[32vw] text-white/10 transition-colors duration-500 ease-in" aria-hidden="true">01</div>
+              <div class="max-w-7xl mx-auto px-6 md:px-10 h-full flex flex-col justify-end pb-20 relative z-10">
+                <div class="usp-content max-w-[780px]">
+                  <span class="block text-xs tracking-[0.4em] uppercase text-[#C9A84C]/70 mb-8">Qualität</span>
+                  <h3 class="font-['Bebas_Neue'] leading-[0.92] text-white tracking-tight mb-10 text-5xl md:text-7xl lg:text-[7vw]">Ein Fahrzeug,<br>das <span class="text-[#C9A84C]">kompromisslos</span><br>geprüft wurde</h3>
+                  <div class="w-10 h-[1px] bg-[#C9A84C] mb-8"></div>
+                  <p class="text-[#888] leading-[1.9] text-sm md:text-base max-w-[520px]">Jedes Fahrzeug in unserem Bestand durchläuft eine strenge Qualitätskontrolle – von Motor und Getriebe bis hin zur Elektronik und Karosserie. Wir übergeben Ihnen nur Fahrzeuge, die unseren höchsten Ansprüchen genügen.</p>
+                </div>
+              </div>
+            </div>
+            <div class="usp-panel relative flex-shrink-0 h-full w-[100vw]">
+              <div class="usp-ghost-num pointer-events-none select-none absolute top-0 right-0 font-['Bebas_Neue'] leading-none text-[32vw] text-white/10 transition-colors duration-500 ease-in" aria-hidden="true">02</div>
+              <div class="max-w-7xl mx-auto px-6 md:px-10 h-full flex flex-col justify-end pb-20 relative z-10">
+                <div class="usp-content max-w-[780px]">
+                  <span class="block text-xs tracking-[0.4em] uppercase text-[#C9A84C]/70 mb-8">Transparenz</span>
+                  <h3 class="font-['Bebas_Neue'] leading-[0.92] text-white tracking-tight mb-10 text-5xl md:text-7xl lg:text-[7vw]"><span class="text-[#C9A84C]">Keine</span><br>versteckten<br>Kosten</h3>
+                  <div class="w-10 h-[1px] bg-[#C9A84C] mb-8"></div>
+                  <p class="text-[#888] leading-[1.9] text-sm md:text-base max-w-[520px]">Wir setzen auf absolute Ehrlichkeit. Der vereinbarte Preis ist verbindlich. Keine Überraschungen, keine versteckten Zusatzgebühren und kein verwirrendes Kleingedrucktes.</p>
+                </div>
+              </div>
+            </div>
+            <div class="usp-panel relative flex-shrink-0 h-full w-[100vw]">
+              <div class="usp-ghost-num pointer-events-none select-none absolute top-0 right-0 font-['Bebas_Neue'] leading-none text-[32vw] text-white/10 transition-colors duration-500 ease-in" aria-hidden="true">03</div>
+              <div class="max-w-7xl mx-auto px-6 md:px-10 h-full flex flex-col justify-end pb-20 relative z-10">
+                <div class="usp-content max-w-[780px]">
+                  <span class="block text-xs tracking-[0.4em] uppercase text-[#C9A84C]/70 mb-8">Beratung</span>
+                  <h3 class="font-['Bebas_Neue'] leading-[0.92] text-white tracking-tight mb-10 text-5xl md:text-7xl lg:text-[7vw]"><span class="text-[#C9A84C]">Persönlich</span>,<br>individuell<br>&amp; kompetent</h3>
+                  <div class="w-10 h-[1px] bg-[#C9A84C] mb-8"></div>
+                  <p class="text-[#888] leading-[1.9] mb-10 text-sm md:text-base max-w-[520px]">Ihre Wünsche stehen im Mittelpunkt. Wir nehmen uns die nötige Zeit für Sie, beraten Sie ganz ohne Druck und hören aufmerksam zu.</p>
+                  <a onclick="scrollToSection('contact')" class="cursor-pointer inline-flex items-center gap-4 text-xs tracking-[0.35em] uppercase text-[#C9A84C] border border-[#C9A84C]/60 px-8 py-4 hover:bg-[#C9A84C] hover:text-black transition-all duration-300 w-fit">Kontakt aufnehmen <iconify-icon icon="solar:arrow-right-linear" style="stroke-width: 1.5;"></iconify-icon></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="md:hidden flex flex-col">
+      <div class="w-full border-t border-white/10 flex flex-col px-6 py-14">
+        <span class="font-['Bebas_Neue'] text-4xl text-[#C9A84C] tracking-tight mb-1">01</span>
+        <span class="text-xs tracking-widest uppercase text-[#C9A84C]/60 mb-6">Qualität</span>
+        <h3 class="font-['Bebas_Neue'] text-4xl leading-[1.05] tracking-tight text-white uppercase mb-6">Ein Fahrzeug, das kompromisslos geprüft wurde</h3>
+        <div class="w-8 h-[1px] bg-[#C9A84C] mb-6"></div>
+        <p class="text-[#888] text-sm leading-[1.9]">Jedes Fahrzeug durchläuft eine strenge Qualitätskontrolle – von Motor bis Karosserie.</p>
+      </div>
+      <div class="w-full border-t border-white/10 flex flex-col px-6 py-14">
+        <span class="font-['Bebas_Neue'] text-4xl text-[#C9A84C] tracking-tight mb-1">02</span>
+        <span class="text-xs tracking-widest uppercase text-[#C9A84C]/60 mb-6">Transparenz</span>
+        <h3 class="font-['Bebas_Neue'] text-4xl leading-[1.05] tracking-tight text-white uppercase mb-6">Keine versteckten Kosten</h3>
+        <div class="w-8 h-[1px] bg-[#C9A84C] mb-6"></div>
+        <p class="text-[#888] text-sm leading-[1.9]">Keine Überraschungen, keine versteckten Gebühren. Klare Preise von Anfang an.</p>
+      </div>
+      <div class="w-full border-t border-white/10 flex flex-col px-6 py-14">
+        <span class="font-['Bebas_Neue'] text-4xl text-[#C9A84C] tracking-tight mb-1">03</span>
+        <span class="text-xs tracking-widest uppercase text-[#C9A84C]/60 mb-6">Beratung</span>
+        <h3 class="font-['Bebas_Neue'] text-4xl leading-[1.05] tracking-tight text-white uppercase mb-6">Persönlich, individuell &amp; kompetent</h3>
+        <div class="w-8 h-[1px] bg-[#C9A84C] mb-6"></div>
+        <p class="text-[#888] text-sm leading-[1.9] mb-8">Ihre Wünsche stehen im Mittelpunkt. Beratung ohne Druck.</p>
+        <a onclick="scrollToSection('contact')" class="inline-flex items-center px-8 py-4 text-xs tracking-widest uppercase bg-[#C9A84C] text-black w-fit">Kontakt aufnehmen</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHILOSOPHIE -->
+  <section id="philosophie" class="relative z-40 overflow-hidden bg-[#F7F5F0]" data-slide="3">
+    <div class="absolute inset-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+      <canvas id="phil-canvas" class="absolute inset-0 w-full h-full opacity-70"></canvas>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-['Bebas_Neue'] tracking-tight whitespace-nowrap leading-none text-[#C9A84C] text-[18vw] opacity-[0.035]">PHILOSOPHIE</div>
+      <div class="absolute -top-32 -right-32 w-[640px] h-[640px]">
+        <svg viewBox="0 0 640 640" fill="none" class="w-full h-full">
+          <circle cx="320" cy="320" r="310" stroke="#C9A84C" stroke-width="0.6" stroke-dasharray="6 14" style="animation: slowspin 55s linear infinite; transform-origin: center;"></circle>
+          <circle cx="320" cy="320" r="248" stroke="#C9A84C" stroke-width="0.5" opacity="0.5" style="animation: slowspin-r 40s linear infinite; transform-origin: center;"></circle>
+          <circle cx="320" cy="320" r="186" stroke="#C9A84C" stroke-width="0.4" opacity="0.35" style="animation: slowspin 55s linear infinite; transform-origin: center;"></circle>
+          <circle cx="320" cy="320" r="124" stroke="#C9A84C" stroke-width="0.4" opacity="0.25" style="animation: slowspin-r 40s linear infinite; transform-origin: center;"></circle>
+          <line x1="10" y1="320" x2="630" y2="320" stroke="#C9A84C" stroke-width="0.3" opacity="0.2"></line>
+          <line x1="320" y1="10" x2="320" y2="630" stroke="#C9A84C" stroke-width="0.3" opacity="0.2"></line>
+          <circle cx="320" cy="320" r="6" fill="#C9A84C" opacity="0.3"></circle>
+        </svg>
+      </div>
+      <div class="absolute -bottom-24 -left-24 w-[340px] h-[340px]" style="animation: floatY 6s ease-in-out infinite;">
+        <svg viewBox="0 0 340 340" fill="none" class="w-full h-full">
+          <circle cx="170" cy="170" r="160" stroke="#C9A84C" stroke-width="0.5" stroke-dasharray="3 9" style="animation: slowspin-r 40s linear infinite; transform-origin: center;" opacity="0.5"></circle>
+          <circle cx="170" cy="170" r="110" stroke="#C9A84C" stroke-width="0.4" opacity="0.3" style="animation: slowspin 55s linear infinite; transform-origin: center;"></circle>
+          <circle cx="170" cy="170" r="60" stroke="#C9A84C" stroke-width="0.4" opacity="0.2" style="animation: slowspin-r 40s linear infinite; transform-origin: center;"></circle>
+        </svg>
+      </div>
+      <div class="absolute top-[38%] right-[22%] w-28 h-28" style="animation: floatY 6s ease-in-out infinite; animation-delay:-3s;">
+        <svg viewBox="0 0 112 112" fill="none" class="w-full h-full" style="animation: slowspin-r 40s linear infinite; transform-origin: center;">
+          <rect x="56" y="4" width="73" height="73" rx="2" transform="rotate(45 56 56)" stroke="#C9A84C" stroke-width="0.7" opacity="0.25"></rect>
+          <rect x="56" y="20" width="51" height="51" rx="1" transform="rotate(45 56 56)" stroke="#C9A84C" stroke-width="0.5" opacity="0.18"></rect>
+          <circle cx="56" cy="56" r="5" fill="#C9A84C" opacity="0.25"></circle>
+        </svg>
+      </div>
+    </div>
+    <div class="relative z-10 border-b border-black/[0.07]">
+      <div class="max-w-7xl mx-auto px-6 md:px-10 flex items-end justify-between pt-20 pb-12">
+        <div class="scroll-reveal">
+          <span class="text-xs tracking-normal text-[#C9A84C] block mb-3" dir="rtl">שקף 3 · Unser Ansatz</span>
+          <h2 class="font-['Bebas_Neue'] leading-none tracking-tight text-black uppercase text-6xl md:text-8xl lg:text-[9vw]">Philosophie</h2>
+        </div>
+        <div class="hidden md:block w-20 h-20 shrink-0 mb-1 scroll-reveal" style="animation: slowspin 25s linear infinite; transform-origin: center;">
+          <svg viewBox="0 0 80 80" fill="none" class="w-full h-full">
+            <circle cx="40" cy="40" r="36" stroke="#C9A84C" stroke-width="1" stroke-dasharray="5 7"></circle>
+            <circle cx="40" cy="40" r="24" stroke="#C9A84C" stroke-width="0.6" opacity="0.5"></circle>
+            <circle cx="40" cy="40" r="12" stroke="#C9A84C" stroke-width="0.6" opacity="0.3"></circle>
+            <circle cx="40" cy="40" r="3" fill="#C9A84C" opacity="0.7"></circle>
+            <line x1="40" y1="4" x2="40" y2="16" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"></line>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="phil-block relative z-10 border-b border-black/[0.07]">
+      <div class="max-w-7xl mx-auto px-6 md:px-10">
+        <div class="grid md:grid-cols-[200px_1fr] min-h-[52vh]">
+          <div class="hidden md:flex flex-col justify-between border-r border-black/[0.07] py-16 pr-10">
+            <div><span class="font-['Bebas_Neue'] text-7xl tracking-tight leading-none text-[#C9A84C] opacity-[0.08] block phil-num">01</span><span class="text-xs tracking-[0.4em] uppercase text-black/40 mt-1 block">Qualität</span></div>
+            <div class="line-draw scale-x-0 h-[1px] w-full bg-gradient-to-r from-[#C9A84C] to-transparent origin-left transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+          </div>
+          <div class="flex flex-col justify-center md:pl-14 py-16">
+            <span class="md:hidden text-xs tracking-[0.4em] uppercase text-[#C9A84C] mb-6 block">01 — Qualität</span>
+            <h3 class="font-['Bebas_Neue'] leading-[0.92] tracking-tight text-black uppercase mb-8 text-4xl md:text-6xl lg:text-[5.5vw]"><span class="phil-line block">Kein Kompromiss.</span><span class="phil-line block" style="color:#C9A84C;">Jedes Detail</span><span class="phil-line block">zählt.</span></h3>
+            <div class="w-10 h-[1px] bg-[#C9A84C] mb-7 phil-line-fade"></div>
+            <p class="text-[#777] leading-[1.9] phil-line-fade text-xs md:text-sm max-w-[520px]">Jedes Fahrzeug durchläuft eine lückenlose Inspektion — Mechanik, Elektronik, Karosserie, Historie. Erst wenn alles stimmt, kommt es in unseren Bestand.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phil-block relative z-10 border-b border-black/[0.07]">
+      <div class="max-w-7xl mx-auto px-6 md:px-10">
+        <div class="grid md:grid-cols-[200px_1fr] min-h-[52vh]">
+          <div class="hidden md:flex flex-col justify-between border-r border-black/[0.07] py-16 pr-10">
+            <div><span class="font-['Bebas_Neue'] text-7xl tracking-tight leading-none text-[#C9A84C] opacity-[0.08] block phil-num">02</span><span class="text-xs tracking-[0.4em] uppercase text-black/40 mt-1 block">Ehrlichkeit</span></div>
+            <div class="line-draw scale-x-0 h-[1px] w-full bg-gradient-to-r from-[#C9A84C] to-transparent origin-left transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+          </div>
+          <div class="flex flex-col justify-center md:pl-14 py-16">
+            <span class="md:hidden text-xs tracking-[0.4em] uppercase text-[#C9A84C] mb-6 block">02 — Ehrlichkeit</span>
+            <h3 class="font-['Bebas_Neue'] leading-[0.92] tracking-tight text-black uppercase mb-8 text-4xl md:text-6xl lg:text-[5.5vw]"><span class="phil-line block">Der Preis</span><span class="phil-line block" style="color:#C9A84C;">den Sie sehen,</span><span class="phil-line block">ist der Preis.</span></h3>
+            <div class="w-10 h-[1px] bg-[#C9A84C] mb-7 phil-line-fade"></div>
+            <p class="text-[#777] leading-[1.9] phil-line-fade text-xs md:text-sm max-w-[520px]">Kein Kleingedrucktes. Kein Nachverhandeln. Was wir nennen, gilt — das ist unser Geschäftsprinzip seit dem ersten Tag.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phil-block relative z-10">
+      <div class="max-w-7xl mx-auto px-6 md:px-10">
+        <div class="grid md:grid-cols-[200px_1fr] min-h-[52vh]">
+          <div class="hidden md:flex flex-col justify-between border-r border-black/[0.07] py-16 pr-10">
+            <div><span class="font-['Bebas_Neue'] text-7xl tracking-tight leading-none text-[#C9A84C] opacity-[0.08] block phil-num">03</span><span class="text-xs tracking-[0.4em] uppercase text-black/40 mt-1 block">Partnerschaft</span></div>
+            <div class="line-draw scale-x-0 h-[1px] w-full bg-gradient-to-r from-[#C9A84C] to-transparent origin-left transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+          </div>
+          <div class="flex flex-col justify-center md:pl-14 py-16">
+            <span class="md:hidden text-xs tracking-[0.4em] uppercase text-[#C9A84C] mb-6 block">03 — Partnerschaft</span>
+            <h3 class="font-['Bebas_Neue'] leading-[0.92] tracking-tight text-black uppercase mb-8 text-4xl md:text-6xl lg:text-[5.5vw]"><span class="phil-line block">Wir hören</span><span class="phil-line block" style="color:#C9A84C;">zuerst zu.</span><span class="phil-line block">Dann beraten wir.</span></h3>
+            <div class="w-10 h-[1px] bg-[#C9A84C] mb-7 phil-line-fade"></div>
+            <p class="text-[#777] leading-[1.9] mb-10 phil-line-fade text-xs md:text-sm max-w-[520px]">Kein Verkaufsskript. Kein Druck. Wir investieren Zeit — um zu verstehen, was Sie wirklich suchen.</p>
+            <a onclick="scrollToSection('contact')" class="cursor-pointer inline-flex items-center gap-4 text-xs tracking-[0.35em] uppercase text-black border border-black/25 px-8 py-4 hover:bg-[#C9A84C] hover:border-[#C9A84C] transition-all duration-300 w-fit phil-line-fade">Gespräch vereinbaren <iconify-icon icon="solar:arrow-right-linear" style="stroke-width: 1.5;"></iconify-icon></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE -->
+  <section class="relative z-40 overflow-hidden py-20 md:py-32 bg-black" id="service" data-slide="4">
+    <div class="w-full max-w-7xl mx-auto px-6 md:px-10 pb-12 border-b border-white/[0.05] scroll-reveal">
+      <span class="text-xs tracking-normal text-[#C9A84C] font-['Inter'] block mb-3" dir="rtl">שקף 4 · Was wir tun</span>
+      <h2 class="font-['Bebas_Neue'] text-6xl md:text-8xl leading-none tracking-tight text-[#f2f0e8] uppercase">Service</h2>
+    </div>
+    <div id="serviceAccordion" class="w-full max-w-7xl mx-auto px-6 md:px-10">
+      <div class="accordion-item border-b border-white/[0.05] scroll-reveal">
+        <button class="accordion-trigger w-full flex items-center justify-between py-8 md:py-10 text-left group">
+          <div class="flex items-center gap-8 md:gap-12 min-w-0"><span class="font-['Bebas_Neue'] text-lg text-[#C9A84C]/25 shrink-0 w-8 group-hover:text-[#C9A84C]/60 transition-colors tracking-tight">01</span><h3 class="font-['Bebas_Neue'] text-3xl md:text-4xl lg:text-5xl text-[#f2f0e8] uppercase tracking-tight leading-none group-hover:text-[#C9A84C] transition-colors duration-300">Fahrzeugankauf</h3></div>
+          <span class="acc-plus text-2xl text-[#C9A84C]/50 ml-4 shrink-0 group-hover:text-[#C9A84C] transition-transform duration-[380ms] ease-in-out block" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-body max-h-0 overflow-hidden transition-all duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div class="pb-10 md:pb-14 flex flex-col md:flex-row gap-8 md:gap-16 pl-16 md:pl-20">
+            <div class="md:w-[55%]"><p class="text-sm md:text-base text-[#888] leading-[1.85] font-['Inter'] font-extralight">Sie möchten Ihr Fahrzeug verkaufen? Wir nehmen Ihnen den Aufwand ab. Keine Inserate, keine Besichtigungen mit Fremden, keine zermürbenden Preisverhandlungen. Wir bewerten Ihr Auto professionell, fair und transparent — und zahlen direkt aus.</p></div>
+            <div class="md:w-[45%] flex flex-col gap-4">
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Sofortige Fahrzeugbewertung</span></div>
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Direkte Auszahlung</span></div>
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Alle Marken &amp; Modelle</span></div>
+              <div class="flex items-center gap-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Abholung schweizweit möglich</span></div>
+              <a onclick="scrollToSection('contact')" class="cursor-pointer mt-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase text-[#C9A84C] hover:text-[#e0c266] transition-colors font-['Inter'] group">Jetzt anfragen <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform" style="stroke-width: 1.5;"></iconify-icon></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item border-b border-white/[0.05] scroll-reveal">
+        <button class="accordion-trigger w-full flex items-center justify-between py-8 md:py-10 text-left group">
+          <div class="flex items-center gap-8 md:gap-12 min-w-0"><span class="font-['Bebas_Neue'] text-lg text-[#C9A84C]/25 shrink-0 w-8 group-hover:text-[#C9A84C]/60 transition-colors tracking-tight">02</span><h3 class="font-['Bebas_Neue'] text-3xl md:text-4xl lg:text-5xl text-[#f2f0e8] uppercase tracking-tight leading-none group-hover:text-[#C9A84C] transition-colors duration-300">Fahrzeugverkauf</h3></div>
+          <span class="acc-plus text-2xl text-[#C9A84C]/50 ml-4 shrink-0 group-hover:text-[#C9A84C] transition-transform duration-[380ms] ease-in-out block" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-body max-h-0 overflow-hidden transition-all duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div class="pb-10 md:pb-14 flex flex-col md:flex-row gap-8 md:gap-16 pl-16 md:pl-20">
+            <div class="md:w-[55%]"><p class="text-sm md:text-base text-[#888] leading-[1.85] font-['Inter'] font-extralight">Unsere handverlesenen Fahrzeuge sind vollständig geprüft, professionell aufbereitet und klar dokumentiert. Sie bekommen genau das Fahrzeug, das zu Ihnen passt — ohne Kompromisse und ohne böse Überraschungen nach dem Kauf.</p></div>
+            <div class="md:w-[45%] flex flex-col gap-4">
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Vollständige Fahrzeugdokumentation</span></div>
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Persönliche Probefahrt</span></div>
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Inzahlungnahme möglich</span></div>
+              <div class="flex items-center gap-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Lieferung schweizweit</span></div>
+              <a onclick="scrollToSection('contact')" class="cursor-pointer mt-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase text-[#C9A84C] hover:text-[#e0c266] transition-colors font-['Inter'] group">Anfrage senden <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform" style="stroke-width: 1.5;"></iconify-icon></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item border-b border-white/[0.05] scroll-reveal">
+        <button class="accordion-trigger w-full flex items-center justify-between py-8 md:py-10 text-left group">
+          <div class="flex items-center gap-8 md:gap-12 min-w-0"><span class="font-['Bebas_Neue'] text-lg text-[#C9A84C]/25 shrink-0 w-8 group-hover:text-[#C9A84C]/60 transition-colors tracking-tight">03</span><h3 class="font-['Bebas_Neue'] text-3xl md:text-4xl lg:text-5xl text-[#f2f0e8] uppercase tracking-tight leading-none group-hover:text-[#C9A84C] transition-colors duration-300">Finanzierung</h3></div>
+          <span class="acc-plus text-2xl text-[#C9A84C]/50 ml-4 shrink-0 group-hover:text-[#C9A84C] transition-transform duration-[380ms] ease-in-out block" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-body max-h-0 overflow-hidden transition-all duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div class="pb-10 md:pb-14 flex flex-col md:flex-row gap-8 md:gap-16 pl-16 md:pl-20">
+            <div class="md:w-[55%]"><p class="text-sm md:text-base text-[#888] leading-[1.85] font-['Inter'] font-extralight">Wir unterstützen Sie bei der Finanzierung Ihres Wunschfahrzeugs — flexibel, transparent und auf Ihre Situation zugeschnitten. Wir übernehmen die Abwicklung mit unseren Finanzierungspartnern für Sie.</p></div>
+            <div class="md:w-[45%] flex flex-col gap-4">
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Individuelle Laufzeiten</span></div>
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Günstige Konditionen</span></div>
+              <div class="flex items-center gap-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Schnelle Genehmigung</span></div>
+              <a onclick="scrollToSection('contact')" class="cursor-pointer mt-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase text-[#C9A84C] hover:text-[#e0c266] transition-colors font-['Inter'] group">Beratung anfragen <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform" style="stroke-width: 1.5;"></iconify-icon></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item scroll-reveal">
+        <button class="accordion-trigger w-full flex items-center justify-between py-8 md:py-10 text-left group">
+          <div class="flex items-center gap-8 md:gap-12 min-w-0"><span class="font-['Bebas_Neue'] text-lg text-[#C9A84C]/25 shrink-0 w-8 group-hover:text-[#C9A84C]/60 transition-colors tracking-tight">04</span><h3 class="font-['Bebas_Neue'] text-3xl md:text-4xl lg:text-5xl text-[#f2f0e8] uppercase tracking-tight leading-none group-hover:text-[#C9A84C] transition-colors duration-300">Garantie &amp; Gewährleistung</h3></div>
+          <span class="acc-plus text-2xl text-[#C9A84C]/50 ml-4 shrink-0 group-hover:text-[#C9A84C] transition-transform duration-[380ms] ease-in-out block" aria-hidden="true">+</span>
+        </button>
+        <div class="accordion-body max-h-0 overflow-hidden transition-all duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div class="pb-10 md:pb-14 flex flex-col md:flex-row gap-8 md:gap-16 pl-16 md:pl-20">
+            <div class="md:w-[55%]"><p class="text-sm md:text-base text-[#888] leading-[1.85] font-['Inter'] font-extralight">Jedes Fahrzeug aus unserem Bestand wird mit gesetzlicher Gewährleistung übergeben. Auf Wunsch vermitteln wir Ihnen zusätzliche Garantiepakete für maximale Sicherheit — weit über den Kauf hinaus.</p></div>
+            <div class="md:w-[45%] flex flex-col gap-4">
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Gesetzliche Gewährleistung</span></div>
+              <div class="flex items-center gap-4 border-b border-white/[0.06] pb-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Optionale Anschlussgarantie</span></div>
+              <div class="flex items-center gap-4"><span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span><span class="text-xs text-[#f2f0e8]/50 font-['Inter'] font-light">Transparent &amp; klar geregelt</span></div>
+              <a onclick="scrollToSection('contact')" class="cursor-pointer mt-4 inline-flex items-center gap-3 text-xs tracking-widest uppercase text-[#C9A84C] hover:text-[#e0c266] transition-colors font-['Inter'] group">Mehr erfahren <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform" style="stroke-width: 1.5;"></iconify-icon></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta" class="relative z-40 bg-[#C9A84C] w-full min-h-[85vh] flex flex-col justify-between py-20 text-black overflow-hidden" data-slide="5">
+    <div class="w-full max-w-7xl mx-auto px-6 md:px-10 flex flex-col flex-1 justify-between">
+      <div class="cta-anim opacity-0 translate-y-6 transition-all duration-1000 ease-out"><span class="text-xs tracking-normal font-['Inter'] font-normal" dir="rtl">שקף 5 · Bereit?</span></div>
+      <div class="flex flex-col items-center justify-center text-center py-16">
+        <h2 class="cta-anim opacity-0 translate-y-6 transition-all duration-1000 delay-150 ease-out font-['Bebas_Neue'] text-7xl md:text-9xl lg:text-[11rem] leading-[0.88] tracking-tight uppercase mb-10">Ihr nächstes<br>Auto wartet</h2>
+        <a onclick="scrollToSection('contact')" class="cta-anim opacity-0 translate-y-6 transition-all duration-1000 delay-300 ease-out cursor-pointer inline-flex items-center gap-4 bg-black text-[#f2f0e8] font-['Bebas_Neue'] text-2xl md:text-3xl px-12 py-5 tracking-widest uppercase hover:bg-[#111] transition-colors group">Kontakt aufnehmen <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform" style="stroke-width: 1.5;"></iconify-icon></a>
+      </div>
+      <div class="cta-anim transition-all duration-1000 delay-500 ease-out flex flex-wrap opacity-0 border-black/15 border-t pt-10 pb-2 translate-y-6 gap-x-24 gap-y-24 items-end justify-center">
+        <div class="flex flex-col items-center"><div class="font-['Bebas_Neue'] text-6xl md:text-7xl leading-none flex items-end tracking-tight gap-1"><span class="cta-stat" data-target="500">500</span><span class="text-3xl pb-1 font-['Inter'] font-thin">+</span></div><span class="text-xs tracking-widest uppercase mt-2 font-['Inter'] font-normal text-black/60">Fahrzeuge</span></div>
+        <div class="flex flex-col items-center"><div class="font-['Bebas_Neue'] text-6xl md:text-7xl tracking-tight leading-none"><span class="cta-stat" data-target="12">12</span></div><span class="text-xs tracking-widest uppercase mt-2 font-['Inter'] font-normal text-black/60">Jahre</span></div>
+        <div class="flex flex-col items-center"><div class="font-['Bebas_Neue'] text-6xl md:text-7xl leading-none flex items-end tracking-tight gap-1"><span class="cta-stat" data-target="4.9" data-float="true">4.9</span><span class="text-4xl pb-0.5 font-light">★</span></div><span class="text-xs tracking-widest uppercase mt-2 font-['Inter'] font-normal text-black/60">Bewertung</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="contact" class="relative z-40 bg-black overflow-hidden text-[#f2f0e8] font-['Inter'] scroll-mt-10" data-slide="6">
+    <div class="flex flex-col min-h-[85vh] w-full max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-0 relative justify-between">
+      <div class="flex flex-col md:flex-row justify-between items-start w-full gap-10 border-b border-white/[0.06] pb-12 scroll-reveal">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 text-[#C9A84C]"><iconify-icon icon="solar:arrow-up-linear" style="stroke-width: 1.5;"></iconify-icon></div>
+          <span class="text-xs font-light tracking-normal text-[#f2f0e8]/60" dir="rtl">שקף 6 · Kontakt aufnehmen</span>
+        </div>
+        <div class="flex flex-wrap gap-8 md:gap-12 text-xs font-light tracking-widest uppercase text-[#f2f0e8]/40">
+          <a href="#" class="hover:text-[#C9A84C] transition-colors">Impressum</a>
+          <a href="#" class="hover:text-[#C9A84C] transition-colors">Datenschutz</a>
+          <span class="text-[#f2f0e8]/20">© 2026 Auto Voralpen GmbH</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-6 mt-16 mb-auto relative scroll-reveal">
+        <div class="group/item w-fit"><a href="https://maps.google.com/?q=Vorderschlundstrasse+5a" target="_blank" rel="noopener" class="text-4xl md:text-6xl lg:text-7xl font-['Bebas_Neue'] tracking-tight text-[#f2f0e8] group-hover/item:text-transparent group-hover/item:bg-clip-text group-hover/item:bg-gradient-to-r group-hover/item:from-[#f2f0e8] group-hover/item:to-[#C9A84C] transition-all duration-500">VORDERSCHLUNDSTRASSE 5 A</a></div>
+        <div class="group/item w-fit"><a href="tel:0795401314" class="text-4xl md:text-6xl lg:text-7xl font-['Bebas_Neue'] tracking-tight text-[#f2f0e8] group-hover/item:text-transparent group-hover/item:bg-clip-text group-hover/item:bg-gradient-to-r group-hover/item:from-[#f2f0e8] group-hover/item:to-[#C9A84C] transition-all duration-500">079 540 13 14</a></div>
+        <div class="group/item w-fit"><a href="mailto:info@auto-voralpen.ch" class="text-4xl md:text-6xl lg:text-7xl font-['Bebas_Neue'] tracking-tight text-[#f2f0e8] group-hover/item:text-transparent group-hover/item:bg-clip-text group-hover/item:bg-gradient-to-r group-hover/item:from-[#f2f0e8] group-hover/item:to-[#C9A84C] transition-all duration-500">INFO@AUTO-VORALPEN.CH</a></div>
+      </div>
+      <div class="select-none overflow-hidden flex scroll-reveal text-left w-full mt-12 relative justify-start">
+        <h2 class="text-[13vw] font-['Bebas_Neue'] tracking-tight text-[#f2f0e8] mix-blend-overlay opacity-25 pointer-events-none uppercase leading-none pb-2 md:pb-4">Auto Voralpen</h2>
+        <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    (function() {
+      const loader = document.getElementById("loader");
+      const prog = document.getElementById("loader-progress");
+      const pct = document.getElementById("loader-percentage");
+      const obj = { val: 0 };
+      gsap.to(obj, {
+        val: 100,
+        duration: 1.3,
+        ease: "power2.inOut",
+        onUpdate() {
+          if (prog) prog.style.width = obj.val + "%";
+          if (pct) pct.innerText = Math.round(obj.val) + "%";
+        },
+        onComplete() {
+          if (!loader) return;
+          loader.classList.add("opacity-0");
+          loader.setAttribute("aria-busy", "false");
+          setTimeout(() => loader.style.display = "none", 700);
+        }
+      });
+    })();
+
+    const mainNav = document.getElementById("mainNav");
+    let lastST = 0;
+    window.addEventListener("scroll", () => {
+      const st = window.pageYOffset;
+      mainNav.style.transform = (st > lastST && st > 120) ? "translateY(-140%)" : "translateY(0)";
+      lastST = st <= 0 ? 0 : st;
+    }, { passive: true });
+
+    document.getElementById("mobileMenuBtn").addEventListener("click", () => document.getElementById("mobileMenu").classList.replace("-translate-y-full", "translate-y-0"));
+    window.closeMobileMenu = () => document.getElementById("mobileMenu").classList.replace("translate-y-0", "-translate-y-full");
+    document.getElementById("closeMenuBtn").addEventListener("click", closeMobileMenu);
+
+    window.scrollToSection = function(id) {
+      if (id === "top") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    (function() {
+      const video = document.getElementById("scrollVideo");
+      const stage = document.getElementById("slide-1");
+      const overlays = document.getElementById("heroOverlays");
+      const blocks = document.querySelectorAll(".overlay-block");
+      let maxScroll = 1;
+      let pending = false;
+
+      function computeMax() {
+        maxScroll = Math.max(stage.offsetHeight - window.innerHeight, 1);
+      }
+
+      function clamp(v) {
+        return Math.min(1, Math.max(0, v));
+      }
+
+      function applySync() {
+        pending = false;
+        const p = clamp(window.scrollY / maxScroll);
+        blocks.forEach(b => {
+          const inRange = p >= +b.dataset.start && p <= +b.dataset.end;
+          b.classList.toggle("opacity-0", !inRange);
+          b.classList.toggle("scale-95", !inRange);
+          b.classList.toggle("opacity-100", inRange);
+          b.classList.toggle("scale-100", inRange);
+          b.classList.toggle("pointer-events-auto", inRange);
+        });
+        const done = window.scrollY >= maxScroll - 1;
+        overlays.classList.toggle("opacity-0", done);
+        overlays.classList.toggle("invisible", done);
+      }
+
+      function playVideo() {
+        video.play().catch(() => {
+          // Muted autoplay is allowed in modern browsers; this only matters if a browser blocks it.
+        });
+      }
+
+      computeMax();
+      window.addEventListener("scroll", () => {
+        if (!pending) {
+          pending = true;
+          requestAnimationFrame(applySync);
+        }
+      }, { passive: true });
+      window.addEventListener("resize", () => {
+        computeMax();
+        applySync();
+      });
+      if (video.readyState >= 1) {
+        applySync();
+        playVideo();
+      } else {
+        video.addEventListener("loadedmetadata", () => {
+          applySync();
+          playVideo();
+        }, { once: true });
+      }
+      applySync();
+      playVideo();
+    })();
+
+    (function() {
+      if (window.innerWidth < 768) return;
+      const wrap = document.getElementById("usp-pin-wrap");
+      const track = document.getElementById("usp-track");
+      const dots = document.querySelectorAll(".usp-dot");
+      const panels = document.querySelectorAll(".usp-panel");
+      const ghostNums = document.querySelectorAll(".usp-ghost-num");
+      if (!wrap || !track) return;
+
+      const totalPanels = panels.length;
+      gsap.to(track, {
+        x: () => -(window.innerWidth * (totalPanels - 1)),
+        ease: "none",
+        scrollTrigger: {
+          trigger: wrap,
+          start: "top top",
+          end: () => "+=" + (wrap.offsetHeight - window.innerHeight),
+          scrub: 0.3,
+          onUpdate(self) {
+            const pos = self.progress * (totalPanels - 1);
+            const active = Math.round(pos);
+
+            dots.forEach((d, i) => {
+              d.style.width = i === active ? "2rem" : "0.5rem";
+              d.style.background = i === active ? "#C9A84C" : "rgba(255,255,255,0.2)";
+            });
+
+            ghostNums.forEach((n, i) => {
+              const dist = Math.abs(pos - i);
+              const t = Math.max(0, 1 - dist * 2);
+              const r = Math.round(255 + (201 - 255) * t);
+              const g = Math.round(255 + (168 - 255) * t);
+              const b = Math.round(255 + (76 - 255) * t);
+              const a = 0.05 + 0.45 * t;
+              n.style.color = `rgba(${r},${g},${b},${a})`;
+            });
+          }
+        }
+      });
+    })();
+
+    (function() {
+      const canvas = document.getElementById('phil-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let W, H, pts = [];
+      const N = 55;
+      const DIST = 160;
+      const GOLD = '201,168,76';
+
+      function resize() {
+        W = canvas.width = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+      }
+
+      function mkPts() {
+        pts = Array.from({ length: N }, () => ({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - .5) * .35,
+          vy: (Math.random() - .5) * .35,
+          r: Math.random() * 1.8 + .6
+        }));
+      }
+
+      function frame() {
+        ctx.clearRect(0, 0, W, H);
+        pts.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${GOLD},.45)`;
+          ctx.fill();
+        });
+        for (let i = 0; i < pts.length; i++) {
+          for (let j = i + 1; j < pts.length; j++) {
+            const dx = pts[i].x - pts[j].x;
+            const dy = pts[i].y - pts[j].y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < DIST) {
+              ctx.beginPath();
+              ctx.moveTo(pts[i].x, pts[i].y);
+              ctx.lineTo(pts[j].x, pts[j].y);
+              ctx.strokeStyle = `rgba(${GOLD},${(1 - d / DIST) * .12})`;
+              ctx.lineWidth = .6;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(frame);
+      }
+
+      resize();
+      mkPts();
+      new ResizeObserver(() => {
+        resize();
+        mkPts();
+      }).observe(canvas.parentElement);
+      frame();
+    })();
+
+    document.querySelectorAll(".phil-block").forEach(block => {
+      const lines = block.querySelectorAll(".phil-line");
+      const fades = block.querySelectorAll(".phil-line-fade");
+      const ldraw = block.querySelectorAll(".line-draw");
+      const nums = block.querySelectorAll(".phil-num");
+      lines.forEach(l => { l.style.cssText += "opacity:0;transform:translateY(52px);transition:opacity .65s ease,transform .65s cubic-bezier(.16,1,.3,1);"; });
+      fades.forEach(f => { f.style.cssText += "opacity:0;transition:opacity .55s ease;"; });
+      nums.forEach(n => { n.style.cssText += "transition:opacity 1s ease;"; });
+      new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          lines.forEach((l, i) => setTimeout(() => {
+            l.style.opacity = "1";
+            l.style.transform = "translateY(0)";
+          }, i * 100));
+          fades.forEach((f, i) => setTimeout(() => {
+            f.style.opacity = "1";
+          }, lines.length * 100 + i * 130));
+          ldraw.forEach(l => setTimeout(() => l.classList.replace("scale-x-0", "scale-x-100"), 200));
+          nums.forEach(n => setTimeout(() => {
+            n.style.opacity = "1";
+          }, 100));
+        });
+      }, { threshold: 0.18 }).observe(block);
+    });
+
+    document.querySelectorAll(".accordion-trigger").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const item = btn.closest(".accordion-item");
+        const body = item.querySelector(".accordion-body");
+        const isOpen = item.classList.contains("active");
+
+        document.querySelectorAll(".accordion-item").forEach(i => {
+          i.classList.remove("active");
+          const b = i.querySelector(".accordion-body");
+          if (b) {
+            b.classList.remove("max-h-[480px]");
+            b.classList.add("max-h-0");
+          }
+          const plus = i.querySelector(".acc-plus");
+          if (plus) plus.classList.remove("rotate-45");
+        });
+
+        if (!isOpen) {
+          item.classList.add("active");
+          body.classList.remove("max-h-0");
+          body.classList.add("max-h-[480px]");
+          item.querySelector(".acc-plus").classList.add("rotate-45");
+        }
+      });
+    });
+
+    (function() {
+      const cta = document.getElementById("cta");
+      if (!cta) return;
+      let counted = false;
+      new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          cta.querySelectorAll(".cta-anim").forEach(el => {
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0)";
+          });
+          if (!counted) {
+            counted = true;
+            setTimeout(() => {
+              cta.querySelectorAll(".cta-stat").forEach(s => {
+                const target = parseFloat(s.dataset.target);
+                const isFloat = s.dataset.float === "true";
+                let step = 0;
+                const steps = 55;
+                const t = setInterval(() => {
+                  step++;
+                  const ease = 1 - Math.pow(1 - step / steps, 3);
+                  const val = target * ease;
+                  s.textContent = step >= steps ? (isFloat ? target.toFixed(1) : target) : (isFloat ? val.toFixed(1) : Math.floor(val));
+                  if (step >= steps) clearInterval(t);
+                }, 2000 / steps);
+              });
+            }, 400);
+          }
+        });
+      }, { threshold: 0.2 }).observe(cta);
+    })();
+
+    (function() {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    })();
+  </script>
+</body>
+</html>

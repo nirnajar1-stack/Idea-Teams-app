@@ -1,6 +1,19 @@
 import type { Idea } from '../types/idea'
 import type { AppUser, StoredUser } from '../types/user'
 
+/** האם המשתמש מוקצה ישירות או דרך קבוצה */
+export function isIdeaAssignee(
+  idea: Idea,
+  userId: string,
+  userGroupIds: string[] = [],
+): boolean {
+  if (idea.assigneeUserId === userId) return true
+  if (idea.assigneeUserIds?.includes(userId)) return true
+  const assignedGroups = idea.assigneeGroupIds ?? []
+  if (assignedGroups.length === 0 || userGroupIds.length === 0) return false
+  return userGroupIds.some((gid) => assignedGroups.includes(gid))
+}
+
 export function isMaster(user: AppUser | null): boolean {
   return user?.accessLevel === 'master'
 }
@@ -32,7 +45,11 @@ function isOthersMasterPrivate(user: AppUser, idea: Idea): boolean {
 }
 
 /** מנהלים ומאסטר — עריכה, העברה וסימון הושלם לכל משימה גלויה (לא master_private של אחר) */
-export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
+export function canEditIdea(
+  user: AppUser | null,
+  idea: Idea,
+  userGroupIds: string[] = [],
+): boolean {
   if (!user) return false
   if (isOthersMasterPrivate(user, idea)) return false
   if (user.accessLevel === 'manager' || user.accessLevel === 'master') return true
@@ -43,7 +60,7 @@ export function canEditIdea(user: AppUser | null, idea: Idea): boolean {
       idea.guestSessionId === user.guestSessionId
     )
   }
-  return idea.createdByUserId === user.id || idea.assigneeUserId === user.id
+  return idea.createdByUserId === user.id || isIdeaAssignee(idea, user.id, userGroupIds)
 }
 
 /** מחיקה — מאסטר לכל המשימות הגלויות; יוצר (משתמש רגיל) למשימות שלו בלבד */
@@ -82,11 +99,12 @@ export function canViewIdea(
   viewer: AppUser | null,
   idea: Idea,
   _usersById: Map<string, StoredUser>,
+  userGroupIds: string[] = [],
 ): boolean {
   if (!viewer) return false
 
   if (idea.createdByUserId === viewer.id) return true
-  if (idea.assigneeUserId === viewer.id) return true
+  if (isIdeaAssignee(idea, viewer.id, userGroupIds)) return true
 
   if (idea.visibility === 'master_private') return false
 
@@ -113,6 +131,7 @@ export function filterVisibleIdeas(
   ideas: Idea[],
   viewer: AppUser | null,
   usersById: Map<string, StoredUser>,
+  userGroupIds: string[] = [],
 ): Idea[] {
   if (!viewer) return []
   const byId = new Map(ideas.map((i) => [i.id, i]))
@@ -120,8 +139,8 @@ export function filterVisibleIdeas(
     if (idea.parentId) {
       const parent = byId.get(idea.parentId)
       if (!parent) return false
-      return canViewIdea(viewer, parent, usersById)
+      return canViewIdea(viewer, parent, usersById, userGroupIds)
     }
-    return canViewIdea(viewer, idea, usersById)
+    return canViewIdea(viewer, idea, usersById, userGroupIds)
   })
 }

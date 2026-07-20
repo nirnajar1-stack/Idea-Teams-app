@@ -88,8 +88,12 @@ export interface Idea {
   ideaKind?: IdeaKind
   /** מזהה רעיון-אב (תת-רעיון בלבד) */
   parentId?: string
-  /** משתמש מוקצה לביצוע הרעיון */
+  /** משתמש מוקצה ראשי (תאימות לאחור — הראשון ברשימה) */
   assigneeUserId?: string
+  /** משתמשים מוקצים לביצוע */
+  assigneeUserIds?: string[]
+  /** קבוצות מוקצות לביצוע */
+  assigneeGroupIds?: string[]
   /** מי רואה את הרעיון — ברירת מחדל team */
   visibility?: IdeaVisibility
 }

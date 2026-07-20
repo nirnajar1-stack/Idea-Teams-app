@@ -139,7 +139,7 @@ export function UserFormModal({ user, onClose, onSave }: UserFormModalProps) {
             />
           </div>
           <div>
-            <label className="mb-1 block font-label-md">טלפון WhatsApp (אופציונלי)</label>
+            <label className="mb-1 block font-label-md">טלפון (אופציונלי)</label>
             <input
               type="tel"
               value={phone}

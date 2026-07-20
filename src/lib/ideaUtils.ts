@@ -34,6 +34,18 @@ export function normalizeIdea(idea: Idea): Idea {
     ideaKind: idea.ideaKind ?? (idea.parentId ? 'standard' : 'standard'),
     parentId: idea.parentId,
     visibility: idea.visibility ?? 'team',
+    assigneeUserIds:
+      idea.assigneeUserIds && idea.assigneeUserIds.length > 0
+        ? idea.assigneeUserIds
+        : idea.assigneeUserId
+          ? [idea.assigneeUserId]
+          : [],
+    assigneeGroupIds: idea.assigneeGroupIds ?? [],
+    assigneeUserId:
+      idea.assigneeUserId ??
+      (idea.assigneeUserIds && idea.assigneeUserIds.length > 0
+        ? idea.assigneeUserIds[0]
+        : undefined),
     ideaSource:
       idea.ideaSource && IDEA_SOURCES.includes(idea.ideaSource)
         ? idea.ideaSource

@@ -46,6 +46,8 @@ export interface IdeaRow {
   idea_kind: IdeaKind
   parent_id: string | null
   assignee_user_id: string | null
+  assignee_user_ids?: string[] | null
+  assignee_group_ids?: string[] | null
   visibility: IdeaVisibility
 }
 
@@ -129,6 +131,13 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     ideaKind: row.idea_kind,
     parentId: row.parent_id ?? undefined,
     assigneeUserId: row.assignee_user_id ?? undefined,
+    assigneeUserIds:
+      row.assignee_user_ids && row.assignee_user_ids.length > 0
+        ? row.assignee_user_ids
+        : row.assignee_user_id
+          ? [row.assignee_user_id]
+          : [],
+    assigneeGroupIds: row.assignee_group_ids ?? [],
     visibility: row.visibility ?? 'team',
   }
 }
@@ -165,7 +174,9 @@ export function ideaToRow(idea: Idea): IdeaRow {
     concept_image_url: idea.conceptImageUrl ?? null,
     idea_kind: idea.ideaKind ?? 'standard',
     parent_id: idea.parentId ?? null,
-    assignee_user_id: idea.assigneeUserId ?? null,
+    assignee_user_id: idea.assigneeUserId ?? idea.assigneeUserIds?.[0] ?? null,
+    assignee_user_ids: idea.assigneeUserIds ?? (idea.assigneeUserId ? [idea.assigneeUserId] : []),
+    assignee_group_ids: idea.assigneeGroupIds ?? [],
     visibility: idea.visibility ?? 'team',
   }
 }
@@ -201,7 +212,16 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.conceptImageUrl !== undefined) row.concept_image_url = patch.conceptImageUrl ?? null
   if (patch.ideaKind !== undefined) row.idea_kind = patch.ideaKind
   if (patch.parentId !== undefined) row.parent_id = patch.parentId ?? null
-  if (patch.assigneeUserId !== undefined) row.assignee_user_id = patch.assigneeUserId ?? null
+  if (patch.assigneeUserIds !== undefined) {
+    row.assignee_user_ids = patch.assigneeUserIds
+    row.assignee_user_id = patch.assigneeUserIds[0] ?? null
+  } else if (patch.assigneeUserId !== undefined) {
+    row.assignee_user_id = patch.assigneeUserId ?? null
+    row.assignee_user_ids = patch.assigneeUserId ? [patch.assigneeUserId] : []
+  }
+  if (patch.assigneeGroupIds !== undefined) {
+    row.assignee_group_ids = patch.assigneeGroupIds
+  }
   if (patch.visibility !== undefined) row.visibility = patch.visibility
   return row
 }

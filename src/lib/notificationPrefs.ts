@@ -12,7 +12,7 @@ export function buildTargetDateNotifications(
 
   const relevant = ideas.filter((idea) => {
     if (idea.workflowStatus === 'completed') return false
-    if (idea.createdByUserId !== userId && idea.assigneeUserId !== userId) return false
+    if (idea.createdByUserId !== userId && idea.assigneeUserId !== userId && !idea.assigneeUserIds?.includes(userId)) return false
     const days = getDaysUntilTarget(idea.targetStartDate)
     return days <= 3
   })

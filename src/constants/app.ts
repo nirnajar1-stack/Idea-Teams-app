@@ -17,6 +17,8 @@ export const ROUTES = {
   users: '/users',
   timeline: '/timeline',
   labels: '/labels',
+  groups: '/groups',
+  emailLog: '/email-log',
   openTasksDashboard: '/insights/open-tasks',
 } as const
 
@@ -50,5 +52,7 @@ export const NAV_LABELS = {
   users: 'משתמשים',
   timeline: 'טיימליין',
   labels: 'לייבלים',
+  groups: 'קבוצות',
+  emailLog: 'יומן מיילים',
   openTasks: 'משימות פתוחות',
 } as const

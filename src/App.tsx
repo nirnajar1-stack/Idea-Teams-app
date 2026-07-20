@@ -7,6 +7,7 @@ import { PreferencesProvider } from './context/PreferencesContext'
 import { ChatNotificationsProvider } from './context/ChatNotificationsContext'
 import { EmbedModeProvider } from './context/EmbedModeContext'
 import { LabelsProvider } from './context/LabelsContext'
+import { GroupsProvider } from './context/GroupsContext'
 import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
@@ -28,6 +29,8 @@ import { LoginPage } from './pages/LoginPage'
 import { UserManagementPage } from './pages/UserManagementPage'
 import { AddSubIdeaPage } from './pages/AddSubIdeaPage'
 import { LabelsManagementPage } from './pages/LabelsManagementPage'
+import { GroupsManagementPage } from './pages/GroupsManagementPage'
+import { EmailLogPage } from './pages/EmailLogPage'
 import { OpenTasksDashboardPage } from './pages/OpenTasksDashboardPage'
 import { TimelinePage } from './pages/TimelinePage'
 
@@ -47,6 +50,7 @@ function App() {
           <PreferencesProvider>
           <EmbedModeProvider>
           <LabelsProvider>
+          <GroupsProvider>
           <IdeasProvider>
             <ChatNotificationsProvider>
             <Toaster
@@ -79,6 +83,8 @@ function App() {
                 <Route path={ROUTES.profile} element={<ProfilePage />} />
                 <Route element={<ManagerRoute />}>
                   <Route path={ROUTES.users} element={<UserManagementPage />} />
+                  <Route path={ROUTES.groups} element={<GroupsManagementPage />} />
+                  <Route path={ROUTES.emailLog} element={<EmailLogPage />} />
                 </Route>
                 <Route path={ROUTES.openTasksDashboard} element={<OpenTasksDashboardPage />} />
                 <Route element={<MasterRoute />}>
@@ -92,6 +98,7 @@ function App() {
             </Routes>
             </ChatNotificationsProvider>
           </IdeasProvider>
+          </GroupsProvider>
           </LabelsProvider>
           </EmbedModeProvider>
           </PreferencesProvider>

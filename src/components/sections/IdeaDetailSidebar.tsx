@@ -10,6 +10,7 @@ import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
 import { MasterWorkflowActions } from './MasterWorkflowActions'
 import { WorkflowStatusSelect } from './WorkflowStatusSelect'
 import { useUsers } from '../../context/UsersContext'
+import { useGroups } from '../../context/GroupsContext'
 import { useAuth } from '../../context/AuthContext'
 import { canChangeIdeaVisibility } from '../../lib/ideaVisibility'
 import { cn } from '../../lib/cn'
@@ -46,6 +47,7 @@ export function IdeaDetailSidebar({
   const navigate = useNavigate()
   const { user } = useAuth()
   const { listManageableUsers } = useUsers()
+  const { groups } = useGroups()
 
   const handleWorkflowChange = (status: IdeaWorkflowStatus) => {
     if (status === 'completed') {
@@ -135,9 +137,21 @@ export function IdeaDetailSidebar({
 
         <AssigneeSelect
           users={listManageableUsers()}
-          value={idea.assigneeUserId}
+          groups={groups}
+          userIds={idea.assigneeUserIds?.length
+            ? idea.assigneeUserIds
+            : idea.assigneeUserId
+              ? [idea.assigneeUserId]
+              : []}
+          groupIds={idea.assigneeGroupIds ?? []}
           disabled={!canEdit}
-          onChange={(assigneeUserId) => onUpdate({ assigneeUserId })}
+          onChange={({ userIds, groupIds }) =>
+            onUpdate({
+              assigneeUserIds: userIds,
+              assigneeGroupIds: groupIds,
+              assigneeUserId: userIds[0],
+            })
+          }
         />
 
         {user && canChangeIdeaVisibility(user, idea) && (

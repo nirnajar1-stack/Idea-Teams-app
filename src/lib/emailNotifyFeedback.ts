@@ -1,4 +1,4 @@
-import type { EmailNotifyResult, WhatsAppNotifyResult } from '../api/emailApi'
+import type { EmailNotifyResult } from '../api/emailApi'
 
 /** הודעה למשתמש אחרי ניסיון שליחת מייל השלמה */
 export function emailNotifyUserMessage(result: EmailNotifyResult): string | null {
@@ -16,7 +16,7 @@ export function emailNotifyUserMessage(result: EmailNotifyResult): string | null
       case 'not_completed':
         return 'מייל לא נשלח — הסטטוס בענן עדיין לא עודכן. נסה לרענן ולסמן שוב'
       case 'no_recipients':
-        return 'מייל לא נשלח — אין משתמשים זכאים לפי נראות הבקשה/רעיון'
+        return 'מייל לא נשלח — אין משתמשים מוקצים (או יוצר) לשליחה'
       default:
         return null
     }
@@ -36,61 +36,19 @@ export function emailNotifyUserMessage(result: EmailNotifyResult): string | null
       return 'מייל לא נשלח — הרעיון לא נמצא בענן'
     }
     if (result.error.includes('users_load_failed')) {
-      return 'מייל לא נשלח — שגיאה בטעינת משתמשים (הרץ מיגרציה 022?)'
+      return 'מייל לא נשלח — שגיאה בטעינת משתמשים'
     }
     return `מייל לא נשלח: ${result.error}`
   }
 
   if (result.ok && (!result.sent || result.sent.length === 0)) {
-    return 'מייל לא נשלח — בדוק שיש אימייל לפותח/מוקצה והעדפה פעילה בפרופיל'
+    return 'מייל לא נשלח — בדוק הקצאות, אימיילים והעדפות/החרגות'
   }
 
   return null
 }
 
-/** הודעה למשתמש אחרי ניסיון שליחת WhatsApp בהשלמה */
-export function whatsappNotifyUserMessage(result: WhatsAppNotifyResult | undefined): string | null {
-  if (!result) return null
-
-  if (result.ok && result.sent) {
-    const display = result.sent.phone.startsWith('972')
-      ? `0${result.sent.phone.slice(3)}`
-      : result.sent.phone
-    return `נשלח עדכון WhatsApp למוקצה: ${display}`
-  }
-
-  if (result.skipped) {
-    switch (result.reason) {
-      case 'whatsapp_not_configured':
-        return 'WhatsApp לא נשלח — יש להגדיר WHATSAPP_ACCESS_TOKEN ו-WHATSAPP_PHONE_NUMBER_ID ב-Supabase (ראה docs/WHATSAPP_SETUP.md)'
-      case 'no_assignee':
-        return 'WhatsApp לא נשלח — לא הוגדר משתמש מוקצה לבקשה/רעיון'
-      case 'no_phone':
-        return 'WhatsApp לא נשלח — למוקצה אין מספר טלפון (הגדר בניהול משתמשים)'
-      case 'invalid_phone':
-        return 'WhatsApp לא נשלח — מספר הטלפון של המוקצה לא תקין'
-      case 'prefs_off':
-        return 'WhatsApp לא נשלח — המוקצה כיבה התראות WhatsApp בפרופיל'
-      case 'assignee_not_found':
-      case 'inactive':
-        return 'WhatsApp לא נשלח — המוקצה לא נמצא או לא פעיל'
-      default:
-        return null
-    }
-  }
-
-  if (result.error === 'whatsapp_send_failed') {
-    return 'שליחת WhatsApp נכשלה — בדוק template מאושר ב-Meta ו-token תקין'
-  }
-
-  if (result.error) {
-    return `WhatsApp לא נשלח: ${result.error}`
-  }
-
-  return null
-}
-
-/** הודעות מייל + WhatsApp אחרי סימון הושלם */
+/** הודעות מייל אחרי סימון הושלם */
 export function completionNotifyToasts(
   result: EmailNotifyResult,
 ): { level: 'message' | 'warning'; text: string }[] {
@@ -100,13 +58,6 @@ export function completionNotifyToasts(
     out.push({
       level: result.ok && result.sent && result.sent.length > 0 ? 'message' : 'warning',
       text: emailMsg,
-    })
-  }
-  const waMsg = whatsappNotifyUserMessage(result.whatsapp)
-  if (waMsg) {
-    out.push({
-      level: result.whatsapp?.ok ? 'message' : 'warning',
-      text: waMsg,
     })
   }
   return out
