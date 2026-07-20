@@ -30,14 +30,14 @@ function escapeHtml(text: string): string {
     .replace(/"/g, '&quot;')
 }
 
-function roleIntro(role: RecipientRole['role'], name: string): string {
+function roleBody(role: RecipientRole['role']): string {
   if (role === 'creator') {
-    return `שלום ${name},<br><br>הבקשה/רעיון שפתחת סומן/ה כ<strong>הושלם</strong>.`
+    return 'הבקשה/רעיון שפתחת סומן/ה כהושלם.'
   }
   if (role === 'assignee') {
-    return `שלום ${name},<br><br>הבקשה/רעיון שהוקצה לך סומן/ה כ<strong>הושלם</strong>.`
+    return 'הבקשה/רעיון שהוקצה לך סומן/ה כהושלם.'
   }
-  return `שלום ${name},<br><br>בקשה/רעיון במערכת Ogen סומן/ה כ<strong>הושלם</strong>.`
+  return 'בקשה/רעיון במערכת Ogen סומן/ה כהושלם.'
 }
 
 function buildEmailHtml(params: {
@@ -49,29 +49,112 @@ function buildEmailHtml(params: {
   ideaUrl: string | null
 }): string {
   const { recipientName, role, title, description, actorName, ideaUrl } = params
-  const desc = description
-    ? `<p style="margin:16px 0;color:#444;line-height:1.6;">${escapeHtml(truncate(description, 1200))}</p>`
+  const safeName = escapeHtml(recipientName)
+  const safeTitle = escapeHtml(truncate(title, 200))
+  const safeActor = escapeHtml(actorName)
+  const safeBody = escapeHtml(roleBody(role))
+  const safeDesc = description
+    ? `<p style="margin:12px 0 0;font-family:'Work Sans',Arial,sans-serif;font-size:15px;line-height:1.5;color:#778aac;">${escapeHtml(truncate(description, 400))}</p>`
     : ''
-
-  const link = ideaUrl
-    ? `<p style="margin:24px 0;"><a href="${escapeHtml(ideaUrl)}" style="color:#1a5f4a;font-weight:600;">צפייה בבקשה/רעיון באפליקציה</a></p>`
-    : ''
+  const ctaHref = ideaUrl || 'https://idea-teams-app.vercel.app/'
+  const year = new Date().getFullYear()
 
   return `<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head><meta charset="utf-8"></head>
-<body style="font-family:Segoe UI,Arial,sans-serif;background:#f5f5f0;margin:0;padding:24px;">
-  <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px;border:1px solid #e8e8e0;">
-    <p style="margin:0 0 8px;font-size:13px;color:#888;">Ogen — צוות פיתוח ובקרה</p>
-    <h1 style="margin:0 0 20px;font-size:22px;color:#1a1a1a;">✅ בקשה/רעיון הושלם</h1>
-    <p style="margin:0 0 20px;line-height:1.6;color:#333;">${roleIntro(role, escapeHtml(recipientName))}</p>
-    <h2 style="margin:0 0 8px;font-size:18px;color:#1a5f4a;">${escapeHtml(truncate(title, 200))}</h2>
-    ${desc}
-    <p style="margin:16px 0 0;font-size:14px;color:#666;">סומן כהושלם על ידי: <strong>${escapeHtml(actorName)}</strong></p>
-    ${link}
-    <hr style="margin:28px 0;border:none;border-top:1px solid #eee;">
-    <p style="margin:0;font-size:12px;color:#999;">הודעה אוטומטית ממערכת Ogen</p>
-  </div>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ogen - עדכון סטטוס</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&amp;family=Work+Sans:wght@400;500&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+</head>
+<body style="margin:0;padding:0;background-color:#fbf9fc;-webkit-font-smoothing:antialiased;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fbf9fc;padding:40px 16px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+        <!-- Header -->
+        <tr>
+          <td style="background-color:#000b20;padding:24px 28px;border-radius:12px 12px 0 0;border-bottom:2px solid #fdc003;">
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td align="right">
+                  <h1 style="margin:0;font-family:Rubik,Arial,sans-serif;font-size:24px;line-height:1.3;font-weight:600;color:#fdc003;">Ogen</h1>
+                  <p style="margin:4px 0 0;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.05em;color:#ffffff;opacity:0.8;">צוות פיתוח ובקרה</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Main card -->
+        <tr>
+          <td style="background-color:#ffffff;border-radius:0 0 12px 12px;border-top:4px solid #009e52;overflow:hidden;">
+            <!-- Status hero -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f5f3f6;border-bottom:1px solid #c4c6ce;">
+              <tr>
+                <td align="center" style="padding:28px 24px;">
+                  <div style="display:inline-block;width:64px;height:64px;line-height:64px;border-radius:9999px;background-color:#002810;color:#009e52;font-size:36px;font-weight:700;">✓</div>
+                  <h2 style="margin:16px 0 0;font-family:Rubik,Arial,sans-serif;font-size:24px;line-height:1.3;font-weight:600;color:#1b1b1e;">בקשה/רעיון הושלם</h2>
+                </td>
+              </tr>
+            </table>
+            <!-- Body -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding:24px;">
+                  <p style="margin:0 0 8px;font-family:'Work Sans',Arial,sans-serif;font-size:18px;line-height:1.6;color:#1b1b1e;">שלום ${safeName},</p>
+                  <p style="margin:0 0 24px;font-family:'Work Sans',Arial,sans-serif;font-size:16px;line-height:1.5;color:#44474d;">${safeBody}</p>
+
+                  <!-- Info card -->
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0d223f;border-radius:8px;border-right:4px solid #fdc003;">
+                    <tr>
+                      <td style="padding:16px;">
+                        <p style="margin:0 0 10px;font-family:'Work Sans',Arial,sans-serif;font-size:16px;font-weight:700;color:#ffffff;">✓ ${safeTitle}</p>
+                        ${safeDesc}
+                        <p style="margin:12px 0 0;font-family:'Work Sans',Arial,sans-serif;font-size:15px;line-height:1.5;color:#778aac;">
+                          סטטוס: <strong style="color:#009e52;">הושלם</strong>
+                        </p>
+                        <p style="margin:6px 0 0;font-family:'Work Sans',Arial,sans-serif;font-size:15px;line-height:1.5;color:#778aac;">
+                          סומן כהושלם על ידי: <strong style="color:#ffffff;">${safeActor}</strong>
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- CTA -->
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
+                    <tr>
+                      <td align="center">
+                        <a href="${escapeHtml(ctaHref)}" style="display:inline-block;background-color:#000b20;color:#ffffff;text-decoration:none;padding:16px 32px;border-radius:12px;font-family:Rubik,Arial,sans-serif;font-size:16px;font-weight:600;">
+                          צפייה בבקשה/רעיון באפליקציה
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+            <!-- Footer strip -->
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#dbd9dc;border-top:1px solid #c4c6ce;">
+              <tr>
+                <td style="padding:14px 24px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#44474d;">
+                  Version: 1.2 · Owner: Nir Nagar
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Legal footer -->
+        <tr>
+          <td align="center" style="padding:28px 8px 0;">
+            <p style="margin:0;font-family:'JetBrains Mono',monospace;font-size:12px;color:#44474d;opacity:0.7;">
+              © ${year} Ogen — צוות פיתוח ובקרה. כל הזכויות שמורות.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
 </body>
 </html>`
 }
@@ -111,7 +194,8 @@ Deno.serve(async (req) => {
   try {
     const resendKey = Deno.env.get('RESEND_API_KEY')
     const emailFrom = Deno.env.get('EMAIL_FROM')
-    const appPublicUrl = Deno.env.get('APP_PUBLIC_URL') ?? ''
+    const appPublicUrl =
+      Deno.env.get('APP_PUBLIC_URL')?.trim() || 'https://idea-teams-app.vercel.app'
     const emailConfigured = !!(resendKey && emailFrom)
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!

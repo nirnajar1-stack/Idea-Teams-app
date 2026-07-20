@@ -21,7 +21,7 @@ export function getStoredTheme(): Theme | null {
 export function resolveInitialTheme(): Theme {
   const stored = getStoredTheme()
   if (stored) return stored
-  return 'dark'
+  return 'light'
 }
 
 export function applyTheme(theme: Theme) {
