@@ -1,87 +1,31 @@
 # מייל בהשלמת משימה — Ogen System
 
-כש**בקשה/רעיון מסומן כהושלם**, נשלח מייל אוטומטי ל**כל המשתמשים הפעילים** (מנהל, מאסטר, חבר צוות — לא אורח), לפי **נראות** הבקשה/רעיון:
+כש**בקשה/רעיון מסומן כהושלם**, נשלח מייל אוטומטי ל:
 
-| נראות | מי מקבל מייל |
-|--------|----------------|
-| `team` (פתוח לכולם) | כל המשתמשים הפעילים |
-| `managers_only` | מנהלים ומאסטר בלבד |
-| `master_private` | יוצר המאסטר בלבד |
+1. **כל המשתמשים המוקצים** למשימה
+2. **כל חברי הקבוצות** המוקצות למשימה
+3. **יוצר המשימה** (אם עדיין לא ברשימה)
 
 ---
 
 ## דרישות
 
-1. מיגרציה **`022_email_completion.sql`** הורצה ב-Supabase SQL Editor
-2. חשבון **[Resend](https://resend.com)** (או שירות דומה — הקוד משתמש ב-Resend API)
-3. דומיין מאומת לשליחה
-4. Edge Function **`notify-idea-completed`** פרוסה מחדש
-5. Secrets ב-Supabase Dashboard
+1. מיגרציות `022_email_completion.sql` + `033_multi_assignees_groups_email.sql`
+2. חשבון [Resend](https://resend.com) עם דומיין מאומת
+3. Edge Function `notify-idea-completed` פרוסה עם `--no-verify-jwt`
+4. Secrets: `RESEND_API_KEY`, `EMAIL_FROM`, `APP_PUBLIC_URL`
 
 ---
 
-## שלב 1 — מיגרציה 022
+## החרגות
 
-```sql
--- supabase/migrations/022_email_completion.sql
-```
-
-מוסיף עמודת `notify_email_completed` (ברירת מחדל: פעיל).
+במסך **יומן מיילים** ניתן להחריג משתמשים או קבוצות משליחת מייל בהשלמה.
 
 ---
 
-## שלב 2 — Resend
+## יומן
 
-1. צור חשבון ב-[resend.com](https://resend.com)
-2. **Domains** → הוסף דומיין → אמת DNS
-3. **API Keys** → צור מפתח
-
----
-
-## שלב 3 — פריסת Edge Function
-
-```bash
-supabase login
-supabase link --project-ref YOUR_PROJECT_REF
-supabase functions deploy notify-idea-completed --no-verify-jwt
-```
-
-> **חשוב:** האפליקציה מתחברת עם סיסמה (RPC) ולא עם Supabase Auth JWT. בלי `--no-verify-jwt` תקבל שגיאה `Edge Function returned a non-2xx status code` / `Invalid JWT`.
-
----
-
-## שלב 4 — Secrets
-
-**Project Settings → Edge Functions → Secrets**
-
-| Secret | חובה | דוגמה |
-|--------|------|--------|
-| `RESEND_API_KEY` | ✓ | `re_...` |
-| `EMAIL_FROM` | ✓ | `Ogen <noreply@yourdomain.gov.il>` |
-| `APP_PUBLIC_URL` | מומלץ | `https://your-app.vercel.app` |
-
-`APP_PUBLIC_URL` משמש לקישור ישיר לרעיון במייל.
-
----
-
-## שלב 5 — באפליקציה
-
-1. וודא ש**למשתמשים יש אימייל** תקין (מסך ניהול משתמשים)
-2. כל משתמש יכול לכבות ב**פרופיל** → *מייל כשבקשה/רעיון הושלם*
-3. סמן **הושלם** — המיילים נשלחים אוטומטית לכל מי שזכאי לפי הטבלה למעלה
-
----
-
-## לוגיקה
-
-המייל **לא** נשלח אם:
-
-- Resend לא מוגדר (`email_not_configured`)
-- אין אימייל למשתמש
-- `notify_email_completed = false`
-- המשתמש לא פעיל
-
-פותח ומוקצה מקבלים ניסוח מותאם במייל; שאר המשתמשים מקבלים הודעה כללית. לכל משתמש נשלח **מייל אחד** בלבד.
+כל ניסיון שליחה נרשם ב-`email_send_log` ומוצג במסך **יומן מיילים**.
 
 ---
 
@@ -89,9 +33,7 @@ supabase functions deploy notify-idea-completed --no-verify-jwt
 
 | תסמין | פתרון |
 |-------|--------|
-| `non-2xx` / `Invalid JWT` | פרוס עם `--no-verify-jwt` (ראה שלב 3) |
-| `email_not_configured` | הגדר `RESEND_API_KEY` ו-`EMAIL_FROM` |
-| `no_email` | הוסף אימייל למשתמש |
-| `prefs_off` | הפעל בפרופיל |
-| `email_send_failed` | בדוק דומיין מאומת ב-Resend, פורמט `EMAIL_FROM` |
-| עמודה חסרה | הרץ מיגרציה 022 |
+| Invalid JWT | פרוס עם `--no-verify-jwt` |
+| email_not_configured | הגדר Secrets |
+| email_send_failed | בדוק דומיין מאומת ב-Resend |
+| אין נמענים | שייך משתמשים/קבוצות למשימה |
