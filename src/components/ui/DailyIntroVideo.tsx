@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Volume2, VolumeX, X } from 'lucide-react'
 import { INTRO_VIDEO_SRC } from '../../constants/app'
 import { cn } from '../../lib/cn'
-import { markDailyIntroVideoShown } from '../../lib/dailyIntroVideo'
+import { markMonthlyIntroVideoShown } from '../../lib/monthlyIntroVideo'
 import type { AppUser } from '../../types/user'
 
 export interface DailyIntroVideoProps {
@@ -19,7 +19,7 @@ export function DailyIntroVideo({ user, onComplete }: DailyIntroVideoProps) {
   const finish = useCallback(() => {
     if (finishedRef.current) return
     finishedRef.current = true
-    markDailyIntroVideoShown(user)
+    markMonthlyIntroVideoShown(user)
     setExiting(true)
     window.setTimeout(onComplete, 450)
   }, [user, onComplete])

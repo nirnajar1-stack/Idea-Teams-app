@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { AppSplashLoader } from '../components/ui/AppSplashLoader'
 import { DailyIntroVideo } from '../components/ui/DailyIntroVideo'
-import { shouldShowDailyIntroVideo } from '../lib/dailyIntroVideo'
+import { shouldShowMonthlyIntroVideo } from '../lib/monthlyIntroVideo'
 import {
   deleteIdeaFromDb,
   fetchIdeasFromDb,
@@ -141,7 +141,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const [splashExiting, setSplashExiting] = useState(false)
   const [showSplash, setShowSplash] = useState(!skipSplash)
   const [showDailyVideo, setShowDailyVideo] = useState(
-    () => !isEmbed && !!(user && shouldShowDailyIntroVideo(user)),
+    () => !isEmbed && !!(user && shouldShowMonthlyIntroVideo(user)),
   )
   const [usingCloud, setUsingCloud] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -209,7 +209,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       setShowDailyVideo(false)
       return
     }
-    setShowDailyVideo(shouldShowDailyIntroVideo(user))
+    setShowDailyVideo(shouldShowMonthlyIntroVideo(user))
   }, [user, isEmbed])
 
   useEffect(() => {
@@ -321,11 +321,11 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         ideaKind,
         parentId: input.parentId,
         ...author,
-        tags: [
-          isContainer
-            ? 'תת-בקשות/רעיונות'
-            : categoryDepartment(input.category),
-        ],
+        tags: input.labelIds?.length
+          ? input.labelIds
+          : isContainer
+            ? ['תת-בקשות/רעיונות']
+            : [],
         goals: [],
         attachments: [],
         progress: 0,

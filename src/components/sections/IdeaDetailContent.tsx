@@ -27,6 +27,7 @@ import { SubIdeasSection } from './SubIdeasSection'
 import { AuditLogSection } from './AuditLogSection'
 import { AttachmentUpload } from './AttachmentUpload'
 import { GoalsTagsEditor } from './GoalsTagsEditor'
+import { TaskLabelSelect } from './TaskLabelSelect'
 
 const priorityVariant: Record<
   IdeaPriority,
@@ -144,11 +145,22 @@ export function IdeaDetailContent({
       )}
 
       <section className="glass-card-hover p-6">
+        <TaskLabelSelect
+          value={(idea.tags ?? []).filter((t) => t.startsWith('lbl-'))}
+          onChange={(labelIds) => onUpdate?.({ tags: labelIds })}
+          disabled={!canEdit}
+        />
+      </section>
+
+      <section className="glass-card-hover p-6">
         <GoalsTagsEditor
           goals={idea.goals}
-          tags={idea.tags}
+          tags={[]}
           disabled={!canEdit}
-          onChange={(patch) => onUpdate?.(patch)}
+          onChange={(patch) => {
+            if (patch.goals) onUpdate?.({ goals: patch.goals })
+          }}
+          hideTags
         />
       </section>
 

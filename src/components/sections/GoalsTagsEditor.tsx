@@ -6,6 +6,7 @@ export interface GoalsTagsEditorProps {
   goals: string[]
   tags: string[]
   disabled?: boolean
+  hideTags?: boolean
   onChange: (patch: { goals?: string[]; tags?: string[] }) => void
 }
 
@@ -13,6 +14,7 @@ export function GoalsTagsEditor({
   goals,
   tags,
   disabled = false,
+  hideTags = false,
   onChange,
 }: GoalsTagsEditorProps) {
   const [newGoal, setNewGoal] = useState('')
@@ -83,6 +85,7 @@ export function GoalsTagsEditor({
         )}
       </div>
 
+      {!hideTags && (
       <div>
         <div className="mb-3 flex items-center gap-2 text-primary">
           <Tag className="h-5 w-5" />
@@ -131,6 +134,7 @@ export function GoalsTagsEditor({
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

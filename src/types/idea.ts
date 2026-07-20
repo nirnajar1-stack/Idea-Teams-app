@@ -105,6 +105,8 @@ export interface IdeaFormInput {
   ideaKind?: IdeaKind
   parentId?: string
   visibility?: IdeaVisibility
+  /** מזהי לייבלים מהקטalog */
+  labelIds?: string[]
 }
 
 export interface IdeaFilters {

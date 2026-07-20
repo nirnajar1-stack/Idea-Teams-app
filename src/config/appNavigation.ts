@@ -1,8 +1,10 @@
 import {
   Archive,
+  BarChart3,
   CalendarRange,
   LayoutDashboard,
   Lightbulb,
+  Tag,
   UserCog,
   UserRound,
   type LucideIcon,
@@ -13,7 +15,9 @@ export type AppNavItemId =
   | 'home'
   | 'ideas'
   | 'inbox'
+  | 'openTasks'
   | 'timeline'
+  | 'labels'
   | 'users'
   | 'profile'
 
@@ -59,11 +63,26 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
     match: (p) => p === ROUTES.inbox,
   },
   {
+    id: 'openTasks',
+    label: NAV_LABELS.openTasks,
+    to: ROUTES.openTasksDashboard,
+    icon: BarChart3,
+    match: (p) => p === ROUTES.openTasksDashboard,
+  },
+  {
     id: 'timeline',
     label: NAV_LABELS.timeline,
     to: ROUTES.timeline,
     icon: CalendarRange,
     match: (p) => p === ROUTES.timeline,
+    visible: ({ isMaster }) => isMaster,
+  },
+  {
+    id: 'labels',
+    label: NAV_LABELS.labels,
+    to: ROUTES.labels,
+    icon: Tag,
+    match: (p) => p === ROUTES.labels,
     visible: ({ isMaster }) => isMaster,
   },
   {

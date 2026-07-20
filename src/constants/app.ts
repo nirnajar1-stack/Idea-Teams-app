@@ -16,6 +16,8 @@ export const ROUTES = {
   profile: '/profile',
   users: '/users',
   timeline: '/timeline',
+  labels: '/labels',
+  openTasksDashboard: '/insights/open-tasks',
 } as const
 
 /** נתיבים לשילוב ב-Power BI (iframe) */
@@ -31,7 +33,9 @@ export const STORAGE_KEY = 'ideaflow-ideas-v1'
 export const CLOUD_MIGRATED_KEY = 'ideaflow-cloud-migrated-v1'
 export const SESSION_STORAGE_KEY = 'ideaflow-session-v1'
 export const SPLASH_SHOWN_KEY = 'ideaflow-splash-shown-v1'
-export const DAILY_INTRO_VIDEO_KEY = 'ogen-daily-intro-video-v1'
+export const MONTHLY_INTRO_VIDEO_KEY = 'ogen-monthly-intro-video-v1'
+/** @deprecated use MONTHLY_INTRO_VIDEO_KEY */
+export const DAILY_INTRO_VIDEO_KEY = MONTHLY_INTRO_VIDEO_KEY
 /** קובץ ב-public — נתיב מקודד לתמיכה בשם עברי */
 export const INTRO_VIDEO_SRC = encodeURI('/פרויקט וידאו.mp4')
 export const USERS_STORAGE_KEY = 'ideaflow-users-v1'
@@ -45,4 +49,6 @@ export const NAV_LABELS = {
   add: 'חדש',
   users: 'משתמשים',
   timeline: 'טיימליין',
+  labels: 'לייבלים',
+  openTasks: 'משימות פתוחות',
 } as const

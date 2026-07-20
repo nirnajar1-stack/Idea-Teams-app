@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { PreferencesProvider } from './context/PreferencesContext'
 import { ChatNotificationsProvider } from './context/ChatNotificationsContext'
 import { EmbedModeProvider } from './context/EmbedModeContext'
+import { LabelsProvider } from './context/LabelsContext'
 import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
@@ -26,6 +27,8 @@ import { InboxPage } from './pages/InboxPage'
 import { LoginPage } from './pages/LoginPage'
 import { UserManagementPage } from './pages/UserManagementPage'
 import { AddSubIdeaPage } from './pages/AddSubIdeaPage'
+import { LabelsManagementPage } from './pages/LabelsManagementPage'
+import { OpenTasksDashboardPage } from './pages/OpenTasksDashboardPage'
 import { TimelinePage } from './pages/TimelinePage'
 
 const queryClient = new QueryClient({
@@ -43,6 +46,7 @@ function App() {
         <AuthProvider>
           <PreferencesProvider>
           <EmbedModeProvider>
+          <LabelsProvider>
           <IdeasProvider>
             <ChatNotificationsProvider>
             <Toaster
@@ -76,8 +80,10 @@ function App() {
                 <Route element={<ManagerRoute />}>
                   <Route path={ROUTES.users} element={<UserManagementPage />} />
                 </Route>
+                <Route path={ROUTES.openTasksDashboard} element={<OpenTasksDashboardPage />} />
                 <Route element={<MasterRoute />}>
                   <Route path={ROUTES.timeline} element={<TimelinePage />} />
+                  <Route path={ROUTES.labels} element={<LabelsManagementPage />} />
                   <Route path={EMBED_ROUTES.timeline} element={<TimelinePage />} />
                 </Route>
                 <Route path="*" element={<DefaultHomeRedirect />} />
@@ -86,6 +92,7 @@ function App() {
             </Routes>
             </ChatNotificationsProvider>
           </IdeasProvider>
+          </LabelsProvider>
           </EmbedModeProvider>
           </PreferencesProvider>
         </AuthProvider>

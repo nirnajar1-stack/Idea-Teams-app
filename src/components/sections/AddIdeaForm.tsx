@@ -19,15 +19,10 @@ import { PriorityChip } from '../ui/PriorityChip'
 import { Textarea } from '../ui/Textarea'
 import { IdeaSourceSelect } from './IdeaSourceSelect'
 import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
+import { TaskLabelSelect } from './TaskLabelSelect'
 import { cn } from '../../lib/cn'
 
 type SubmitState = 'idle' | 'loading' | 'success'
-
-function defaultTargetDate(): string {
-  const d = new Date()
-  d.setDate(d.getDate() + 14)
-  return d.toISOString().slice(0, 10)
-}
 
 export function AddIdeaForm() {
   const navigate = useNavigate()
@@ -35,19 +30,31 @@ export function AddIdeaForm() {
   const { addIdea } = useIdeas()
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState<IdeaCategory>('development')
+  const [category, setCategory] = useState<IdeaCategory | null>(null)
   const [ideaSource, setIdeaSource] = useState<IdeaSource>(DEFAULT_IDEA_SOURCE)
   const [priority, setPriority] = useState<IdeaPriority>('medium')
-  const [targetStartDate, setTargetStartDate] = useState(defaultTargetDate)
+  const [targetStartDate, setTargetStartDate] = useState('')
+  const [labelIds, setLabelIds] = useState<string[]>([])
   const [sendToMaybeInbox, setSendToMaybeInbox] = useState(false)
   const [isContainer, setIsContainer] = useState(false)
   const [visibility, setVisibility] = useState<IdeaVisibility>('team')
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
+  const [showValidation, setShowValidation] = useState(false)
   const allowContainer = canCreateContainerIdea(user)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!title.trim() || !description.trim() || !targetStartDate) return
+    setShowValidation(true)
+
+    if (!title.trim() || !description.trim()) return
+    if (!category) {
+      toast.error('יש לבחור קטגוריה — פיתוח, בקרה או טכני')
+      return
+    }
+    if (!targetStartDate) {
+      toast.error('יש לבחור תאריך יעד להתחלה')
+      return
+    }
 
     setSubmitState('loading')
     await new Promise((r) => setTimeout(r, 800))
@@ -60,6 +67,7 @@ export function AddIdeaForm() {
         ideaSource,
         priority,
         targetStartDate,
+        labelIds,
         sendToMaybeInbox: isContainer ? false : sendToMaybeInbox,
         ideaKind: isContainer ? 'container' : 'standard',
         visibility: user ? resolveVisibilityOnCreate(user, visibility) : 'team',
@@ -99,8 +107,15 @@ export function AddIdeaForm() {
           />
 
           <div className="space-y-3">
-            <span className="block font-label-md text-secondary">קטגוריה</span>
-            <CategoryPicker value={category} onChange={setCategory} />
+            <span className="block font-label-md text-secondary">
+              קטגוריה <span className="text-error">*</span>
+            </span>
+            <CategoryPicker
+              value={category}
+              onChange={setCategory}
+              required
+              error={showValidation && !category}
+            />
           </div>
 
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
@@ -123,6 +138,8 @@ export function AddIdeaForm() {
             hint="מתי מתוכנן להתחיל לעבוד על הבקשה/רעיון?"
             required
           />
+
+          <TaskLabelSelect value={labelIds} onChange={setLabelIds} />
 
           <div className="space-y-3">
             <span className="block font-label-md text-secondary">רמת חשיבות</span>

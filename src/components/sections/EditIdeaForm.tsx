@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
+import { filterKnownLabelIds } from '../../api/labelsApi'
+import { useLabels } from '../../context/LabelsContext'
 import type { Idea, IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
 import { CategoryPicker } from '../ui/CategoryPicker'
 import { categoryDepartment } from '../../lib/ideaUtils'
@@ -13,6 +15,7 @@ import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
 import { Textarea } from '../ui/Textarea'
 import { IdeaSourceSelect } from './IdeaSourceSelect'
+import { TaskLabelSelect } from './TaskLabelSelect'
 import { cn } from '../../lib/cn'
 
 type SubmitState = 'idle' | 'loading' | 'success'
@@ -24,12 +27,16 @@ export interface EditIdeaFormProps {
 export function EditIdeaForm({ idea }: EditIdeaFormProps) {
   const navigate = useNavigate()
   const { updateIdea } = useIdeas()
+  const { labels } = useLabels()
   const [title, setTitle] = useState(idea.title)
   const [description, setDescription] = useState(idea.description)
   const [category, setCategory] = useState<IdeaCategory>(idea.category)
   const [ideaSource, setIdeaSource] = useState<IdeaSource>(idea.ideaSource)
   const [priority, setPriority] = useState<IdeaPriority>(idea.priority)
   const [targetStartDate, setTargetStartDate] = useState(idea.targetStartDate)
+  const [labelIds, setLabelIds] = useState<string[]>(
+    filterKnownLabelIds(idea.tags ?? [], labels),
+  )
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
 
   const handleSubmit = async (e: FormEvent) => {
@@ -46,6 +53,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
         ideaSource,
         priority,
         targetStartDate,
+        tags: labelIds,
       })
       if (!ok) {
         toast.error('אין הרשאה לערוך בקשה/רעיון זה')
@@ -105,6 +113,8 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
             onChange={(e) => setTargetStartDate(e.target.value)}
             required
           />
+
+          <TaskLabelSelect value={labelIds} onChange={setLabelIds} />
 
           <div className="space-y-3">
             <span className="block font-label-md text-secondary">רמת חשיבות</span>

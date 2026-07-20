@@ -17,6 +17,11 @@ export function canManageUsers(user: AppUser | null): boolean {
   return isManagerOrMaster(user)
 }
 
+/** לייבלים — יצירה ועריכה למאסטר בלבד */
+export function canManageLabels(user: AppUser | null): boolean {
+  return isMaster(user)
+}
+
 /** רעיון-מארז עם תת-רעיונות — יצירה למנהל בלבד */
 export function canCreateContainerIdea(user: AppUser | null): boolean {
   return user?.accessLevel === 'manager'

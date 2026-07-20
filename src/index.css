@@ -349,6 +349,34 @@
     @apply mb-10 md:mb-14;
   }
 
+  .open-tasks-dashboard {
+    @apply mb-10 md:mb-14;
+  }
+
+  .open-tasks-dashboard__shell {
+    @apply border border-border-light bg-surface-container-low/35 p-4 md:p-6 lg:p-8;
+  }
+
+  .open-tasks-dashboard__header {
+    @apply mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border-light pb-6 md:mb-8;
+  }
+
+  .open-tasks-dashboard__kpi-grid {
+    @apply mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 md:mb-8 md:gap-4;
+  }
+
+  .open-tasks-dashboard__featured-grid {
+    @apply mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2 md:mb-6;
+  }
+
+  .open-tasks-dashboard__secondary-grid {
+    @apply grid grid-cols-1 gap-4 md:grid-cols-3;
+  }
+
+  .open-tasks-dashboard__priority-list {
+    @apply mt-8 border border-border-light bg-surface-container-low/35 p-4 md:p-6 lg:p-8;
+  }
+
   .lambo-stagger > * {
     @apply animate-fade-up;
   }
