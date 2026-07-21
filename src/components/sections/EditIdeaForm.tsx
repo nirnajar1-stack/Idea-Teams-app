@@ -5,9 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
-import { filterKnownLabelIds } from '../../api/labelsApi'
-import { mergeLabelIdsIntoTags } from '../../lib/labelTags'
-import { useLabels } from '../../context/LabelsContext'
+import { mergeLabelIdsIntoTags, extractLabelIds } from '../../lib/labelTags'
 import type { Idea, IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
 import { CategoryPicker } from '../ui/CategoryPicker'
 import { categoryDepartment } from '../../lib/ideaUtils'
@@ -28,16 +26,13 @@ export interface EditIdeaFormProps {
 export function EditIdeaForm({ idea }: EditIdeaFormProps) {
   const navigate = useNavigate()
   const { updateIdea } = useIdeas()
-  const { labels } = useLabels()
   const [title, setTitle] = useState(idea.title)
   const [description, setDescription] = useState(idea.description)
   const [category, setCategory] = useState<IdeaCategory>(idea.category)
   const [ideaSource, setIdeaSource] = useState<IdeaSource>(idea.ideaSource)
   const [priority, setPriority] = useState<IdeaPriority>(idea.priority)
   const [targetStartDate, setTargetStartDate] = useState(idea.targetStartDate)
-  const [labelIds, setLabelIds] = useState<string[]>(
-    filterKnownLabelIds(idea.tags ?? [], labels),
-  )
+  const [labelIds, setLabelIds] = useState<string[]>(extractLabelIds(idea.tags))
   const [submitState, setSubmitState] = useState<SubmitState>('idle')
 
   const handleSubmit = async (e: FormEvent) => {
