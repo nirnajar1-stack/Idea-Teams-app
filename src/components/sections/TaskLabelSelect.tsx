@@ -28,14 +28,34 @@ export function TaskLabelSelect({
     }
   }
 
+  const clearAll = () => {
+    if (!disabled) onChange([])
+  }
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2 text-primary">
-        <Tag className="h-5 w-5" />
-        <span className="font-label-md text-on-surface">
-          לייבלים
-          {required && <span className="mr-1 text-error">*</span>}
-        </span>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex items-center gap-2 text-primary">
+          <Tag className="h-5 w-5" />
+          <div>
+            <span className="font-label-md text-on-surface">
+              לייבלים
+              {required && <span className="mr-1 text-error">*</span>}
+            </span>
+            <p className="mt-0.5 font-label-sm text-secondary">
+              בחר מתוך הלייבלים הקיימים — ניתן לשייך כמה לייבלים
+            </p>
+          </div>
+        </div>
+        {value.length > 0 && !disabled && (
+          <button
+            type="button"
+            onClick={clearAll}
+            className="font-label-sm text-secondary hover:text-error"
+          >
+            נקה בחירה
+          </button>
+        )}
       </div>
 
       {!isReady && (
@@ -51,8 +71,8 @@ export function TaskLabelSelect({
       {labels.length > 0 && (
         <div
           className={cn(
-            'flex flex-wrap gap-2',
-            error && 'rounded border border-error/40 p-2',
+            'flex flex-wrap gap-2 rounded border border-border-light bg-surface-subtle p-3',
+            error && 'border-error/40',
           )}
           role="group"
           aria-label="בחירת לייבלים"
@@ -66,10 +86,10 @@ export function TaskLabelSelect({
                 disabled={disabled}
                 onClick={() => toggle(label.id)}
                 className={cn(
-                  'inline-flex items-center gap-2 border px-3 py-1.5 text-sm transition-colors',
+                  'inline-flex items-center gap-2 border px-3 py-2 text-sm transition-colors',
                   selected
                     ? 'border-primary bg-primary/10 text-primary font-semibold'
-                    : 'border-border-light bg-surface-subtle text-on-surface-variant hover:border-primary/30',
+                    : 'border-border-light bg-surface-container-lowest text-on-surface-variant hover:border-primary/30',
                   disabled && 'cursor-not-allowed opacity-60',
                 )}
               >
@@ -83,6 +103,12 @@ export function TaskLabelSelect({
             )
           })}
         </div>
+      )}
+
+      {value.length > 0 && (
+        <p className="font-label-sm text-secondary">
+          נבחרו {value.length} לייבלים
+        </p>
       )}
 
       {error && (

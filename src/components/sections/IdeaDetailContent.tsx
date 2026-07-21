@@ -28,6 +28,7 @@ import { AuditLogSection } from './AuditLogSection'
 import { AttachmentUpload } from './AttachmentUpload'
 import { GoalsTagsEditor } from './GoalsTagsEditor'
 import { TaskLabelSelect } from './TaskLabelSelect'
+import { mergeLabelIdsIntoTags } from '../../lib/labelTags'
 
 const priorityVariant: Record<
   IdeaPriority,
@@ -147,7 +148,7 @@ export function IdeaDetailContent({
       <section className="glass-card-hover p-6">
         <TaskLabelSelect
           value={(idea.tags ?? []).filter((t) => t.startsWith('lbl-'))}
-          onChange={(labelIds) => onUpdate?.({ tags: labelIds })}
+          onChange={(labelIds) => onUpdate?.({ tags: mergeLabelIdsIntoTags(idea.tags, labelIds) })}
           disabled={!canEdit}
         />
       </section>

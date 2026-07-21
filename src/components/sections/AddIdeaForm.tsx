@@ -16,7 +16,7 @@ import { DateInput } from '../ui/DateInput'
 import { InboxToggle } from '../ui/InboxToggle'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
-import { Textarea } from '../ui/Textarea'
+import { ExpandableTextarea } from '../ui/ExpandableTextarea'
 import { IdeaSourceSelect } from './IdeaSourceSelect'
 import { IdeaVisibilitySelect } from './IdeaVisibilitySelect'
 import { TaskLabelSelect } from './TaskLabelSelect'
@@ -120,13 +120,12 @@ export function AddIdeaForm() {
 
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
 
-          <Textarea
+          <ExpandableTextarea
             label="תיאור הבקשה/רעיון"
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="פרט כאן את המהות של הבקשה/רעיון, את הבעיה שהוא פותר ואיך הוא ייושם..."
-            rows={5}
             required
           />
 

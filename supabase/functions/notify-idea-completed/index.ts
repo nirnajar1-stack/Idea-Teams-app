@@ -32,12 +32,22 @@ function escapeHtml(text: string): string {
 
 function roleBody(role: RecipientRole['role']): string {
   if (role === 'creator') {
-    return 'הבקשה/רעיון שפתחת סומן/ה כהושלם.'
+    return 'הבקשה/רעיון שפתחת הושלמה בהצלחה.'
   }
   if (role === 'assignee') {
-    return 'הבקשה/רעיון שהוקצה לך סומן/ה כהושלם.'
+    return 'בקשה/רעיון בטיפולך הושלמה — בדוק/י את הפרטים.'
   }
-  return 'בקשה/רעיון במערכת Ogen סומן/ה כהושלם.'
+  return 'בקשה/רעיון במערכת Ogen סומנה כהושלמה.'
+}
+
+function roleHeroTitle(role: RecipientRole['role']): string {
+  if (role === 'creator') {
+    return 'הבקשה שפתחת הושלמה!'
+  }
+  if (role === 'assignee') {
+    return 'בקשה בעניינך הושלמה!'
+  }
+  return 'בקשה/רעיון הושלם'
 }
 
 function buildEmailHtml(params: {
@@ -93,7 +103,7 @@ function buildEmailHtml(params: {
               <tr>
                 <td align="center" style="padding:28px 24px;">
                   <div style="display:inline-block;width:64px;height:64px;line-height:64px;border-radius:9999px;background-color:#002810;color:#009e52;font-size:36px;font-weight:700;">✓</div>
-                  <h2 style="margin:16px 0 0;font-family:Rubik,Arial,sans-serif;font-size:24px;line-height:1.3;font-weight:600;color:#1b1b1e;">בקשה/רעיון הושלם</h2>
+                  <h2 style="margin:16px 0 0;font-family:Rubik,Arial,sans-serif;font-size:24px;line-height:1.3;font-weight:600;color:#1b1b1e;">${escapeHtml(roleHeroTitle(role))}</h2>
                 </td>
               </tr>
             </table>

@@ -6,6 +6,7 @@ import { useIdeas } from '../../context/IdeasContext'
 import { ROUTES } from '../../constants/app'
 import { formatIdeaSaveError } from '../../lib/ideaSaveErrors'
 import { filterKnownLabelIds } from '../../api/labelsApi'
+import { mergeLabelIdsIntoTags } from '../../lib/labelTags'
 import { useLabels } from '../../context/LabelsContext'
 import type { Idea, IdeaCategory, IdeaPriority, IdeaSource } from '../../types/idea'
 import { CategoryPicker } from '../ui/CategoryPicker'
@@ -13,7 +14,7 @@ import { categoryDepartment } from '../../lib/ideaUtils'
 import { DateInput } from '../ui/DateInput'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
-import { Textarea } from '../ui/Textarea'
+import { ExpandableTextarea } from '../ui/ExpandableTextarea'
 import { IdeaSourceSelect } from './IdeaSourceSelect'
 import { TaskLabelSelect } from './TaskLabelSelect'
 import { cn } from '../../lib/cn'
@@ -53,7 +54,7 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
         ideaSource,
         priority,
         targetStartDate,
-        tags: labelIds,
+        tags: mergeLabelIdsIntoTags(idea.tags, labelIds),
       })
       if (!ok) {
         toast.error('אין הרשאה לערוך בקשה/רעיון זה')
@@ -97,12 +98,11 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
 
           <IdeaSourceSelect value={ideaSource} onChange={setIdeaSource} />
 
-          <Textarea
+          <ExpandableTextarea
             label="תיאור הבקשה/רעיון"
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            rows={5}
             required
           />
 

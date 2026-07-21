@@ -10,7 +10,7 @@ import { CategoryPicker } from '../ui/CategoryPicker'
 import { DateInput } from '../ui/DateInput'
 import { Input } from '../ui/Input'
 import { PriorityChip } from '../ui/PriorityChip'
-import { Textarea } from '../ui/Textarea'
+import { ExpandableTextarea } from '../ui/ExpandableTextarea'
 import { TaskLabelSelect } from './TaskLabelSelect'
 import { cn } from '../../lib/cn'
 
@@ -110,12 +110,11 @@ export function AddSubIdeaForm({ parent }: AddSubIdeaFormProps) {
             />
           </div>
 
-          <Textarea
+          <ExpandableTextarea
             label="תיאור"
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            rows={4}
             required
           />
 
