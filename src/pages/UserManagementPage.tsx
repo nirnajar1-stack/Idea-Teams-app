@@ -2,6 +2,7 @@ import { Pencil, Plus, Shield, Trash2, UserCog } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
+import { ManagementPageHeader } from '../components/layout/ManagementPageHeader'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
 import { UserFormModal } from '../components/sections/UserFormModal'
 import { useAuth } from '../context/AuthContext'
@@ -86,26 +87,24 @@ export function UserManagementPage() {
 
   return (
     <AppShell variant="main">
-      <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-        <div>
-          <span className="section-eyebrow">
-            <Shield className="h-3.5 w-3.5" />
-            ניהול
-          </span>
-          <h1 className="mb-2 font-display text-headline-lg text-on-surface">
-            ניהול משתמשים
-          </h1>
-          <p className="font-body-md text-secondary">
-            הוספה, עריכה והשבתה של משתמשי המערכת.
-          </p>
-        </div>
-        <button type="button" onClick={openCreate} className="btn-boutique inline-flex items-center gap-2">
-          <Plus className="h-5 w-5" />
-          משתמש חדש
-        </button>
-      </div>
+      <ManagementPageHeader
+        eyebrow="ניהול"
+        title="ניהול משתמשים"
+        description="הוספה, עריכה והשבתה של משתמשי המערכת."
+        icon={<Shield className="h-6 w-6 text-primary" aria-hidden />}
+        action={
+          <button
+            type="button"
+            onClick={openCreate}
+            className="btn-boutique inline-flex items-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            משתמש חדש
+          </button>
+        }
+      />
 
-      <div className="glass-card overflow-hidden">
+      <div className="overflow-hidden rounded-[1.35rem] bg-surface-container-lowest shadow-soft">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-right">
             <thead className="border-b border-border-light bg-surface-subtle">

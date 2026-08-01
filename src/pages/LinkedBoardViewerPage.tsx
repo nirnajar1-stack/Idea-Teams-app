@@ -1,24 +1,37 @@
-import { ArrowRight, ExternalLink } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowRight, AppWindow, ExternalLink, LayoutGrid } from 'lucide-react'
+import { useCallback, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
 import { useLinkedBoards } from '../context/LinkedBoardsContext'
 import { ROUTES } from '../constants/app'
-import { LINKED_BOARD_PROVIDER_LABELS } from '../types/linkedBoard'
+import { openBoardPopup } from '../lib/openBoardPopup'
+import {
+  LINKED_BOARD_PROVIDER_LABELS,
+  providerBlocksIframe,
+  resolveViewMode,
+} from '../types/linkedBoard'
 
 export function LinkedBoardViewerPage() {
   const { id } = useParams<{ id: string }>()
   const { getBoardById, isReady } = useLinkedBoards()
   const board = id ? getBoardById(id) : undefined
-  const [iframeFailed, setIframeFailed] = useState(false)
+  const [popupBlocked, setPopupBlocked] = useState(false)
 
-  useEffect(() => {
-    setIframeFailed(false)
-  }, [id])
+  const effectiveMode = useMemo(() => {
+    if (!board) return 'popup' as const
+    return resolveViewMode(board.provider, board.viewMode)
+  }, [board])
 
-  useEffect(() => {
-    if (!board || board.viewMode !== 'link') return
-    window.open(board.url, '_blank', 'noopener,noreferrer')
+  const handleOpenPopup = useCallback(() => {
+    if (!board) return
+    const win = openBoardPopup(board.url, board.title)
+    if (!win) {
+      setPopupBlocked(true)
+      toast.error('הדפדפן חסם חלון קופץ — אשרו חלונות קופצים או פתחו בטאב')
+      return
+    }
+    setPopupBlocked(false)
   }, [board])
 
   if (!isReady) {
@@ -33,7 +46,9 @@ export function LinkedBoardViewerPage() {
     return <Navigate to={ROUTES.boards} replace />
   }
 
-  const showIframe = board.viewMode === 'iframe' && !iframeFailed
+  const blocksIframe = providerBlocksIframe(board.provider)
+  const showIframe = effectiveMode === 'iframe' && !blocksIframe
+  const usePopup = effectiveMode === 'popup' || (blocksIframe && effectiveMode !== 'link')
 
   return (
     <AppShell variant="back" maxWidth="full">
@@ -53,15 +68,27 @@ export function LinkedBoardViewerPage() {
             {LINKED_BOARD_PROVIDER_LABELS[board.provider]}
           </p>
         </div>
-        <a
-          href={board.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-boutique inline-flex min-h-11 items-center gap-2"
-        >
-          <ExternalLink className="h-4 w-4" aria-hidden />
-          פתח באתר המקורי
-        </a>
+        <div className="flex flex-wrap items-center gap-2">
+          {(usePopup || !showIframe) && (
+            <button
+              type="button"
+              onClick={handleOpenPopup}
+              className="btn-boutique inline-flex min-h-11 items-center gap-2"
+            >
+              <AppWindow className="h-4 w-4" aria-hidden />
+              פתח בחלון קופץ
+            </button>
+          )}
+          <a
+            href={board.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary-light inline-flex min-h-11 items-center gap-2"
+          >
+            <ExternalLink className="h-4 w-4" aria-hidden />
+            טאב חדש
+          </a>
+        </div>
       </div>
 
       {showIframe ? (
@@ -72,31 +99,49 @@ export function LinkedBoardViewerPage() {
             className="h-[min(75vh,720px)] w-full bg-white"
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
             referrerPolicy="no-referrer-when-downgrade"
-            onError={() => setIframeFailed(true)}
           />
           <p className="border-t border-border-light px-4 py-2 text-center text-micro text-secondary">
-            אם הלוח לא נטען — האתר חוסם הטמעה. השתמשו ב«פתח באתר המקורי».
+            אם הלוח לא נטען — האתר חוסם הטמעה. השתמשו ב«פתח בחלון קופץ».
           </p>
         </div>
       ) : (
-        <div className="rounded-[1.35rem] bg-surface-container-lowest px-5 py-8 text-center shadow-soft">
-          <p className="font-body-md text-on-surface">
-            {board.viewMode === 'link'
-              ? 'הלוח נפתח בטאב חדש (אתרים כמו Notion לרוב חוסמים הטמעה).'
-              : 'לא ניתן להציג את הלוח בתוך האפליקציה.'}
+        <div className="rounded-[1.35rem] bg-surface-container-lowest px-5 py-10 text-center shadow-soft">
+          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <LayoutGrid className="h-7 w-7" aria-hidden />
+          </span>
+          <p className="font-display text-headline-md text-on-surface">{board.title}</p>
+          <p className="mx-auto mt-3 max-w-md text-body-sm leading-relaxed text-secondary">
+            {board.provider === 'notion'
+              ? 'Notion לא ניתן להטמיע בתוך הדף. פתחו בחלון קופץ גדול — זה הכי קרוב לתצוגה בתוך האפליקציה.'
+              : 'פתחו את הלוח בחלון קופץ או בטאב חדש.'}
           </p>
           {board.description && (
             <p className="mt-2 text-body-sm text-secondary">{board.description}</p>
           )}
-          <a
-            href={board.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-boutique mt-5 inline-flex min-h-11 items-center gap-2"
-          >
-            <ExternalLink className="h-4 w-4" aria-hidden />
-            פתח שוב
-          </a>
+          {popupBlocked && (
+            <p className="mt-3 text-body-sm text-error">
+              החלון נחסם על ידי הדפדפן. אשרו חלונות קופצים לאתר זה, או השתמשו ב«טאב חדש».
+            </p>
+          )}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleOpenPopup}
+              className="btn-boutique inline-flex min-h-12 items-center gap-2 px-6"
+            >
+              <AppWindow className="h-4 w-4" aria-hidden />
+              פתח בחלון קופץ
+            </button>
+            <a
+              href={board.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary-light inline-flex min-h-12 items-center gap-2 px-5"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden />
+              טאב חדש
+            </a>
+          </div>
         </div>
       )}
     </AppShell>

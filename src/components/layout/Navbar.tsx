@@ -173,19 +173,6 @@ export function Navbar({
         </div>
       </div>
 
-      {/* מובייל: מעבר דפים עם תוויות ברורות */}
-      {showMainNav && (
-        <div className="border-t border-border-light/80 px-2 pb-2 pt-1 md:hidden">
-          <NavTabs
-            items={primaryNavItems.filter((item) => item.id !== 'profile')}
-            manageItems={manageNavItems}
-            pathname={pathname}
-            inboxCount={stats.inboxCount}
-            compact
-          />
-        </div>
-      )}
-
       <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   )

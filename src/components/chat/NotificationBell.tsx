@@ -48,7 +48,7 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="relative rounded-full p-2 transition-colors duration-200 hover:bg-primary/10"
-        aria-label="התראות צ'אט"
+        aria-label="התראות"
         aria-expanded={open}
       >
         <Bell className="h-6 w-6 text-on-surface" />
@@ -60,11 +60,15 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 w-[min(90vw,20rem)] animate-fade-up border border-border-light bg-surface-container-lowest/95 p-2 backdrop-blur-xl">
-          <p className="px-3 py-2 font-label-md text-on-surface">התראות צ&apos;אט</p>
+        <div className="absolute left-0 top-full z-50 mt-2 w-[min(90vw,20rem)] animate-fade-up rounded-2xl border border-border-light bg-surface-container-lowest/95 p-2 shadow-card backdrop-blur-xl">
+          <p className="px-3 py-2 font-label-md text-on-surface">
+            {bellUnreadTotal > 0
+              ? `${bellUnreadTotal} התראות ממתינות`
+              : 'התראות'}
+          </p>
           {bellNotifications.length === 0 ? (
-            <p className="px-3 py-6 text-center font-label-sm text-secondary">
-              אין התראות חדשות
+            <p className="px-3 py-5 text-center text-body-sm text-secondary">
+              אין תיוגים חדשים או יעדים דחופים
             </p>
           ) : (
             <ul className="max-h-72 space-y-1 overflow-y-auto">

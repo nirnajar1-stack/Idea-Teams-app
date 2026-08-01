@@ -238,20 +238,20 @@ export function PermissionsManagementPage() {
   return (
     <AppShell variant="main">
       <div className="pb-24 md:pb-8">
-        <header className="mb-5 text-right md:mb-8">
+        <header className="mb-5 text-right md:mb-6">
           <span className="section-eyebrow">ניהול מאסטר</span>
-          <h1 className="mb-2 flex items-center justify-end gap-2 font-display text-headline-md text-on-surface sm:text-headline-lg">
-            <Shield className="h-6 w-6 shrink-0 text-primary sm:h-7 sm:w-7" aria-hidden />
+          <h1 className="mt-1 flex items-center justify-end gap-2 font-display text-headline-lg text-on-surface">
+            <Shield className="h-6 w-6 shrink-0 text-primary" aria-hidden />
             הרשאות מערכת
           </h1>
-          <p className="font-body-md text-secondary">
-            בחרו קטגוריה למעלה, ואז הגדירו לכל פריט מי מורשה.
+          <p className="mt-1 text-body-sm text-secondary">
+            בחרו קטגוריה, ואז הגדירו לכל פריט מי מורשה.
           </p>
         </header>
 
         {/* מעבר ברור בין תצוגות ↔ פעולות */}
         <div
-          className="sticky top-[7.25rem] z-30 -mx-4 mb-5 border-b border-border-light bg-background/95 px-4 py-2 backdrop-blur-md md:top-16 md:mx-0 md:mb-6 md:rounded-2xl md:border md:bg-surface-container-lowest md:px-2 md:py-2 md:shadow-soft md:backdrop-blur-none"
+          className="sticky top-14 z-30 -mx-4 mb-5 border-b border-border-light bg-background/95 px-4 py-2 backdrop-blur-md md:top-16 md:mx-0 md:mb-6 md:rounded-2xl md:border md:bg-surface-container-lowest md:px-2 md:py-2 md:shadow-soft md:backdrop-blur-none"
           role="tablist"
           aria-label="קטגוריית הרשאות"
         >

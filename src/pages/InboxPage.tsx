@@ -1,4 +1,4 @@
-import { Archive, ArrowLeft, Search } from 'lucide-react'
+import { Archive, ArrowLeft, Rocket, Search } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/layout/AppShell'
@@ -48,28 +48,28 @@ export function InboxPage() {
 
   return (
     <AppShell variant="main">
-      <header className="mb-10 animate-fade-up">
+      <header className="mb-5 animate-fade-up md:mb-6">
         <span className="section-eyebrow border-inbox/20 bg-inbox-soft text-inbox">
           <Archive className="h-3.5 w-3.5" />
           Inbox
         </span>
-        <h1 className="mb-2 font-display text-headline-lg text-on-surface">
-          אולי בהמשך
-        </h1>
-        <p className="max-w-2xl font-body-md text-secondary">
-          בקשות/רעיונות ששמרתם לבחינה עתידית — בלי לחץ ביצוע. החזירו אותם ללוח הפעיל בלחיצה
-          אחת.
+        <h1 className="mt-1 font-display text-headline-lg text-on-surface">אולי בהמשך</h1>
+        <p className="mt-1 max-w-xl text-body-sm text-secondary">
+          כאן נשמרות בקשות שלא לטיפול עכשיו. הצעד הבא: החזרה לפעילות או סגירה מהכרטיס.
         </p>
-        <Link
-          to={ROUTES.ideas}
-          className="mt-4 inline-flex items-center gap-1 font-label-md text-primary hover:underline"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          חזרה לבקשות/רעיונות פעילים
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-3 text-label-sm text-secondary">
+          <span className="inline-flex items-center gap-1.5">
+            <Rocket className="h-3.5 w-3.5 text-primary" aria-hidden />
+            החזר לפעילים
+          </span>
+          <Link to={ROUTES.ideas} className="inline-flex items-center gap-1 text-primary hover:underline">
+            <ArrowLeft className="h-3.5 w-3.5" />
+            לרשימה הפעילה
+          </Link>
+        </div>
       </header>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="relative w-full max-w-xl">
           <Search className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
           <input
@@ -77,7 +77,7 @@ export function InboxPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="חיפוש ב-Inbox..."
-            className="boutique-input h-12 w-full pr-12"
+            className="boutique-input h-11 w-full pr-12"
           />
         </div>
       </div>
@@ -92,33 +92,27 @@ export function InboxPage() {
       />
 
       {inboxIdeas.length === 0 ? (
-        <div className="glass-card p-12">
+        <div className="rounded-[1.35rem] bg-surface-container-lowest p-6 shadow-soft">
           <EmptyState
-            title="ה-Inbox ריק כרגע"
-            description='בעת הוספת בקשה/רעיון, סמנו "שלח ל-Inbox — אולי בהמשך"'
+            title="ה-Inbox ריק"
+            description="כשבקשה לא רלוונטית עכשיו — שלחו אותה לכאן מתוך כרטיס הבקשה. אחר כך אפשר להחזיר לפעילים בלחיצה."
             action={
-              <Link to={ROUTES.ideas} className="btn-secondary-light">
-                <ArrowLeft className="h-4 w-4" />
-                חזרה לבקשות/רעיונות פעילים
+              <Link to={ROUTES.ideas} className="btn-boutique">
+                לרשימת הבקשות
               </Link>
             }
           />
         </div>
       ) : (
-        <div className={viewPrefs.compact ? 'space-y-2' : 'space-y-4'}>
-          {inboxIdeas.map((idea, i) => (
-            <div
+        <div className={viewPrefs.compact ? 'space-y-2' : 'space-y-3'}>
+          {inboxIdeas.map((idea) => (
+            <IdeaListCard
               key={idea.id}
-              className="animate-fade-up"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <IdeaListCard
-                idea={idea}
-                compact={viewPrefs.compact}
-                showInboxActions
-                onRestoreFromInbox={handleRestore}
-              />
-            </div>
+              idea={idea}
+              compact={viewPrefs.compact}
+              showInboxActions
+              onRestoreFromInbox={handleRestore}
+            />
           ))}
         </div>
       )}

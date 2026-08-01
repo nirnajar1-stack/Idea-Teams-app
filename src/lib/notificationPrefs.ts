@@ -29,7 +29,12 @@ export function buildTargetDateNotifications(
     return {
       kind: 'idea' as const,
       targetId: idea.id,
-      title: `תזכורת: ${idea.title}`,
+      title:
+        days < 0
+          ? `באיחור: ${idea.title}`
+          : days === 0
+            ? `יעד היום: ${idea.title}`
+            : `תזכורת: ${idea.title}`,
       unreadCount: 1,
       latestBody: body,
       latestAuthorName: 'מערכת',

@@ -1,7 +1,7 @@
 export const LINKED_BOARDS_STORAGE_KEY = 'ogen-linked-boards-v1'
 
 export type LinkedBoardProvider = 'notion' | 'powerbi' | 'excel' | 'generic'
-export type LinkedBoardViewMode = 'iframe' | 'link'
+export type LinkedBoardViewMode = 'iframe' | 'link' | 'popup'
 
 export interface LinkedBoard {
   id: string
@@ -34,7 +34,13 @@ export const LINKED_BOARD_PROVIDER_LABELS: Record<LinkedBoardProvider, string> =
 /** מזהה ספק לפי כתובת */
 export function detectBoardProvider(url: string): LinkedBoardProvider {
   const lower = url.toLowerCase()
-  if (lower.includes('notion.so') || lower.includes('notion.site')) return 'notion'
+  if (
+    lower.includes('notion.so') ||
+    lower.includes('notion.site') ||
+    lower.includes('notion.com')
+  ) {
+    return 'notion'
+  }
   if (lower.includes('powerbi.com') || lower.includes('app.powerbi.com')) return 'powerbi'
   if (
     lower.includes('docs.google.com/spreadsheets') ||
@@ -48,14 +54,37 @@ export function detectBoardProvider(url: string): LinkedBoardProvider {
 }
 
 /**
- * Notion ואתרים רבים חוסמים iframe — ברירת מחדל לקישור חיצוני.
- * Power BI / דפי embed ייעודיים יכולים iframe.
+ * Notion חוסם iframe — ברירת מחדל: חלון קופץ.
+ * Power BI תומך בהטמעה; שאר האתרים — קישור חיצוני.
  */
 export function defaultViewModeForProvider(
   provider: LinkedBoardProvider,
 ): LinkedBoardViewMode {
   if (provider === 'powerbi') return 'iframe'
+  if (provider === 'notion') return 'popup'
   return 'link'
+}
+
+/** Notion: רק popup או link (לא iframe) */
+export function resolveViewMode(
+  provider: LinkedBoardProvider,
+  requested?: LinkedBoardViewMode,
+): LinkedBoardViewMode {
+  if (provider === 'notion') {
+    if (requested === 'link') return 'link'
+    return 'popup'
+  }
+  return requested ?? defaultViewModeForProvider(provider)
+}
+
+export function providerBlocksIframe(provider: LinkedBoardProvider): boolean {
+  return provider === 'notion'
+}
+
+export const LINKED_BOARD_VIEW_MODE_LABELS: Record<LinkedBoardViewMode, string> = {
+  iframe: 'הטמעה באפליקציה',
+  popup: 'חלון קופץ',
+  link: 'טאב חדש',
 }
 
 export function normalizeBoardUrl(raw: string): string {

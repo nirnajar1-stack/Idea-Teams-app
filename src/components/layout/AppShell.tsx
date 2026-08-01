@@ -27,10 +27,6 @@ export function AppShell({
     narrow: 'max-w-[800px]',
     full: 'max-w-container-max',
   }[maxWidth]
-  const showMobilePageNav =
-    navbarProps.variant === 'main' ||
-    navbarProps.variant === 'ideas' ||
-    navbarProps.variant == null
 
   if (isEmbed) {
     return (
@@ -53,8 +49,7 @@ export function AppShell({
       <Navbar connectedAs={connectedAs ?? user?.name} shareUrl={shareUrl} {...navbarProps} />
       <main
         className={cn(
-          'relative mx-auto px-4 pb-10 md:px-margin-desktop md:pb-12 md:pt-24',
-          showMobilePageNav ? 'pt-[7.25rem]' : 'pt-16',
+          'relative mx-auto px-4 pb-10 pt-16 md:px-margin-desktop md:pb-12 md:pt-24',
           maxWidthClass,
         )}
       >

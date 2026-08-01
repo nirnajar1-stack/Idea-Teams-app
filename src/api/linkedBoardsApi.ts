@@ -1,9 +1,9 @@
 import { getSupabase, isSupabaseEnabled } from '../lib/supabaseClient'
 import {
   LINKED_BOARDS_STORAGE_KEY,
-  defaultViewModeForProvider,
   detectBoardProvider,
   normalizeBoardUrl,
+  resolveViewMode,
   type LinkedBoard,
   type LinkedBoardInput,
   type LinkedBoardProvider,
@@ -86,7 +86,7 @@ export async function createLinkedBoard(
 ): Promise<LinkedBoard> {
   const url = normalizeBoardUrl(input.url)
   const provider = input.provider ?? detectBoardProvider(url)
-  const viewMode = input.viewMode ?? defaultViewModeForProvider(provider)
+  const viewMode = resolveViewMode(provider, input.viewMode)
   const existing = readLocalBoards()
   const maxOrder = existing.reduce((m, b) => Math.max(m, b.sortOrder), -1)
 
@@ -134,12 +134,16 @@ export async function updateLinkedBoard(
     if (b.id !== id) return b
     const url = patch.url !== undefined ? normalizeBoardUrl(patch.url) : b.url
     const provider = patch.provider ?? (patch.url ? detectBoardProvider(url) : b.provider)
+    const viewMode = resolveViewMode(
+      provider,
+      patch.viewMode ?? (patch.url || patch.provider ? undefined : b.viewMode),
+    )
     return {
       ...b,
       ...patch,
       url,
       provider,
-      viewMode: patch.viewMode ?? b.viewMode,
+      viewMode,
     }
   })
   writeLocalBoards(sortBoards(next.filter((b) => b.active !== false)))
@@ -148,8 +152,22 @@ export async function updateLinkedBoard(
     const payload: Record<string, unknown> = {}
     if (patch.title !== undefined) payload.title = patch.title.trim()
     if (patch.url !== undefined) payload.url = normalizeBoardUrl(patch.url)
-    if (patch.provider !== undefined) payload.provider = patch.provider
-    if (patch.viewMode !== undefined) payload.view_mode = patch.viewMode
+    if (patch.provider !== undefined || patch.url !== undefined) {
+      const url = patch.url !== undefined ? normalizeBoardUrl(patch.url) : undefined
+      const provider =
+        patch.provider ??
+        (url ? detectBoardProvider(url) : undefined) ??
+        local.find((b) => b.id === id)?.provider ??
+        'generic'
+      payload.provider = provider
+      payload.view_mode = resolveViewMode(
+        provider,
+        patch.viewMode ?? (patch.url || patch.provider ? undefined : undefined),
+      )
+    } else if (patch.viewMode !== undefined) {
+      const provider = local.find((b) => b.id === id)?.provider ?? 'generic'
+      payload.view_mode = resolveViewMode(provider, patch.viewMode)
+    }
     if (patch.description !== undefined) payload.description = patch.description?.trim() || null
     if (patch.sortOrder !== undefined) payload.sort_order = patch.sortOrder
     if (patch.active !== undefined) payload.active = patch.active

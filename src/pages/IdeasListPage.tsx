@@ -27,11 +27,25 @@ import {
   type IdeasFiltersPrefs,
 } from '../lib/ideasFiltersPrefs'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
-import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
+import { filterIdeas, isActivelyOverdue, sortIdeas } from '../lib/ideaUtils'
+import { cn } from '../lib/cn'
 import type { IdeaCategory, IdeaFilters, IdeaSource, IdeasViewPrefs } from '../types/idea'
 import { IDEA_SOURCES } from '../types/idea'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
+
+type QuickView = 'all' | 'mine' | 'overdue' | 'unlabeled'
+
+const QUICK_VIEWS: { id: QuickView; label: string }[] = [
+  { id: 'all', label: 'הכל' },
+  { id: 'mine', label: 'שלי' },
+  { id: 'overdue', label: 'באיחור' },
+  { id: 'unlabeled', label: 'ללא לייבל' },
+]
+
+function hasLabelTag(tags: string[] | undefined): boolean {
+  return (tags ?? []).some((t) => t.startsWith('lbl-'))
+}
 
 export function IdeasListPage() {
   const { user } = useAuth()
@@ -44,6 +58,7 @@ export function IdeasListPage() {
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<IdeasFiltersPrefs>(loadIdeasFiltersPrefs)
   const [viewPrefs, setViewPrefs] = useState<IdeasViewPrefs>(loadIdeasViewPrefs)
+  const [quickView, setQuickView] = useState<QuickView>('all')
 
   const { categories, sources, priority, onlyMine, onlyExecution } = filters
 
@@ -62,9 +77,11 @@ export function IdeasListPage() {
       sources: [...IDEA_SOURCES],
     })
     setSearch('')
+    setQuickView('all')
   }, [])
 
-  const filtersActive = !isDefaultFilters(filters) || search.trim().length > 0
+  const filtersActive =
+    !isDefaultFilters(filters) || search.trim().length > 0 || quickView !== 'all'
 
   const baseFilters = useMemo(
     (): Omit<IdeaFilters, 'workflow'> => ({
@@ -72,22 +89,23 @@ export function IdeasListPage() {
       categories,
       sources,
       priority,
-      onlyMine,
+      onlyMine: onlyMine || quickView === 'mine',
       onlySentToExecution: onlyExecution || undefined,
       currentUserId: user?.id,
       pipeline: 'active',
     }),
-    [search, categories, sources, priority, onlyMine, onlyExecution, user?.id],
+    [search, categories, sources, priority, onlyMine, onlyExecution, user?.id, quickView],
   )
 
-  const activeIdeas = useMemo(
-    () =>
-      sortIdeas(
-        filterIdeas(visibleIdeas, { ...baseFilters, workflow: 'active' }),
-        viewPrefs.sort,
-      ),
-    [visibleIdeas, baseFilters, viewPrefs.sort],
-  )
+  const activeIdeas = useMemo(() => {
+    let list = sortIdeas(
+      filterIdeas(visibleIdeas, { ...baseFilters, workflow: 'active' }),
+      viewPrefs.sort,
+    )
+    if (quickView === 'overdue') list = list.filter(isActivelyOverdue)
+    if (quickView === 'unlabeled') list = list.filter((i) => !hasLabelTag(i.tags))
+    return list
+  }, [visibleIdeas, baseFilters, viewPrefs.sort, quickView])
 
   const completedIdeas = useMemo(
     () =>
@@ -147,16 +165,34 @@ export function IdeasListPage() {
       searchValue={search}
       onSearchChange={setSearch}
     >
-      <div className="mb-6 flex flex-col justify-between gap-4 md:mb-10 md:flex-row md:items-end md:gap-6">
+      <div className="mb-5 flex flex-col justify-between gap-3 md:mb-6 md:flex-row md:items-end md:gap-6">
         <div>
-          <h2 className="mb-2 font-display text-headline-lg text-on-surface">
+          <h2 className="font-display text-headline-lg text-on-surface">
             {IDEA_TERM.listTitle}
           </h2>
-          <p className="font-body-md text-secondary">{IDEA_TERM.listSubtitle}</p>
+          <p className="mt-1 text-body-sm text-secondary">{IDEA_TERM.listSubtitle}</p>
         </div>
         <Button icon={<Plus className="h-5 w-5" />} onClick={openQuickAdd}>
           {IDEA_TERM.addNew}
         </Button>
+      </div>
+
+      <div className="mb-4 flex flex-wrap gap-1.5" role="group" aria-label="תצוגות מהירות">
+        {QUICK_VIEWS.map((view) => (
+          <button
+            key={view.id}
+            type="button"
+            onClick={() => setQuickView(view.id)}
+            className={cn(
+              'min-h-9 rounded-full px-3.5 text-label-sm transition-colors',
+              quickView === view.id
+                ? 'bg-primary text-on-primary shadow-soft'
+                : 'bg-surface-container text-secondary hover:text-on-surface',
+            )}
+          >
+            {view.label}
+          </button>
+        ))}
       </div>
 
       <div className="mb-5 md:hidden">

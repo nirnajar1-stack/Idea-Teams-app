@@ -2,7 +2,7 @@ import { IDEAS_VIEW_PREFS_KEY } from '../constants/app'
 import type { IdeasViewPrefs, IdeaSortOption } from '../types/idea'
 
 export const DEFAULT_IDEAS_VIEW_PREFS: IdeasViewPrefs = {
-  compact: false,
+  compact: true,
   sort: 'date_desc',
 }
 

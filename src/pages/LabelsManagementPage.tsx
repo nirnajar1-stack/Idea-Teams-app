@@ -2,6 +2,7 @@ import { Plus, Tag, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
+import { ManagementPageHeader } from '../components/layout/ManagementPageHeader'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
 import { Input } from '../components/ui/Input'
 import { useLabels } from '../context/LabelsContext'
@@ -52,16 +53,13 @@ export function LabelsManagementPage() {
 
   return (
     <AppShell variant="main">
-      <div className="mb-10 text-right">
-        <span className="section-eyebrow">ניהול מערכת</span>
-        <h1 className="mb-2 font-display text-headline-lg text-on-surface">ניהול לייבלים</h1>
-        <p className="font-body-md text-secondary">
-          רק מאסטר יכול ליצור לייבלים חדשים. שאר המשתמשים יכולים לשייך לייבלים קיימים בעת פתיחה או
-          עריכת משימה.
-        </p>
-      </div>
+      <ManagementPageHeader
+        title="ניהול לייבלים"
+        description="צרו לייבלים לשיוך במשימות. יצירה למאסטר בלבד."
+        icon={<Tag className="h-6 w-6 text-primary" aria-hidden />}
+      />
 
-      <div className="glass-card mb-8 p-6 md:p-8">
+      <div className="mb-5 rounded-[1.35rem] bg-surface-container-lowest p-4 shadow-soft md:p-5">
         <h2 className="mb-4 flex items-center gap-2 font-label-md text-on-surface">
           <Plus className="h-5 w-5 text-primary" />
           לייבל חדש

@@ -14,6 +14,8 @@ import {
   detectBoardProvider,
   isValidHttpUrl,
   normalizeBoardUrl,
+  providerBlocksIframe,
+  resolveViewMode,
   type LinkedBoardProvider,
   type LinkedBoardViewMode,
 } from '../types/linkedBoard'
@@ -37,7 +39,9 @@ export function LinkedBoardsManagePage() {
   }, [provider, url])
 
   const previewMode = useMemo(() => {
-    if (viewMode !== 'auto') return viewMode
+    if (viewMode !== 'auto') {
+      return resolveViewMode(previewProvider, viewMode)
+    }
     return defaultViewModeForProvider(previewProvider)
   }, [viewMode, previewProvider])
 
@@ -159,11 +163,25 @@ export function LinkedBoardsManagePage() {
               }
             >
               <option value="auto">
-                ברירת מחדל ({previewMode === 'iframe' ? 'הטמעה' : 'טאב חיצוני'})
+                ברירת מחדל (
+                {previewMode === 'iframe'
+                  ? 'הטמעה'
+                  : previewMode === 'popup'
+                    ? 'חלון קופץ'
+                    : 'טאב חדש'}
+                )
               </option>
-              <option value="iframe">הטמעה בתוך האפליקציה</option>
-              <option value="link">פתיחה בטאב חדש</option>
+              {!providerBlocksIframe(previewProvider) && (
+                <option value="iframe">הטמעה בתוך האפליקציה</option>
+              )}
+              <option value="popup">חלון קופץ גדול</option>
+              <option value="link">טאב חדש</option>
             </select>
+            {providerBlocksIframe(previewProvider) && (
+              <span className="mt-1.5 block text-body-sm text-secondary">
+                Notion חוסם הטמעה — מומלץ חלון קופץ.
+              </span>
+            )}
           </label>
           <div className="md:col-span-2">
             <Input
@@ -203,8 +221,8 @@ export function LinkedBoardsManagePage() {
                 </p>
               </div>
               <select
-                className="boutique-input h-10 w-auto min-w-[8rem] py-1 text-sm"
-                value={board.viewMode}
+                className="boutique-input h-10 w-auto min-w-[9rem] py-1 text-sm"
+                value={resolveViewMode(board.provider, board.viewMode)}
                 onChange={(e) =>
                   void updateBoard(board.id, {
                     viewMode: e.target.value as LinkedBoardViewMode,
@@ -214,8 +232,11 @@ export function LinkedBoardsManagePage() {
                 }
                 aria-label="אופן פתיחה"
               >
-                <option value="iframe">הטמעה</option>
-                <option value="link">טאב חיצוני</option>
+                {!providerBlocksIframe(board.provider) && (
+                  <option value="iframe">הטמעה</option>
+                )}
+                <option value="popup">חלון קופץ</option>
+                <option value="link">טאב חדש</option>
               </select>
               <Link
                 to={ROUTES.boardDetail(board.id)}
