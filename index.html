@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f8f8f8" />
+    <meta name="theme-color" content="#f5f6fa" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>Ogen System — עוגן</title>
@@ -19,7 +19,7 @@
         if (theme === 'dim') root.classList.add('dim')
         root.dataset.theme = theme
         root.style.colorScheme = theme === 'dark' ? 'dark' : 'light'
-        var colors = { light: '#f8f8f8', dim: '#e3d8c8', dark: '#000000' }
+        var colors = { light: '#f5f6fa', dim: '#f4f0eb', dark: '#121214' }
         var meta = document.querySelector('meta[name="theme-color"]')
         if (meta) meta.setAttribute('content', colors[theme])
       })()

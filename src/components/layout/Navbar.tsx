@@ -3,9 +3,10 @@ import { ArrowRight, LogOut, Search, Share2 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { APP_NAME_FULL, ROUTES } from '../../constants/app'
-import { visibleNavItems } from '../../config/appNavigation'
+import { splitVisibleNavItems } from '../../config/appNavigation'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { useQuickAdd } from '../../context/QuickAddContext'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
 import { useNavbarScroll } from '../../hooks/useNavbarScroll'
 import { canManageUsers, isMaster } from '../../lib/permissions'
@@ -41,17 +42,21 @@ export function Navbar({
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
   const { stats } = useIdeas()
+  const { openQuickAdd } = useQuickAdd()
   const [searchOpen, setSearchOpen] = useState(false)
   const scrolled = useNavbarScroll()
 
-  const navItems = visibleNavItems({
+  const { primary: primaryNavItems, manage: manageNavItems } = splitVisibleNavItems({
     canManageUsers: canManageUsers(user),
     isMaster: isMaster(user),
   })
 
   const showMainNav = variant === 'main' || variant === 'ideas'
 
-  useKeyboardShortcuts({ onSearchOpen: () => setSearchOpen(true) })
+  useKeyboardShortcuts({
+    onSearchOpen: () => setSearchOpen(true),
+    onQuickAdd: openQuickAdd,
+  })
 
   const handleLogout = () => {
     logout()
@@ -86,13 +91,13 @@ export function Navbar({
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="flex h-10 w-10 items-center justify-center text-on-surface transition-colors duration-300 hover:text-primary"
+              className="icon-chip"
               aria-label="חזרה"
             >
               <ArrowRight className="h-6 w-6" />
             </button>
           )}
-          <Link to={ROUTES.home} className="min-w-0 shrink-0">
+          <Link to={ROUTES.home} className="min-w-0 shrink-0" title={APP_NAME_FULL}>
             <AppLogo size="md" showLabel />
           </Link>
         </div>
@@ -100,7 +105,8 @@ export function Navbar({
         {showMainNav && (
           <div className="mx-2 hidden min-w-0 flex-1 md:block">
             <NavTabs
-              items={navItems}
+              items={primaryNavItems.filter((item) => item.id !== 'profile')}
+              manageItems={manageNavItems}
               pathname={pathname}
               inboxCount={stats.inboxCount}
             />
@@ -151,7 +157,7 @@ export function Navbar({
           )}
           <ThemeToggle />
           <NotificationBell />
-          <Link to={ROUTES.profile} title={user?.name} className="hidden sm:block">
+          <Link to={ROUTES.profile} title={user?.name} className="block">
             <Avatar alt={user?.name ?? 'משתמש'} size="md" />
           </Link>
           <button

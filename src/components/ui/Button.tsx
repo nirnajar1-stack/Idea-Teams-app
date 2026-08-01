@@ -13,7 +13,7 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary: 'btn-boutique',
   secondary: 'btn-secondary-light',
   ghost:
-    'min-h-12 rounded-none px-4 text-sm font-light uppercase tracking-wider text-secondary transition-colors duration-300 hover:text-on-surface',
+    'min-h-12 rounded-full px-4 text-sm font-medium tracking-tight text-secondary transition-colors duration-300 hover:bg-surface-container hover:text-on-surface',
 }
 
 export function Button({

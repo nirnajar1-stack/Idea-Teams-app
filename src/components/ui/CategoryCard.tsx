@@ -32,11 +32,11 @@ export function CategoryCard({
       />
       <div
         className={cn(
-          'flex min-h-[5.5rem] flex-col items-center justify-center border-2 p-4 transition-all duration-200 sm:min-h-[6.5rem] sm:p-5',
+          'flex min-h-[5.5rem] flex-col items-center justify-center rounded-[1.5rem] border-2 p-4 transition-all duration-200 sm:min-h-[6.5rem] sm:p-5',
           'peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background',
           selected
-            ? 'border-primary bg-primary text-on-primary'
-            : 'border-border-light bg-surface-subtle text-secondary hover:border-primary/40 hover:bg-surface-container-low',
+            ? 'border-primary bg-primary text-on-primary shadow-boutique'
+            : 'border-transparent bg-surface-container-lowest text-secondary shadow-soft hover:text-on-surface',
         )}
       >
         <Icon className="mb-2 h-7 w-7 sm:h-8 sm:w-8" aria-hidden />

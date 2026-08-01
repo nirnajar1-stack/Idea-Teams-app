@@ -11,7 +11,7 @@ export function HomePage() {
       <div className="lambo-section">
         <StatsBentoSection />
       </div>
-      <OpenTasksDashboardSection />
+      <OpenTasksDashboardSection variant="snapshot" />
       <RecentIdeasSection />
     </AppShell>
   )

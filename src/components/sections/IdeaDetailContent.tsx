@@ -16,11 +16,13 @@ import { useAppRoutes } from '../../context/EmbedModeContext'
 import { isContainerIdea, isSubIdea } from '../../lib/ideaUtils'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
+import { CollapsibleBlock } from '../ui/CollapsibleBlock'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { ExecutionBadge } from '../ui/ExecutionBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { IdeaVisibilityBadge } from '../ui/IdeaVisibilityBadge'
 import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
+import { MetaBadgeRow } from '../ui/MetaBadgeRow'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 import { IdeaChatSection } from '../chat/IdeaChatSection'
 import { SubIdeasSection } from './SubIdeasSection'
@@ -29,6 +31,8 @@ import { AttachmentUpload } from './AttachmentUpload'
 import { GoalsTagsEditor } from './GoalsTagsEditor'
 import { TaskLabelSelect } from './TaskLabelSelect'
 import { mergeLabelIdsIntoTags, extractLabelIds } from '../../lib/labelTags'
+import { chatApiAvailable } from '../../api/chatApi'
+import { isSupabaseEnabled } from '../../lib/supabaseClient'
 
 const priorityVariant: Record<
   IdeaPriority,
@@ -61,31 +65,43 @@ export function IdeaDetailContent({
   return (
     <div className="space-y-8 lg:col-span-8">
       <section className="glass-card p-6 md:p-8">
-        <div className="mb-6 flex flex-wrap items-center gap-2">
-          <Badge
-            variant={priorityVariant[idea.priority]}
-            icon={<AlertCircle className="h-3.5 w-3.5" />}
-          >
-            עדיפות {PRIORITY_LABELS[idea.priority]}
-          </Badge>
-          <Badge variant="success" icon={<CheckCircle className="h-3.5 w-3.5" />}>
-            {WORKFLOW_LABELS[idea.workflowStatus]}
-          </Badge>
-          {isContainerIdea(idea) && (
-            <ContainerBadge subCount={subIdeas.length} />
-          )}
-          {isSubIdea(idea) && (
-            <Badge variant="surface">תת-בקשה/רעיון</Badge>
-          )}
-          {idea.sendToMaybeInbox && <InboxBadge />}
-          {idea.sentToExecution && <ExecutionBadge />}
-          <IdeaSourceBadge source={idea.ideaSource} />
-          <IdeaVisibilityBadge visibility={idea.visibility ?? 'team'} />
-          <TargetDateBadge targetStartDate={idea.targetStartDate} />
-          <span className="mr-auto font-label-sm text-secondary">
-            ID: #{idea.externalId}
-          </span>
-        </div>
+        <MetaBadgeRow
+          className="mb-6"
+          primary={
+            <>
+              <Badge
+                variant={priorityVariant[idea.priority]}
+                icon={<AlertCircle className="h-3.5 w-3.5" />}
+              >
+                עדיפות {PRIORITY_LABELS[idea.priority]}
+              </Badge>
+              <Badge variant="success" icon={<CheckCircle className="h-3.5 w-3.5" />}>
+                {WORKFLOW_LABELS[idea.workflowStatus]}
+              </Badge>
+              <TargetDateBadge
+                targetStartDate={idea.targetStartDate}
+                workflowStatus={idea.workflowStatus}
+              />
+            </>
+          }
+          secondary={
+            <>
+              {isContainerIdea(idea) && (
+                <ContainerBadge subCount={subIdeas.length} />
+              )}
+              {isSubIdea(idea) && (
+                <Badge variant="surface">תת-בקשה/רעיון</Badge>
+              )}
+              {idea.sendToMaybeInbox && <InboxBadge />}
+              {idea.sentToExecution && <ExecutionBadge />}
+              <IdeaSourceBadge source={idea.ideaSource} />
+              <IdeaVisibilityBadge visibility={idea.visibility ?? 'team'} />
+              <span className="font-label-sm text-secondary">
+                ID: #{idea.externalId}
+              </span>
+            </>
+          }
+        />
         {parent && (
           <Link
             to={routes.ideaDetail(parent.id)}
@@ -136,7 +152,10 @@ export function IdeaDetailContent({
             <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">
               תאריך יעד להתחלה
             </h3>
-            <TargetDateBadge targetStartDate={idea.targetStartDate} />
+            <TargetDateBadge
+              targetStartDate={idea.targetStartDate}
+              workflowStatus={idea.workflowStatus}
+            />
           </div>
         </div>
       </section>
@@ -224,8 +243,16 @@ export function IdeaDetailContent({
         </div>
       </section>
 
-      <IdeaChatSection idea={idea} />
-      <AuditLogSection entityType="idea" entityId={idea.id} />
+      {chatApiAvailable() && (
+        <CollapsibleBlock title="דיון על הבקשה/רעיון">
+          <IdeaChatSection idea={idea} embedded />
+        </CollapsibleBlock>
+      )}
+      {isSupabaseEnabled() && (
+        <CollapsibleBlock title="היסטוריית שינויים" defaultOpenDesktop={false}>
+          <AuditLogSection entityType="idea" entityId={idea.id} embedded />
+        </CollapsibleBlock>
+      )}
     </div>
   )
 }

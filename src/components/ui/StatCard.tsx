@@ -19,7 +19,7 @@ export function StatCard({
   return (
     <div
       className={cn(
-        'flex flex-col justify-between bg-surface-container-lowest p-8 transition-colors duration-300 hover:bg-surface-container',
+        'glass-card-hover flex flex-col justify-between p-8',
         className,
       )}
     >

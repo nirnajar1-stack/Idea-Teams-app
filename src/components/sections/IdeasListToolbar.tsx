@@ -25,7 +25,7 @@ export function IdeasListToolbar({
   onExportClick,
 }: IdeasListToolbarProps) {
   return (
-    <div className="mb-4 flex flex-col gap-3 border border-border-light bg-surface-container-lowest/80 p-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-4 flex flex-col gap-3 rounded-[1.5rem] border border-transparent bg-surface-container-lowest p-4 shadow-card sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap items-center gap-2 text-label-sm text-secondary">
         <span className="rounded-full bg-primary/10 px-3 py-1 font-label-md text-primary">
           {activeCount} פעילים
@@ -42,7 +42,7 @@ export function IdeasListToolbar({
           <button
             type="button"
             onClick={onExportClick}
-            className="flex items-center gap-1.5 border border-primary/30 bg-primary/5 px-3 py-2 font-label-sm text-primary transition-colors hover:bg-primary/10"
+            className="flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-2 font-label-sm text-primary shadow-soft transition-colors hover:bg-primary/10"
           >
             <FileSpreadsheet className="h-4 w-4" />
             <span>ייצוא לאקסל</span>
@@ -50,7 +50,7 @@ export function IdeasListToolbar({
         )}
 
         <label className="flex items-center gap-2 font-label-sm text-on-surface">
-          <span className="hidden sm:inline text-secondary">מיון</span>
+          <span className="hidden text-secondary sm:inline">מיון</span>
           <select
             value={sort}
             onChange={(e) => onSortChange(e.target.value as IdeaSortOption)}
@@ -66,7 +66,7 @@ export function IdeasListToolbar({
         </label>
 
         <div
-          className="flex border border-border-light bg-surface-container-low p-0.5"
+          className="flex rounded-full border border-border-light bg-surface-container-low p-0.5 shadow-soft"
           role="group"
           aria-label="תצוגה"
         >
@@ -74,9 +74,9 @@ export function IdeasListToolbar({
             type="button"
             onClick={() => onCompactChange(false)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-2 font-label-sm transition-colors',
+              'flex items-center gap-1.5 rounded-full px-3 py-2 font-label-sm transition-colors',
               !compact
-                ? 'bg-primary text-on-primary'
+                ? 'bg-primary text-on-primary shadow-boutique'
                 : 'text-secondary hover:text-on-surface',
             )}
             aria-pressed={!compact}
@@ -88,9 +88,9 @@ export function IdeasListToolbar({
             type="button"
             onClick={() => onCompactChange(true)}
             className={cn(
-              'flex items-center gap-1.5 px-3 py-2 font-label-sm transition-colors',
+              'flex items-center gap-1.5 rounded-full px-3 py-2 font-label-sm transition-colors',
               compact
-                ? 'bg-primary text-on-primary'
+                ? 'bg-primary text-on-primary shadow-boutique'
                 : 'text-secondary hover:text-on-surface',
             )}
             aria-pressed={compact}

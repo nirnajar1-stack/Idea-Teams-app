@@ -1,4 +1,4 @@
-import { CalendarRange, LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell } from 'lucide-react'
+import { CalendarRange, LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell, Users, Tag, BarChart3 } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -75,7 +75,34 @@ export function ProfilePage() {
                 icon={<UserCog className="h-4 w-4" />}
                 onClick={() => navigate(ROUTES.users)}
               >
-                ניהול משתמשים
+                משתמשים
+              </Button>
+            )}
+            {canManageUsers(user) && (
+              <Button
+                variant="secondary"
+                icon={<Users className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.groups)}
+              >
+                קבוצות
+              </Button>
+            )}
+            {canManageUsers(user) && (
+              <Button
+                variant="secondary"
+                icon={<Mail className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.emailLog)}
+              >
+                יומן מיילים
+              </Button>
+            )}
+            {isMaster(user) && (
+              <Button
+                variant="secondary"
+                icon={<Tag className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.labels)}
+              >
+                לייבלים
               </Button>
             )}
             {isMaster(user) && (
@@ -84,9 +111,16 @@ export function ProfilePage() {
                 icon={<CalendarRange className="h-4 w-4" />}
                 onClick={() => navigate(ROUTES.timeline)}
               >
-                טיימליין תכנון
+                טיימליין
               </Button>
             )}
+            <Button
+              variant="secondary"
+              icon={<BarChart3 className="h-4 w-4" />}
+              onClick={() => navigate(ROUTES.openTasksDashboard)}
+            >
+              משימות פתוחות
+            </Button>
             <Button
               variant="secondary"
               icon={<RefreshCw className="h-4 w-4" />}

@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ROUTES } from '../constants/app'
 
 interface UseKeyboardShortcutsOptions {
   onSearchOpen?: () => void
+  onQuickAdd?: () => void
 }
 
-export function useKeyboardShortcuts({ onSearchOpen }: UseKeyboardShortcutsOptions = {}) {
-  const navigate = useNavigate()
-
+export function useKeyboardShortcuts({
+  onSearchOpen,
+  onQuickAdd,
+}: UseKeyboardShortcutsOptions = {}) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
@@ -27,11 +27,11 @@ export function useKeyboardShortcuts({ onSearchOpen }: UseKeyboardShortcutsOptio
 
       if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault()
-        navigate(ROUTES.addIdea)
+        onQuickAdd?.()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [navigate, onSearchOpen])
+  }, [onSearchOpen, onQuickAdd])
 }

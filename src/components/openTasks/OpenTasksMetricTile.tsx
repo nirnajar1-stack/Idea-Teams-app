@@ -12,22 +12,22 @@ export interface OpenTasksMetricTileProps {
 
 const toneStyles = {
   neutral: {
-    shell: 'border-border-light bg-surface-container-lowest',
+    shell: 'border-transparent bg-surface-container-lowest shadow-card',
     icon: 'bg-primary/10 text-primary',
     value: 'text-on-surface',
   },
   warning: {
-    shell: 'border-error/20 bg-error/5',
+    shell: 'border-transparent bg-error/5 shadow-card',
     icon: 'bg-error/10 text-error',
     value: 'text-error',
   },
   attention: {
-    shell: 'border-tertiary-fixed/30 bg-tertiary-fixed/10',
-    icon: 'bg-tertiary-fixed/20 text-on-tertiary-fixed',
+    shell: 'border-transparent bg-surface-container shadow-card',
+    icon: 'bg-surface-container-high text-on-surface',
     value: 'text-on-surface',
   },
   insight: {
-    shell: 'border-primary/20 bg-primary/5',
+    shell: 'border-transparent bg-primary/5 shadow-card',
     icon: 'bg-primary/10 text-primary',
     value: 'text-on-surface',
   },
@@ -46,7 +46,7 @@ export function OpenTasksMetricTile({
   return (
     <article
       className={cn(
-        'flex h-full flex-col justify-between border p-5 transition-colors duration-300 md:p-6',
+        'flex h-full flex-col justify-between rounded-[1.5rem] border p-5 transition-all duration-300 md:p-6',
         styles.shell,
         className,
       )}
@@ -54,11 +54,11 @@ export function OpenTasksMetricTile({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-label-sm text-secondary">{label}</p>
-          <p className={cn('mt-2 font-display text-[2.5rem] leading-none tracking-tight', styles.value)}>
+          <p className={cn('mt-2 font-sans text-[2.5rem] font-bold leading-none tracking-tight', styles.value)}>
             {value}
           </p>
         </div>
-        <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center', styles.icon)}>
+        <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', styles.icon)}>
           <Icon className="h-5 w-5" aria-hidden />
         </div>
       </div>

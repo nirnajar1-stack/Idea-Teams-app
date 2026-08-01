@@ -12,6 +12,7 @@ import { WorkflowStatusSelect } from './WorkflowStatusSelect'
 import { useUsers } from '../../context/UsersContext'
 import { useGroups } from '../../context/GroupsContext'
 import { useAuth } from '../../context/AuthContext'
+import { useEmbedMode } from '../../context/EmbedModeContext'
 import { canChangeIdeaVisibility } from '../../lib/ideaVisibility'
 import { cn } from '../../lib/cn'
 
@@ -46,8 +47,11 @@ export function IdeaDetailSidebar({
 }: IdeaDetailSidebarProps) {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { isEmbed } = useEmbedMode()
   const { listManageableUsers } = useUsers()
   const { groups } = useGroups()
+  /** Sticky bar covers these on mobile; keep them visible in embed (no sticky). */
+  const primaryActionClass = isEmbed ? 'flex' : 'hidden lg:flex'
 
   const handleWorkflowChange = (status: IdeaWorkflowStatus) => {
     if (status === 'completed') {
@@ -78,7 +82,7 @@ export function IdeaDetailSidebar({
             <button
               type="button"
               onClick={onComplete}
-              className="btn-boutique flex w-full items-center justify-center gap-2"
+              className={cn('btn-boutique w-full items-center justify-center gap-2', primaryActionClass)}
             >
               <CheckCheck className="h-5 w-5" />
               סימון כהושלם
@@ -92,7 +96,8 @@ export function IdeaDetailSidebar({
               onUpdate({ sendToMaybeInbox: !idea.sendToMaybeInbox })
             }
             className={cn(
-              'flex w-full items-center justify-center gap-2 border py-4 font-label-md transition-colors',
+              'w-full items-center justify-center gap-2 border py-4 font-label-md transition-colors',
+              primaryActionClass,
               idea.sendToMaybeInbox
                 ? 'border-primary/30 bg-primary/5 text-primary hover:bg-primary/10'
                 : 'border-inbox/30 bg-inbox-soft text-inbox hover:bg-inbox/10',
@@ -115,7 +120,10 @@ export function IdeaDetailSidebar({
             <button
               type="button"
               onClick={() => navigate(ROUTES.editIdea(idea.id))}
-              className="btn-secondary-light flex w-full items-center justify-center gap-2 py-4 font-label-md"
+              className={cn(
+                'btn-secondary-light w-full items-center justify-center gap-2 py-4 font-label-md',
+                primaryActionClass,
+              )}
             >
               <Pencil className="h-5 w-5" />
               עריכת בקשה/רעיון

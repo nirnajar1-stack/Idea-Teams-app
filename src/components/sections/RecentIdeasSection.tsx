@@ -1,6 +1,7 @@
 import { Bot, CreditCard, Lightbulb, Shield, Wrench } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useIdeas } from '../../context/IdeasContext'
+import { useQuickAdd } from '../../context/QuickAddContext'
 import { ROUTES } from '../../constants/app'
 import { loadIdeasViewPrefs } from '../../lib/ideasViewPrefs'
 import { CATEGORY_LABELS, formatIdeaDate } from '../../lib/ideaUtils'
@@ -22,6 +23,7 @@ function getRowMeta(idea: Idea) {
 
 export function RecentIdeasSection() {
   const { getRecentIdeas } = useIdeas()
+  const { openQuickAdd } = useQuickAdd()
   const sort = loadIdeasViewPrefs().sort
   const recent = getRecentIdeas(3, sort)
 
@@ -44,10 +46,10 @@ export function RecentIdeasSection() {
           title="עדיין אין בקשות/רעיונות פעילים"
           description="התחילו ליצור רעיונות חדשים כדי לבנות מומנטום."
           action={
-            <Link to={ROUTES.addIdea} className="btn-boutique">
+            <button type="button" onClick={openQuickAdd} className="btn-boutique">
               <Lightbulb className="h-4 w-4" />
               הוסף בקשה/רעיון ראשון
-            </Link>
+            </button>
           }
         />
       ) : (

@@ -33,13 +33,13 @@ export function ConfirmModal({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md animate-fade-up border border-border-light bg-surface-container-lowest p-6"
+        className="w-full max-w-md animate-fade-up rounded-[1.85rem] border border-transparent bg-surface-container-lowest p-6 shadow-card"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
             {variant === 'danger' && (
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-error/10">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error/10">
                 <AlertTriangle className="h-5 w-5 text-error" />
               </div>
             )}
@@ -50,7 +50,7 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onCancel}
-            className="p-1 text-secondary hover:bg-surface-container-low"
+            className="rounded-full p-1 text-secondary hover:bg-surface-container-low"
             aria-label="סגור"
           >
             <X className="h-5 w-5" />
@@ -69,7 +69,7 @@ export function ConfirmModal({
             type="button"
             onClick={onConfirm}
             className={cn(
-              'flex-1 py-3 font-label-md text-on-primary transition-colors',
+              'flex-1 rounded-full py-3 font-label-md text-on-primary transition-colors',
               variant === 'danger' ? 'bg-error hover:bg-error/90' : 'btn-boutique',
             )}
           >

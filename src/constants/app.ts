@@ -42,6 +42,7 @@ export const DAILY_INTRO_VIDEO_KEY = MONTHLY_INTRO_VIDEO_KEY
 export const INTRO_VIDEO_SRC = encodeURI('/פרויקט וידאו.mp4')
 export const USERS_STORAGE_KEY = 'ideaflow-users-v1'
 export const IDEAS_VIEW_PREFS_KEY = 'ideaflow-ideas-view-v1'
+export const IDEAS_FILTERS_KEY = 'ideaflow-ideas-filters-v1'
 
 export const NAV_LABELS = {
   home: 'לוח בקרה',
@@ -55,4 +56,5 @@ export const NAV_LABELS = {
   groups: 'קבוצות',
   emailLog: 'יומן מיילים',
   openTasks: 'משימות פתוחות',
+  manage: 'ניהול',
 } as const

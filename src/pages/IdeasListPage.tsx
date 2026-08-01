@@ -1,43 +1,63 @@
 import { Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
-import { useCallback, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AppShell } from '../components/layout/AppShell'
 import { CompletedIdeasSection } from '../components/sections/CompletedIdeasSection'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
+import { IdeasCompactTable } from '../components/sections/IdeasCompactTable'
 import { IdeasExportModal } from '../components/sections/IdeasExportModal'
 import { IdeasFiltersPanel } from '../components/sections/IdeasFiltersPanel'
 import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
+import { useQuickAdd } from '../context/QuickAddContext'
 import { useUsers } from '../context/UsersContext'
-import { ROUTES } from '../constants/app'
 import { IDEA_TERM } from '../constants/terminology'
 import { isMaster } from '../lib/permissions'
+import {
+  DEFAULT_IDEAS_FILTERS,
+  isDefaultFilters,
+  loadIdeasFiltersPrefs,
+  saveIdeasFiltersPrefs,
+  type IdeasFiltersPrefs,
+} from '../lib/ideasFiltersPrefs'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
 import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
-import type { IdeaCategory, IdeaFilters, IdeaPriority, IdeaSource, IdeasViewPrefs } from '../types/idea'
+import type { IdeaCategory, IdeaFilters, IdeaSource, IdeasViewPrefs } from '../types/idea'
 import { IDEA_SOURCES } from '../types/idea'
 import { Button } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
 
 export function IdeasListPage() {
-  const navigate = useNavigate()
   const { user } = useAuth()
+  const { openQuickAdd } = useQuickAdd()
   const { visibleIdeas, toggleSentToExecution } = useIdeas()
   const { users } = useUsers()
   const [exportOpen, setExportOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [categories, setCategories] = useState<IdeaCategory[]>([
-    'development',
-    'monitoring',
-    'technical',
-  ])
-  const [sources, setSources] = useState<IdeaSource[]>([...IDEA_SOURCES])
-  const [priority, setPriority] = useState<IdeaPriority | null>(null)
-  const [onlyMine, setOnlyMine] = useState(false)
-  const [onlyExecution, setOnlyExecution] = useState(false)
+  const [filters, setFilters] = useState<IdeasFiltersPrefs>(loadIdeasFiltersPrefs)
   const [viewPrefs, setViewPrefs] = useState<IdeasViewPrefs>(loadIdeasViewPrefs)
+
+  const { categories, sources, priority, onlyMine, onlyExecution } = filters
+
+  useEffect(() => {
+    saveIdeasFiltersPrefs(filters)
+  }, [filters])
+
+  const patchFilters = useCallback((patch: Partial<IdeasFiltersPrefs>) => {
+    setFilters((prev) => ({ ...prev, ...patch }))
+  }, [])
+
+  const clearFilters = useCallback(() => {
+    setFilters({
+      ...DEFAULT_IDEAS_FILTERS,
+      categories: ['development', 'monitoring', 'technical'],
+      sources: [...IDEA_SOURCES],
+    })
+    setSearch('')
+  }, [])
+
+  const filtersActive = !isDefaultFilters(filters) || search.trim().length > 0
 
   const baseFilters = useMemo(
     (): Omit<IdeaFilters, 'workflow'> => ({
@@ -80,15 +100,21 @@ export function IdeasListPage() {
   }, [])
 
   const toggleCategory = (cat: IdeaCategory) => {
-    setCategories((prev) =>
-      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
-    )
+    setFilters((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(cat)
+        ? prev.categories.filter((c) => c !== cat)
+        : [...prev.categories, cat],
+    }))
   }
 
   const toggleSource = (source: IdeaSource) => {
-    setSources((prev) =>
-      prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source],
-    )
+    setFilters((prev) => ({
+      ...prev,
+      sources: prev.sources.includes(source)
+        ? prev.sources.filter((s) => s !== source)
+        : [...prev.sources, source],
+    }))
   }
 
   const assigneeNames = useMemo(
@@ -102,6 +128,7 @@ export function IdeasListPage() {
     async (ideaId: string, send: boolean) => {
       const ok = await toggleSentToExecution(ideaId, send)
       if (!ok) toast.error('לא ניתן לעדכן תיוג לביצוע')
+      else toast.success(send ? 'סומן לביצוע' : 'הוסר תיוג לביצוע')
     },
     [toggleSentToExecution],
   )
@@ -119,10 +146,7 @@ export function IdeasListPage() {
           </h2>
           <p className="font-body-md text-secondary">{IDEA_TERM.listSubtitle}</p>
         </div>
-        <Button
-          icon={<Plus className="h-5 w-5" />}
-          onClick={() => navigate(ROUTES.addIdea)}
-        >
+        <Button icon={<Plus className="h-5 w-5" />} onClick={openQuickAdd}>
           {IDEA_TERM.addNew}
         </Button>
       </div>
@@ -135,7 +159,7 @@ export function IdeasListPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="חיפוש..."
-            className="h-12 w-full border border-border-light bg-surface-container-lowest pr-12 pl-4 font-body-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="boutique-input h-12 w-full pr-12 pl-4"
           />
         </div>
       </div>
@@ -148,13 +172,15 @@ export function IdeasListPage() {
             sources={sources}
             onToggleSource={toggleSource}
             onlyMine={onlyMine}
-            onOnlyMineChange={setOnlyMine}
+            onOnlyMineChange={(value) => patchFilters({ onlyMine: value })}
             priority={priority}
-            onPriorityChange={setPriority}
+            onPriorityChange={(value) => patchFilters({ priority: value })}
             userName={user?.name}
             showExecutionFilter={masterUser}
             onlyExecution={onlyExecution}
-            onOnlyExecutionChange={setOnlyExecution}
+            onOnlyExecutionChange={(value) => patchFilters({ onlyExecution: value })}
+            showClearAll={filtersActive}
+            onClearAll={clearFilters}
           />
         </aside>
 
@@ -170,19 +196,37 @@ export function IdeasListPage() {
             onExportClick={() => setExportOpen(true)}
           />
 
-          <div
-            className={
-              viewPrefs.compact
-                ? 'space-y-2'
-                : 'space-y-4'
-            }
-          >
-            {activeIdeas.length === 0 ? (
-              <div className="border border-border-light bg-surface-container-lowest p-8">
-                <EmptyState title={IDEA_TERM.noActiveMatch} />
-              </div>
-            ) : (
-              activeIdeas.map((idea, i) => (
+          {activeIdeas.length === 0 ? (
+            <div className="rounded-[1.75rem] border border-transparent bg-surface-container-lowest p-8 shadow-card">
+              <EmptyState
+                title={IDEA_TERM.noActiveMatch}
+                description={
+                  filtersActive
+                    ? 'נסו לנקות פילטרים או לשנות את החיפוש.'
+                    : undefined
+                }
+                action={
+                  filtersActive ? (
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="btn-boutique min-h-12 px-4"
+                    >
+                      נקה פילטרים
+                    </button>
+                  ) : undefined
+                }
+              />
+            </div>
+          ) : viewPrefs.compact ? (
+            <IdeasCompactTable
+              ideas={activeIdeas}
+              showMasterExecutionToggle={masterUser}
+              onExecutionToggle={handleExecutionToggle}
+            />
+          ) : (
+            <div className="space-y-4">
+              {activeIdeas.map((idea, i) => (
                 <div
                   key={idea.id}
                   className="animate-fade-up"
@@ -190,14 +234,13 @@ export function IdeasListPage() {
                 >
                   <IdeaListCard
                     idea={idea}
-                    compact={viewPrefs.compact}
                     showMasterExecutionToggle={masterUser}
                     onExecutionToggle={handleExecutionToggle}
                   />
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
 
           <CompletedIdeasSection ideas={completedIdeas} compact={viewPrefs.compact} />
         </div>

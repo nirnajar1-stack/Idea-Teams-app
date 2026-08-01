@@ -3,7 +3,10 @@ import {
   CATEGORY_LABELS,
   IDEA_SOURCE_LABELS,
   PRIORITY_LABELS,
+  getDaysUntilTarget,
+  isActivelyOverdue,
   isRootIdea,
+  needsAttentionToday,
 } from './ideaUtils'
 
 export interface BreakdownItem {
@@ -15,7 +18,12 @@ export interface BreakdownItem {
 
 export interface OpenTasksAnalytics {
   totalOpen: number
+  /** עבר תאריך יעד (פתוחות בלבד) */
   overdueCount: number
+  /** יעד היום או באיחור — דורש טיפול מיידי */
+  attentionCount: number
+  /** יעד בשבוע הקרוב (לא כולל איחור) */
+  dueSoonCount: number
   unlabeledCount: number
   bySource: BreakdownItem[]
   byLabel: BreakdownItem[]
@@ -105,13 +113,19 @@ export function computeOpenTasksAnalytics(
     }
   }
 
-  const overdueCount = open.filter(
-    (i) => i.targetStartDate && i.targetStartDate < today,
-  ).length
+  const overdueCount = open.filter(isActivelyOverdue).length
+  const attentionCount = open.filter(needsAttentionToday).length
+  const dueSoonCount = open.filter((i) => {
+    if (!i.targetStartDate || isActivelyOverdue(i)) return false
+    const days = getDaysUntilTarget(i.targetStartDate)
+    return days >= 1 && days <= 7
+  }).length
 
   return {
     totalOpen,
     overdueCount,
+    attentionCount,
+    dueSoonCount,
     unlabeledCount,
     bySource: buildBreakdown(bySourceEntries, totalOpen),
     byLabel: buildBreakdown(byLabelEntries, totalOpen),

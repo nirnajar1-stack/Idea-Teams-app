@@ -19,7 +19,7 @@ export function Avatar({ src, alt, size = 'md', className }: AvatarProps) {
         src={src}
         alt={alt}
         className={cn(
-          'rounded-full border-2 border-primary-container object-cover',
+          'rounded-full border border-border-light object-cover shadow-soft',
           sizeClasses[size],
           className,
         )}
@@ -34,7 +34,7 @@ export function Avatar({ src, alt, size = 'md', className }: AvatarProps) {
       role="img"
       aria-label={alt}
       className={cn(
-        'flex items-center justify-center rounded-full border-2 border-primary-container bg-primary-fixed font-bold text-primary',
+        'flex items-center justify-center rounded-full border border-border-light bg-primary font-semibold text-on-primary shadow-soft',
         sizeClasses[size],
         className,
       )}

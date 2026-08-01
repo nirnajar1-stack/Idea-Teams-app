@@ -20,6 +20,8 @@ export interface IdeasFiltersPanelProps {
   showExecutionFilter?: boolean
   onlyExecution?: boolean
   onOnlyExecutionChange?: (value: boolean) => void
+  onClearAll?: () => void
+  showClearAll?: boolean
 }
 
 export function IdeasFiltersPanel({
@@ -35,12 +37,14 @@ export function IdeasFiltersPanel({
   showExecutionFilter = false,
   onlyExecution = false,
   onOnlyExecutionChange,
+  onClearAll,
+  showClearAll = false,
 }: IdeasFiltersPanelProps) {
   const [open, setOpen] = useState(false)
 
   const activeCount = useMemo(() => {
     let n = 0
-    if (categories.length < 2) n += 1
+    if (categories.length < IDEA_CATEGORIES.length) n += 1
     if (sources.length < IDEA_SOURCES.length) n += 1
     if (onlyMine) n += 1
     if (priority) n += 1
@@ -53,7 +57,7 @@ export function IdeasFiltersPanel({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="mb-4 flex w-full items-center justify-between border border-border-light bg-surface-container-lowest px-4 py-3 transition-colors hover:border-primary/25 lg:hidden"
+        className="mb-4 flex w-full items-center justify-between rounded-[1.35rem] border border-transparent bg-surface-container-lowest px-4 py-3 shadow-soft transition-colors hover:shadow-card lg:hidden"
         aria-expanded={open}
       >
         <span className="flex items-center gap-2 font-label-md text-on-surface">
@@ -74,14 +78,23 @@ export function IdeasFiltersPanel({
       </button>
 
       <div className={cn('space-y-4 lg:space-y-8', open ? 'block' : 'hidden', 'lg:block')}>
-        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
+        {(showClearAll || activeCount > 0) && onClearAll && (
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="btn-secondary-light flex min-h-12 w-full items-center justify-center font-label-md"
+          >
+            נקה את כל הפילטרים
+          </button>
+        )}
+        <div className="rounded-[1.5rem] border border-transparent bg-surface-container-lowest p-4 shadow-card md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">קטגוריות</h3>
           <div className="space-y-2">
             {IDEA_CATEGORIES.map((cat) => (
               <label
                 key={cat}
                 className={cn(
-                  'flex cursor-pointer items-center justify-between p-2 transition-colors hover:bg-surface-subtle',
+                  'flex cursor-pointer items-center justify-between rounded-xl p-2 transition-colors hover:bg-surface-subtle',
                   !categories.includes(cat) && 'opacity-50',
                 )}
               >
@@ -97,14 +110,14 @@ export function IdeasFiltersPanel({
           </div>
         </div>
 
-        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
+        <div className="rounded-[1.5rem] border border-transparent bg-surface-container-lowest p-4 shadow-card md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">מקור הבקשה/רעיון</h3>
           <div className="space-y-2">
             {IDEA_SOURCES.map((source) => (
               <label
                 key={source}
                 className={cn(
-                  'flex cursor-pointer items-center justify-between p-2 transition-colors hover:bg-surface-subtle',
+                  'flex cursor-pointer items-center justify-between rounded-xl p-2 transition-colors hover:bg-surface-subtle',
                   !sources.includes(source) && 'opacity-50',
                 )}
               >
@@ -120,7 +133,7 @@ export function IdeasFiltersPanel({
           </div>
         </div>
 
-        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
+        <div className="rounded-[1.5rem] border border-transparent bg-surface-container-lowest p-4 shadow-card md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">תצוגה</h3>
           <div className="space-y-3">
             <label className="flex cursor-pointer items-center gap-3">
@@ -146,7 +159,7 @@ export function IdeasFiltersPanel({
           </div>
         </div>
 
-        <div className="border border-border-light bg-surface-container-lowest p-4 md:p-6">
+        <div className="rounded-[1.5rem] border border-transparent bg-surface-container-lowest p-4 shadow-card md:p-6">
           <h3 className="mb-4 font-label-md text-on-surface">רמת חשיבות</h3>
           <div className="space-y-3">
             {(['high', 'medium', 'low'] as IdeaPriority[]).map((p) => (

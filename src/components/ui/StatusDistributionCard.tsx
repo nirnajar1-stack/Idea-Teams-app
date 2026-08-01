@@ -29,7 +29,7 @@ export function StatusDistributionCard({
       style={style}
     >
       <div className="mb-8 flex items-center justify-between">
-        <h3 className="font-display text-headline-md uppercase text-on-surface">{title}</h3>
+        <h3 className="font-sans text-headline-md text-on-surface">{title}</h3>
         <div className="flex gap-4">
           {legend.map((item) => (
             <div key={item.label} className="flex items-center gap-2">

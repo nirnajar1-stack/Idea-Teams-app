@@ -44,7 +44,7 @@ export function EmbedToolbar() {
                 key={tab.key}
                 to={to}
                 className={cn(
-                  'shrink-0 px-3 py-1.5 text-label-sm uppercase transition-colors',
+                  'shrink-0 rounded-full px-3 py-1.5 text-label-sm transition-colors',
                   active
                     ? 'bg-primary text-on-primary'
                     : 'text-secondary hover:bg-surface-container-high hover:text-on-surface',

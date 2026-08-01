@@ -20,7 +20,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-2 border border-border-light p-1',
+        'inline-flex items-center gap-1 rounded-full border border-border-light bg-surface-container-lowest p-1 shadow-soft',
         className,
       )}
       role="group"
@@ -37,9 +37,9 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
             aria-pressed={active}
             title={label}
             className={cn(
-              'flex h-8 w-8 items-center justify-center transition-colors duration-300 sm:h-9 sm:w-9',
+              'flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-300 sm:h-9 sm:w-9',
               active
-                ? 'bg-primary text-on-primary'
+                ? 'bg-primary text-on-primary shadow-boutique'
                 : 'text-secondary hover:bg-surface-container-low hover:text-on-surface',
             )}
           >
@@ -48,7 +48,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
         )
       })}
       {showLabel && (
-        <span className="hidden pe-2 text-micro uppercase tracking-widest text-secondary sm:inline">
+        <span className="hidden pe-2 text-micro font-medium tracking-wide text-secondary sm:inline">
           {THEME_OPTIONS.find((o) => o.id === theme)?.label}
         </span>
       )}

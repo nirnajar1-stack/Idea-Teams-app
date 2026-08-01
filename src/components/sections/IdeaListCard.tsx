@@ -17,6 +17,7 @@ import { ContainerBadge } from '../ui/ContainerBadge'
 import { ExecutionBadge } from '../ui/ExecutionBadge'
 import { InboxBadge } from '../ui/InboxBadge'
 import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
+import { MetaBadgeRow } from '../ui/MetaBadgeRow'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
 
 export interface IdeaListCardProps {
@@ -108,14 +109,11 @@ export function IdeaListCard({
             <Badge variant={priorityVariant[idea.priority]} className="!py-0 text-[10px]">
               {PRIORITY_LABELS[idea.priority]}
             </Badge>
-            {showInboxActions && <InboxBadge />}
-            {idea.sentToExecution && <ExecutionBadge compact />}
-            <IdeaSourceBadge source={idea.ideaSource} compact />
-            {completed && (
-              <Badge variant="surface" className="!py-0 text-[10px] text-success-vibrant">
-                {WORKFLOW_LABELS.completed}
-              </Badge>
-            )}
+            <TargetDateBadge
+              targetStartDate={idea.targetStartDate}
+              workflowStatus={completed ? 'completed' : idea.workflowStatus}
+              compact
+            />
           </div>
           <p className="truncate font-label-sm text-secondary">
             {idea.authorName} · {formatIdeaDate(idea.createdAt)}
@@ -136,6 +134,44 @@ export function IdeaListCard({
     )
   }
 
+  const primaryBadges = (
+    <>
+      <Badge variant={priorityVariant[idea.priority]}>
+        {PRIORITY_LABELS[idea.priority]}
+      </Badge>
+      <Badge variant="surface" icon={<CategoryIcon className="h-3.5 w-3.5" />}>
+        {CATEGORY_LABELS[idea.category]}
+      </Badge>
+      <TargetDateBadge
+        targetStartDate={idea.targetStartDate}
+        workflowStatus={completed ? 'completed' : idea.workflowStatus}
+        compact
+      />
+      {completed && (
+        <Badge variant="surface" className="text-success-vibrant">
+          {WORKFLOW_LABELS.completed}
+        </Badge>
+      )}
+    </>
+  )
+
+  const secondaryBadges = (
+    <>
+      {showInboxActions && (
+        <Badge variant="surface" icon={<Archive className="h-3.5 w-3.5" />} className="text-inbox">
+          Inbox
+        </Badge>
+      )}
+      {isContainerIdea(idea) && <ContainerBadge subCount={subCount} compact />}
+      {!showInboxActions && idea.sendToMaybeInbox && <InboxBadge />}
+      {idea.sentToExecution && <ExecutionBadge />}
+      <IdeaSourceBadge source={idea.ideaSource} />
+      <span className="font-label-sm text-secondary">
+        {formatIdeaDate(idea.createdAt)}
+      </span>
+    </>
+  )
+
   return (
     <article
       className={cn(
@@ -146,34 +182,11 @@ export function IdeaListCard({
     >
       <div className="flex flex-col justify-between gap-4">
         <div className="flex-1">
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <Badge variant={priorityVariant[idea.priority]}>
-              {PRIORITY_LABELS[idea.priority]}
-            </Badge>
-            <Badge variant="surface" icon={<CategoryIcon className="h-3.5 w-3.5" />}>
-              {CATEGORY_LABELS[idea.category]}
-            </Badge>
-            {showInboxActions && (
-              <Badge variant="surface" icon={<Archive className="h-3.5 w-3.5" />} className="text-inbox">
-                Inbox
-              </Badge>
-            )}
-            {completed && (
-              <Badge variant="surface" className="text-success-vibrant">
-                {WORKFLOW_LABELS.completed}
-              </Badge>
-            )}
-            {isContainerIdea(idea) && (
-              <ContainerBadge subCount={subCount} compact />
-            )}
-            {!showInboxActions && idea.sendToMaybeInbox && <InboxBadge />}
-            {idea.sentToExecution && <ExecutionBadge />}
-            <IdeaSourceBadge source={idea.ideaSource} />
-            <TargetDateBadge targetStartDate={idea.targetStartDate} compact />
-            <span className="mr-auto font-label-sm text-secondary md:mr-0">
-              {formatIdeaDate(idea.createdAt)}
-            </span>
-          </div>
+          <MetaBadgeRow
+            className="mb-3"
+            primary={primaryBadges}
+            secondary={secondaryBadges}
+          />
           <h3 className="mb-2 font-display text-headline-md text-on-surface transition-colors group-hover:text-primary">
             {idea.title}
           </h3>

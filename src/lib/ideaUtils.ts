@@ -242,9 +242,14 @@ export function formatIdeaDateLong(isoDate: string): string {
   })
 }
 
-export type TargetDateStatus = 'overdue' | 'soon' | 'scheduled'
+export type TargetDateStatus = 'overdue' | 'soon' | 'scheduled' | 'done'
 
-export function getTargetDateStatus(targetStartDate: string): TargetDateStatus {
+export function getTargetDateStatus(
+  targetStartDate: string,
+  options?: { workflowStatus?: Idea['workflowStatus'] },
+): TargetDateStatus {
+  if (options?.workflowStatus === 'completed') return 'done'
+
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const target = new Date(targetStartDate)
@@ -263,6 +268,21 @@ export function getDaysUntilTarget(targetStartDate: string): number {
   const target = new Date(targetStartDate)
   target.setHours(0, 0, 0, 0)
   return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+}
+
+/** איחור פעיל — רק משימות שלא הושלמו עם יעד שעבר */
+export function isActivelyOverdue(idea: Pick<Idea, 'targetStartDate' | 'workflowStatus'>): boolean {
+  if (idea.workflowStatus === 'completed' || !idea.targetStartDate) return false
+  return getTargetDateStatus(idea.targetStartDate) === 'overdue'
+}
+
+/** דורש תשומת לב היום: באיחור או יעד היום */
+export function needsAttentionToday(
+  idea: Pick<Idea, 'targetStartDate' | 'workflowStatus'>,
+): boolean {
+  if (idea.workflowStatus === 'completed' || !idea.targetStartDate) return false
+  const days = getDaysUntilTarget(idea.targetStartDate)
+  return days <= 0
 }
 
 export function generateIdeaId(): string {
@@ -329,4 +349,5 @@ export const TARGET_STATUS_LABELS: Record<TargetDateStatus, string> = {
   overdue: 'עבר מועד',
   soon: 'מתקרב',
   scheduled: 'מתוכנן',
+  done: 'הושלם',
 }

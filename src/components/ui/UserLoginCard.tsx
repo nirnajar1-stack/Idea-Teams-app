@@ -18,16 +18,16 @@ export function UserLoginCard({ user, onSelect }: UserLoginCardProps) {
       type="button"
       onClick={onSelect}
       className={cn(
-        'group w-full border border-border-light bg-surface-container-lowest/90 p-8 text-center backdrop-blur-xl transition-colors duration-300',
-        accentByUser[user.id] ?? 'hover:border-primary/30',
+        'group w-full rounded-[1.85rem] border border-transparent bg-surface-container-lowest p-8 text-center shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover',
+        accentByUser[user.id] ?? '',
       )}
     >
       <div
         className={cn(
-          'mx-auto mb-5 flex h-20 w-20 items-center justify-center text-2xl font-bold transition-colors duration-300',
+          'mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full text-2xl font-bold transition-colors duration-300',
           user.id === 'nir'
-            ? 'bg-primary/15 text-primary'
-            : 'bg-surface-container-low text-inbox',
+            ? 'bg-primary text-on-primary'
+            : 'bg-surface-container text-on-surface',
         )}
       >
         {user.initials}

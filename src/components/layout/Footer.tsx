@@ -1,28 +1,31 @@
 import { CirclePlus } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { NAV_LABELS, ROUTES } from '../../constants/app'
-import { visibleNavItems } from '../../config/appNavigation'
+import { mobileFooterNavItems } from '../../config/appNavigation'
 import { useAuth } from '../../context/AuthContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { useQuickAdd } from '../../context/QuickAddContext'
 import { canManageUsers, isMaster } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
+import { Link } from 'react-router-dom'
 
 export function Footer() {
   const { pathname } = useLocation()
   const { stats } = useIdeas()
   const { user } = useAuth()
+  const { openQuickAdd, isOpen: quickAddOpen } = useQuickAdd()
 
-  const navItems = visibleNavItems({
+  const navItems = mobileFooterNavItems({
     canManageUsers: canManageUsers(user),
     isMaster: isMaster(user),
   })
 
   return (
     <nav
-      className="mobile-bottom-nav fixed bottom-0 left-0 z-50 w-full md:hidden"
+      className="mobile-bottom-nav fixed bottom-0 left-0 z-50 w-full px-4 pb-[max(0.85rem,env(safe-area-inset-bottom))] md:hidden"
       aria-label="ניווט תחתון"
     >
-      <div className="flex h-[4.25rem] items-stretch justify-around gap-0.5 border-t border-border-light bg-background/95 px-1 backdrop-blur-md">
+      <div className="mx-auto flex h-[4.5rem] max-w-md items-center justify-around gap-0.5 rounded-full bg-[var(--color-nav-pill)] px-3 text-[var(--color-nav-pill-fg)] shadow-nav">
         {navItems.map((item) => {
           const Icon = item.icon
           const active = item.match(pathname)
@@ -31,20 +34,22 @@ export function Footer() {
               key={item.id}
               to={item.to}
               className={cn(
-                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 transition-colors duration-200',
-                active ? 'text-on-surface' : 'text-secondary',
+                'relative flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-full px-1 transition-colors duration-200',
+                active ? 'text-white' : 'text-white/40',
               )}
               aria-current={active ? 'page' : undefined}
             >
-              <Icon className="h-5 w-5 shrink-0" aria-hidden />
-              <span className="max-w-full truncate text-[10px] font-medium uppercase tracking-wide">
-                {item.label}
-              </span>
+              <Icon
+                className="h-[22px] w-[22px] shrink-0"
+                strokeWidth={active ? 2.25 : 1.75}
+                aria-hidden
+              />
               {active && (
-                <span className="absolute top-0 h-0.5 w-7 bg-primary" aria-hidden />
+                <span className="h-1 w-1 rounded-full bg-white" aria-hidden />
               )}
+              <span className="sr-only">{item.label}</span>
               {item.id === 'inbox' && stats.inboxCount > 0 && (
-                <span className="absolute -top-0.5 end-0 flex h-4 min-w-4 items-center justify-center bg-primary px-1 text-[10px] font-bold text-on-primary">
+                <span className="absolute top-0 end-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-[var(--color-nav-pill)]">
                   {stats.inboxCount}
                 </span>
               )}
@@ -52,21 +57,21 @@ export function Footer() {
           )
         })}
 
-        <Link
-          to={ROUTES.addIdea}
+        <button
+          type="button"
+          onClick={openQuickAdd}
           className={cn(
-            'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-1.5 transition-colors duration-200',
-            pathname === ROUTES.addIdea ? 'text-primary' : 'text-secondary',
+            'relative flex h-12 min-w-0 flex-1 flex-col items-center justify-center gap-1 px-1 transition-colors duration-200',
+            quickAddOpen || pathname === ROUTES.addIdea
+              ? 'text-white'
+              : 'text-white/40',
           )}
           aria-label={NAV_LABELS.add}
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-primary text-on-primary">
-            <CirclePlus className="h-5 w-5" aria-hidden />
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[var(--color-nav-pill)] shadow-soft">
+            <CirclePlus className="h-5 w-5" strokeWidth={2.25} aria-hidden />
           </span>
-          <span className="max-w-full truncate text-[10px] font-medium uppercase tracking-wide">
-            {NAV_LABELS.add}
-          </span>
-        </Link>
+        </button>
       </div>
     </nav>
   )

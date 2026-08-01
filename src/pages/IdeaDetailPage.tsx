@@ -6,10 +6,11 @@ import { useChatNotifications } from '../context/ChatNotificationsContext'
 import { AppShell } from '../components/layout/AppShell'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
 import { IdeaDetailContent } from '../components/sections/IdeaDetailContent'
+import { IdeaDetailMobileActions } from '../components/sections/IdeaDetailMobileActions'
 import { IdeaDetailSidebar } from '../components/sections/IdeaDetailSidebar'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
-import { useAppRoutes } from '../context/EmbedModeContext'
+import { useAppRoutes, useEmbedMode } from '../context/EmbedModeContext'
 import { canAddSubIdea } from '../lib/permissions'
 import { isContainerIdea, isSubIdea } from '../lib/ideaUtils'
 
@@ -18,6 +19,7 @@ export function IdeaDetailPage() {
   const { hash } = useLocation()
   const navigate = useNavigate()
   const routes = useAppRoutes()
+  const { isEmbed } = useEmbedMode()
   const { markIdeaRead } = useChatNotifications()
   const { user } = useAuth()
   const {
@@ -36,6 +38,24 @@ export function IdeaDetailPage() {
   const shareUrl = idea
     ? `${window.location.origin}${routes.ideaDetail(idea.id)}`
     : undefined
+  const editable = idea ? canEdit(idea) : false
+
+  const handleComplete = () => {
+    if (!idea) return
+    void markCompleted(idea.id).then((result) => {
+      if (!result.ok) {
+        toast.error('העדכון נכשל')
+        return
+      }
+      toast.success('סומן כהושלם')
+      if (result.emailNotify) {
+        for (const t of completionNotifyToasts(result.emailNotify)) {
+          if (t.level === 'message') toast.message(t.text)
+          else toast.warning(t.text)
+        }
+      }
+    })
+  }
 
   useEffect(() => {
     if (!idea || hash !== '#idea-chat') return
@@ -94,40 +114,42 @@ export function IdeaDetailPage() {
   return (
     <>
       <AppShell variant="back" showShare shareUrl={shareUrl}>
-        <div className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
+        <div
+          className={
+            editable
+              ? 'grid grid-cols-1 gap-gutter pb-20 lg:grid-cols-12 lg:pb-0'
+              : 'grid grid-cols-1 gap-gutter lg:grid-cols-12'
+          }
+        >
           <IdeaDetailContent
             idea={idea}
             parent={parent}
             subIdeas={subIdeas}
             canAddSub={canAddSub}
-            canEdit={canEdit(idea)}
+            canEdit={editable}
             onUpdate={(patch) => void handleUpdate(patch)}
           />
           <IdeaDetailSidebar
             idea={idea}
-            canEdit={canEdit(idea)}
+            canEdit={editable}
             canDelete={canDelete(idea)}
             isContainer={isContainerIdea(idea)}
-            onComplete={() =>
-              void markCompleted(idea.id).then((result) => {
-                if (!result.ok) {
-                  toast.error('העדכון נכשל')
-                  return
-                }
-                toast.success('סומן כהושלם')
-                if (result.emailNotify) {
-                  for (const t of completionNotifyToasts(result.emailNotify)) {
-                    if (t.level === 'message') toast.message(t.text)
-                    else toast.warning(t.text)
-                  }
-                }
-              })
-            }
+            onComplete={handleComplete}
             onDelete={handleDelete}
             onUpdate={(patch) => void handleUpdate(patch)}
           />
         </div>
       </AppShell>
+
+      {!isEmbed && (
+        <IdeaDetailMobileActions
+          idea={idea}
+          canEdit={editable}
+          isContainer={isContainerIdea(idea)}
+          onComplete={handleComplete}
+          onUpdate={(patch) => void handleUpdate(patch)}
+        />
+      )}
 
       <ConfirmModal
         open={deleteOpen}

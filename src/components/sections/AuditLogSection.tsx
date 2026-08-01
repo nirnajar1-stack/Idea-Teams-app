@@ -27,9 +27,11 @@ function formatTime(iso: string) {
 export function AuditLogSection({
   entityType,
   entityId,
+  embedded = false,
 }: {
   entityType: AuditEntityType
   entityId: string
+  embedded?: boolean
 }) {
   const [entries, setEntries] = useState<AuditEntry[]>([])
   const [loading, setLoading] = useState(false)
@@ -44,13 +46,8 @@ export function AuditLogSection({
 
   if (!isSupabaseEnabled()) return null
 
-  return (
-    <section className="glass-card p-6">
-      <div className="mb-4 flex items-center gap-2 text-primary">
-        <History className="h-5 w-5" />
-        <h2 className="font-display text-headline-md text-on-surface">היסטוריית שינויים</h2>
-      </div>
-
+  const body = (
+    <>
       {loading && (
         <div className="flex items-center gap-2 text-secondary">
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -78,6 +75,18 @@ export function AuditLogSection({
           </li>
         ))}
       </ul>
+    </>
+  )
+
+  if (embedded) return <div>{body}</div>
+
+  return (
+    <section className="glass-card p-6">
+      <div className="mb-4 flex items-center gap-2 text-primary">
+        <History className="h-5 w-5" />
+        <h2 className="font-display text-headline-md text-on-surface">היסטוריית שינויים</h2>
+      </div>
+      {body}
     </section>
   )
 }
