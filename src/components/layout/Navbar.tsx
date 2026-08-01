@@ -3,13 +3,14 @@ import { ArrowRight, LogOut, Search, Share2 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { APP_NAME_FULL, ROUTES } from '../../constants/app'
-import { splitVisibleNavItems } from '../../config/appNavigation'
+import { buildNavContext, splitVisibleNavItems } from '../../config/appNavigation'
 import { useAuth } from '../../context/AuthContext'
+import { useGroups } from '../../context/GroupsContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { usePermissions } from '../../context/PermissionsContext'
 import { useQuickAdd } from '../../context/QuickAddContext'
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts'
 import { useNavbarScroll } from '../../hooks/useNavbarScroll'
-import { canManageUsers, isMaster } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Avatar } from '../ui/Avatar'
 import { AppLogo } from '../ui/AppLogo'
@@ -42,14 +43,15 @@ export function Navbar({
   const { pathname } = useLocation()
   const { user, logout } = useAuth()
   const { stats } = useIdeas()
+  const { myGroupIds } = useGroups()
+  const { rulesByKey } = usePermissions()
   const { openQuickAdd } = useQuickAdd()
   const [searchOpen, setSearchOpen] = useState(false)
   const scrolled = useNavbarScroll()
 
-  const { primary: primaryNavItems, manage: manageNavItems } = splitVisibleNavItems({
-    canManageUsers: canManageUsers(user),
-    isMaster: isMaster(user),
-  })
+  const { primary: primaryNavItems, manage: manageNavItems } = splitVisibleNavItems(
+    buildNavContext(user, myGroupIds, rulesByKey),
+  )
 
   const showMainNav = variant === 'main' || variant === 'ideas'
 
@@ -80,7 +82,7 @@ export function Navbar({
   return (
     <header
       className={cn(
-        'nav-glass fixed top-0 z-50 h-14 w-full md:h-16',
+        'nav-glass fixed top-0 z-50 w-full',
         scrolled && 'nav-glass--scrolled',
       )}
     >
@@ -170,6 +172,19 @@ export function Navbar({
           </button>
         </div>
       </div>
+
+      {/* מובייל: מעבר דפים עם תוויות ברורות */}
+      {showMainNav && (
+        <div className="border-t border-border-light/80 px-2 pb-2 pt-1 md:hidden">
+          <NavTabs
+            items={primaryNavItems.filter((item) => item.id !== 'profile')}
+            manageItems={manageNavItems}
+            pathname={pathname}
+            inboxCount={stats.inboxCount}
+            compact
+          />
+        </div>
+      )}
 
       <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>

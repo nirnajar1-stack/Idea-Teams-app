@@ -9,7 +9,7 @@ export function StatsBentoSection() {
 
   return (
     <section
-      className="lambo-stagger grid grid-cols-1 gap-gutter md:grid-cols-12"
+      className="lambo-stagger mb-5 grid grid-cols-1 gap-3 md:mb-6 md:grid-cols-12 md:gap-4"
       aria-label="סטטיסטיקות"
     >
       <StatCard
@@ -21,16 +21,16 @@ export function StatsBentoSection() {
       />
       <Link
         to={ROUTES.inbox}
-        className="glass-card-hover group flex flex-col justify-between p-8 md:col-span-4"
+        className="glass-card-hover group flex flex-col justify-between p-4 md:col-span-4 md:p-5"
       >
         <div>
-          <p className="mb-2 text-label-md uppercase text-secondary">Inbox</p>
-          <p className="stat-value font-display text-display-lg leading-none">
+          <p className="mb-1 text-label-sm uppercase text-secondary">Inbox</p>
+          <p className="stat-value font-display text-[2rem] leading-none md:text-display-lg">
             {stats.inboxCount}
           </p>
         </div>
-        <p className="mt-8 border-t border-border-light pt-6 text-body-sm text-secondary transition-colors duration-300 group-hover:text-primary">
-          בקשות/רעיונות לבחינה עתידית ←
+        <p className="mt-4 border-t border-border-light pt-3 text-body-sm text-secondary transition-colors duration-300 group-hover:text-primary">
+          לבחינה עתידית ←
         </p>
       </Link>
       <StatusDistributionCard

@@ -1,4 +1,5 @@
 import { AppShell } from '../components/layout/AppShell'
+import { LinkedBoardsSection } from '../components/sections/LinkedBoardsSection'
 import { RecentIdeasSection } from '../components/sections/RecentIdeasSection'
 import { OpenTasksDashboardSection } from '../components/sections/OpenTasksDashboardSection'
 import { StatsBentoSection } from '../components/sections/StatsBentoSection'
@@ -8,10 +9,9 @@ export function HomePage() {
   return (
     <AppShell variant="main">
       <WelcomeHero />
-      <div className="lambo-section">
-        <StatsBentoSection />
-      </div>
+      <StatsBentoSection />
       <OpenTasksDashboardSection variant="snapshot" />
+      <LinkedBoardsSection />
       <RecentIdeasSection />
     </AppShell>
   )

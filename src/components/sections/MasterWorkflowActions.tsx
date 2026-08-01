@@ -1,7 +1,9 @@
 import { CheckCheck, ListTodo } from 'lucide-react'
 import { toast } from 'sonner'
+import { useGroups } from '../../context/GroupsContext'
 import { useIdeas } from '../../context/IdeasContext'
-import { canManageMasterWorkflow } from '../../lib/permissions'
+import { usePermissions } from '../../context/PermissionsContext'
+import { canManageExecutionWithRules } from '../../lib/permissionMatrix'
 import { cn } from '../../lib/cn'
 import type { AppUser } from '../../types/user'
 import type { Idea, IdeaCheckCadence } from '../../types/idea'
@@ -19,8 +21,15 @@ export function MasterWorkflowActions({
   isContainer = false,
 }: MasterWorkflowActionsProps) {
   const { toggleSentToExecution, setCheckCadence, markRoutineCheckDone } = useIdeas()
+  const { myGroupIds } = useGroups()
+  const { rulesByKey } = usePermissions()
 
-  if (!canManageMasterWorkflow(user, idea) || isContainer) return null
+  if (
+    !canManageExecutionWithRules(user, idea, myGroupIds, rulesByKey) ||
+    isContainer
+  ) {
+    return null
+  }
 
   const handleExecutionToggle = async () => {
     const send = !idea.sentToExecution

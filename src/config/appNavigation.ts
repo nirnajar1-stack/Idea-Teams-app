@@ -3,8 +3,10 @@ import {
   BarChart3,
   CalendarRange,
   LayoutDashboard,
+  LayoutGrid,
   Lightbulb,
   Mail,
+  Shield,
   Tag,
   UserCog,
   UserRound,
@@ -12,6 +14,10 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { NAV_LABELS, ROUTES } from '../constants/app'
+import { NAV_TO_PAGE_KEY, canAccessPage } from '../lib/permissionMatrix'
+import { canManageUsers, isMaster } from '../lib/permissions'
+import type { PermissionKey, PermissionRule } from '../types/permission'
+import type { AppUser } from '../types/user'
 
 export type AppNavItemId =
   | 'home'
@@ -24,6 +30,8 @@ export type AppNavItemId =
   | 'emailLog'
   | 'users'
   | 'profile'
+  | 'permissions'
+  | 'boards'
 
 /** primary — ניווט ראשי; manage — מקובץ תחת תפריט ניהול */
 export type AppNavGroup = 'primary' | 'manage'
@@ -35,17 +43,35 @@ export interface AppNavItem {
   icon: LucideIcon
   group: AppNavGroup
   match: (pathname: string) => boolean
-  /** אם לא מוגדר — תמיד מוצג */
+  /** אם לא מוגדר — תמיד מוצג (עד למטריצת הרשאות) */
   visible?: (ctx: NavVisibilityContext) => boolean
 }
 
 export interface NavVisibilityContext {
+  user: AppUser | null
   canManageUsers: boolean
   isMaster: boolean
+  myGroupIds: string[]
+  permissionRules?: Map<PermissionKey, PermissionRule>
 }
 
 function ideasMatch(pathname: string): boolean {
   return pathname.startsWith('/ideas') && pathname !== ROUTES.addIdea
+}
+
+function defaultPageAllowed(id: AppNavItemId, ctx: NavVisibilityContext): boolean {
+  switch (id) {
+    case 'timeline':
+    case 'labels':
+    case 'permissions':
+      return ctx.isMaster
+    case 'groups':
+    case 'emailLog':
+    case 'users':
+      return ctx.canManageUsers
+    default:
+      return true
+  }
 }
 
 export const APP_NAV_ITEMS: AppNavItem[] = [
@@ -80,6 +106,14 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
     icon: BarChart3,
     group: 'primary',
     match: (p) => p === ROUTES.openTasksDashboard,
+  },
+  {
+    id: 'boards',
+    label: NAV_LABELS.boards,
+    to: ROUTES.boards,
+    icon: LayoutGrid,
+    group: 'primary',
+    match: (p) => p === ROUTES.boards || p.startsWith('/boards/'),
   },
   {
     id: 'timeline',
@@ -127,6 +161,15 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
     visible: ({ canManageUsers }) => canManageUsers,
   },
   {
+    id: 'permissions',
+    label: NAV_LABELS.permissions,
+    to: ROUTES.permissions,
+    icon: Shield,
+    group: 'manage',
+    match: (p) => p === ROUTES.permissions,
+    visible: ({ isMaster }) => isMaster,
+  },
+  {
     id: 'profile',
     label: NAV_LABELS.profile,
     to: ROUTES.profile,
@@ -137,7 +180,20 @@ export const APP_NAV_ITEMS: AppNavItem[] = [
 ]
 
 export function visibleNavItems(ctx: NavVisibilityContext): AppNavItem[] {
-  return APP_NAV_ITEMS.filter((item) => !item.visible || item.visible(ctx))
+  return APP_NAV_ITEMS.filter((item) => {
+    const roleDefault = !item.visible || item.visible(ctx)
+    const pageKey = NAV_TO_PAGE_KEY[item.id] ?? (`page.${item.id}` as PermissionKey)
+    if (item.id === 'permissions') {
+      return isMaster(ctx.user)
+    }
+    return canAccessPage(
+      pageKey,
+      ctx.user,
+      ctx.myGroupIds,
+      ctx.permissionRules,
+      roleDefault && defaultPageAllowed(item.id, ctx),
+    )
+  })
 }
 
 export function splitVisibleNavItems(ctx: NavVisibilityContext): {
@@ -157,11 +213,29 @@ export function splitVisibleNavItems(ctx: NavVisibilityContext): {
  */
 export function mobileFooterNavItems(ctx: NavVisibilityContext): AppNavItem[] {
   const { primary } = splitVisibleNavItems(ctx)
-  const ids = ctx.isMaster
+  const preferred = ctx.isMaster
     ? (['home', 'ideas', 'inbox', 'timeline'] as const)
     : (['home', 'ideas', 'inbox', 'openTasks'] as const)
 
-  return ids
+  const picked = preferred
     .map((id) => primary.find((item) => item.id === id))
     .filter((item): item is AppNavItem => Boolean(item))
+
+  if (picked.length >= 4) return picked.slice(0, 4)
+  const extras = primary.filter((item) => !picked.some((p) => p.id === item.id))
+  return [...picked, ...extras].slice(0, 4)
+}
+
+export function buildNavContext(
+  user: AppUser | null,
+  myGroupIds: string[],
+  permissionRules?: Map<PermissionKey, PermissionRule>,
+): NavVisibilityContext {
+  return {
+    user,
+    canManageUsers: canManageUsers(user),
+    isMaster: isMaster(user),
+    myGroupIds,
+    permissionRules,
+  }
 }

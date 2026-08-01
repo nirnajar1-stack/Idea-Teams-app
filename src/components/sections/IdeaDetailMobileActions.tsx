@@ -7,6 +7,7 @@ import { cn } from '../../lib/cn'
 export interface IdeaDetailMobileActionsProps {
   idea: Idea
   canEdit: boolean
+  canComplete?: boolean
   isContainer?: boolean
   onComplete: () => void
   onUpdate: (patch: Partial<Idea>) => void
@@ -16,16 +17,18 @@ export interface IdeaDetailMobileActionsProps {
 export function IdeaDetailMobileActions({
   idea,
   canEdit,
+  canComplete = canEdit,
   isContainer = false,
   onComplete,
   onUpdate,
 }: IdeaDetailMobileActionsProps) {
   const navigate = useNavigate()
 
-  if (!canEdit) return null
+  if (!canEdit && !canComplete) return null
 
-  const showComplete = !isContainer && idea.workflowStatus !== 'completed'
-  const showInbox = !isContainer
+  const showComplete =
+    canComplete && !isContainer && idea.workflowStatus !== 'completed'
+  const showInbox = canEdit && !isContainer
 
   return (
     <div
@@ -65,14 +68,16 @@ export function IdeaDetailMobileActions({
             )}
           </button>
         )}
-        <button
-          type="button"
-          onClick={() => navigate(ROUTES.editIdea(idea.id))}
-          className="btn-secondary-light flex min-h-12 min-w-12 items-center justify-center px-3"
-          aria-label="עריכת בקשה/רעיון"
-        >
-          <Pencil className="h-5 w-5" aria-hidden />
-        </button>
+        {canEdit && (
+          <button
+            type="button"
+            onClick={() => navigate(ROUTES.editIdea(idea.id))}
+            className="btn-secondary-light flex min-h-12 min-w-12 items-center justify-center px-3"
+            aria-label="עריכת בקשה/רעיון"
+          >
+            <Pencil className="h-5 w-5" aria-hidden />
+          </button>
+        )}
       </div>
     </div>
   )

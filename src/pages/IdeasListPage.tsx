@@ -9,11 +9,16 @@ import { IdeasExportModal } from '../components/sections/IdeasExportModal'
 import { IdeasFiltersPanel } from '../components/sections/IdeasFiltersPanel'
 import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
 import { useAuth } from '../context/AuthContext'
+import { useGroups } from '../context/GroupsContext'
 import { useIdeas } from '../context/IdeasContext'
+import { usePermissions } from '../context/PermissionsContext'
 import { useQuickAdd } from '../context/QuickAddContext'
 import { useUsers } from '../context/UsersContext'
 import { IDEA_TERM } from '../constants/terminology'
-import { isMaster } from '../lib/permissions'
+import {
+  canExportIdeasWithRules,
+  canManageExecutionAction,
+} from '../lib/permissionMatrix'
 import {
   DEFAULT_IDEAS_FILTERS,
   isDefaultFilters,
@@ -33,6 +38,8 @@ export function IdeasListPage() {
   const { openQuickAdd } = useQuickAdd()
   const { visibleIdeas, toggleSentToExecution } = useIdeas()
   const { users } = useUsers()
+  const { myGroupIds } = useGroups()
+  const { rulesByKey } = usePermissions()
   const [exportOpen, setExportOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<IdeasFiltersPrefs>(loadIdeasFiltersPrefs)
@@ -122,7 +129,8 @@ export function IdeasListPage() {
     [users],
   )
 
-  const masterUser = isMaster(user)
+  const canExport = canExportIdeasWithRules(user, myGroupIds, rulesByKey)
+  const canManageExecution = canManageExecutionAction(user, myGroupIds, rulesByKey)
 
   const handleExecutionToggle = useCallback(
     async (ideaId: string, send: boolean) => {
@@ -176,7 +184,7 @@ export function IdeasListPage() {
             priority={priority}
             onPriorityChange={(value) => patchFilters({ priority: value })}
             userName={user?.name}
-            showExecutionFilter={masterUser}
+            showExecutionFilter={canManageExecution}
             onlyExecution={onlyExecution}
             onOnlyExecutionChange={(value) => patchFilters({ onlyExecution: value })}
             showClearAll={filtersActive}
@@ -192,7 +200,7 @@ export function IdeasListPage() {
             onCompactChange={(compact) => updateViewPrefs({ compact })}
             activeCount={activeIdeas.length}
             completedCount={completedIdeas.length}
-            showExport={masterUser}
+            showExport={canExport}
             onExportClick={() => setExportOpen(true)}
           />
 
@@ -221,7 +229,7 @@ export function IdeasListPage() {
           ) : viewPrefs.compact ? (
             <IdeasCompactTable
               ideas={activeIdeas}
-              showMasterExecutionToggle={masterUser}
+              showMasterExecutionToggle={canManageExecution}
               onExecutionToggle={handleExecutionToggle}
             />
           ) : (
@@ -234,7 +242,7 @@ export function IdeasListPage() {
                 >
                   <IdeaListCard
                     idea={idea}
-                    showMasterExecutionToggle={masterUser}
+                    showMasterExecutionToggle={canManageExecution}
                     onExecutionToggle={handleExecutionToggle}
                   />
                 </div>
@@ -246,7 +254,7 @@ export function IdeasListPage() {
         </div>
       </div>
 
-      {masterUser && (
+      {canExport && (
         <IdeasExportModal
           open={exportOpen}
           onClose={() => setExportOpen(false)}

@@ -50,8 +50,8 @@ export function NavTabs({
   return (
     <nav
       className={cn(
-        'flex items-center gap-1 overflow-x-auto overscroll-x-contain pb-0.5',
-        compact ? 'justify-start' : 'md:justify-center',
+        'flex items-center gap-1 overflow-x-auto overscroll-x-contain scroll-smooth pb-0.5',
+        compact ? 'justify-start gap-0.5' : 'md:justify-center',
         '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
       )}
       aria-label="ניווט ראשי"
@@ -64,16 +64,24 @@ export function NavTabs({
             key={item.id}
             to={item.to}
             className={cn(
-              'relative flex shrink-0 items-center rounded-full px-3.5 py-2 text-label-md transition-colors duration-300',
-              compact ? 'min-w-[3.25rem] flex-col gap-1' : 'gap-2',
+              'relative flex shrink-0 items-center rounded-full transition-colors duration-300',
+              compact
+                ? 'min-h-11 min-w-[4.25rem] flex-col justify-center gap-0.5 px-2.5 py-1.5'
+                : 'gap-2 px-3.5 py-2 text-label-md',
               active
                 ? 'bg-primary text-on-primary shadow-boutique'
                 : 'text-secondary hover:bg-surface-container hover:text-on-surface',
             )}
             aria-current={active ? 'page' : undefined}
           >
-            <Icon className={cn('shrink-0', compact ? 'h-5 w-5' : 'h-4 w-4')} aria-hidden />
-            <span className={cn(compact ? 'text-micro leading-tight' : 'whitespace-nowrap')}>
+            <Icon className={cn('shrink-0', compact ? 'h-4 w-4' : 'h-4 w-4')} aria-hidden />
+            <span
+              className={cn(
+                compact
+                  ? 'max-w-[4.5rem] truncate text-[0.65rem] font-medium leading-tight'
+                  : 'whitespace-nowrap',
+              )}
+            >
               {item.label}
             </span>
             {item.id === 'inbox' && inboxCount > 0 && (
@@ -90,7 +98,10 @@ export function NavTabs({
           <button
             type="button"
             className={cn(
-              'relative flex items-center gap-2 rounded-full px-3.5 py-2 text-label-md transition-colors duration-300',
+              'relative flex items-center rounded-full transition-colors duration-300',
+              compact
+                ? 'min-h-11 min-w-[4.25rem] flex-col justify-center gap-0.5 px-2.5 py-1.5'
+                : 'gap-2 px-3.5 py-2 text-label-md',
               manageActive || manageOpen
                 ? 'bg-primary text-on-primary shadow-boutique'
                 : 'text-secondary hover:bg-surface-container hover:text-on-surface',
@@ -101,11 +112,21 @@ export function NavTabs({
             onClick={() => setManageOpen((open) => !open)}
           >
             <Settings2 className="h-4 w-4 shrink-0" aria-hidden />
-            <span className="whitespace-nowrap">{NAV_LABELS.manage}</span>
-            <ChevronDown
-              className={cn('h-3.5 w-3.5 transition-transform', manageOpen && 'rotate-180')}
-              aria-hidden
-            />
+            <span
+              className={cn(
+                compact
+                  ? 'text-[0.65rem] font-medium leading-tight'
+                  : 'whitespace-nowrap',
+              )}
+            >
+              {NAV_LABELS.manage}
+            </span>
+            {!compact && (
+              <ChevronDown
+                className={cn('h-3.5 w-3.5 transition-transform', manageOpen && 'rotate-180')}
+                aria-hidden
+              />
+            )}
           </button>
 
           {manageOpen && (
@@ -113,7 +134,10 @@ export function NavTabs({
               id={menuId}
               role="menu"
               aria-label={NAV_LABELS.manage}
-              className="absolute top-full z-50 mt-2 min-w-[12rem] overflow-hidden rounded-2xl border border-border-light bg-surface-container-lowest py-1 shadow-card end-0"
+              className={cn(
+                'absolute z-50 mt-2 min-w-[12rem] overflow-hidden rounded-2xl border border-border-light bg-surface-container-lowest py-1 shadow-card',
+                compact ? 'start-0 top-full' : 'end-0 top-full',
+              )}
             >
               {manageItems.map((item) => {
                 const Icon = item.icon

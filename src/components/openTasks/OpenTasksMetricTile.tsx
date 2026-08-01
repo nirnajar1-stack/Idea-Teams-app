@@ -40,13 +40,15 @@ export function OpenTasksMetricTile({
   icon: Icon,
   tone = 'neutral',
   className,
-}: OpenTasksMetricTileProps) {
+  compact = false,
+}: OpenTasksMetricTileProps & { compact?: boolean }) {
   const styles = toneStyles[tone]
 
   return (
     <article
       className={cn(
-        'flex h-full flex-col justify-between rounded-[1.5rem] border p-5 transition-all duration-300 md:p-6',
+        'flex h-full flex-col justify-between rounded-[1.35rem] border transition-all duration-300',
+        compact ? 'p-3.5 md:p-4' : 'rounded-[1.5rem] p-5 md:p-6',
         styles.shell,
         className,
       )}
@@ -54,15 +56,32 @@ export function OpenTasksMetricTile({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-label-sm text-secondary">{label}</p>
-          <p className={cn('mt-2 font-sans text-[2.5rem] font-bold leading-none tracking-tight', styles.value)}>
+          <p
+            className={cn(
+              'mt-1.5 font-sans font-bold leading-none tracking-tight',
+              compact ? 'text-[1.75rem]' : 'mt-2 text-[2.5rem]',
+              styles.value,
+            )}
+          >
             {value}
           </p>
         </div>
-        <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-full', styles.icon)}>
-          <Icon className="h-5 w-5" aria-hidden />
+        <div
+          className={cn(
+            'flex shrink-0 items-center justify-center rounded-full',
+            compact ? 'h-8 w-8' : 'h-10 w-10',
+            styles.icon,
+          )}
+        >
+          <Icon className={compact ? 'h-4 w-4' : 'h-5 w-5'} />
         </div>
       </div>
-      <p className="mt-5 border-t border-border-light/70 pt-4 text-body-sm leading-relaxed text-secondary">
+      <p
+        className={cn(
+          'border-t border-border-light/70 text-body-sm leading-relaxed text-secondary',
+          compact ? 'mt-3 pt-2.5' : 'mt-5 pt-4',
+        )}
+      >
         {hint}
       </p>
     </article>

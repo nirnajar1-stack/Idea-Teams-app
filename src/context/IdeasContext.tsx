@@ -42,13 +42,16 @@ import {
   todayDateKey,
 } from '../lib/ideaUtils'
 import {
-  canDeleteIdea,
-  canEditIdea,
-  canManageMasterWorkflow,
-  canScheduleOnTimeline,
   canViewIdea,
   filterVisibleIdeas,
 } from '../lib/permissions'
+import {
+  canCompleteIdea,
+  canDeleteIdeaWithRules,
+  canEditIdeaWithRules,
+  canManageExecutionWithRules,
+  canScheduleTimelineWithRules,
+} from '../lib/permissionMatrix'
 import type { IdeaCheckCadence } from '../types/idea'
 import { authorFieldsFromUser } from '../lib/userUtils'
 import { resolveVisibilityOnCreate } from '../lib/ideaVisibility'
@@ -56,6 +59,7 @@ import type { Idea, IdeaFilters, IdeaFormInput, IdeasStats, IdeaSortOption } fro
 import { useAuth } from './AuthContext'
 import { useEmbedMode } from './EmbedModeContext'
 import { useGroups } from './GroupsContext'
+import { usePermissions } from './PermissionsContext'
 import { useUsers } from './UsersContext'
 
 export interface UpdateIdeaResult {
@@ -86,6 +90,7 @@ interface IdeasContextValue {
   getSubIdeas: (parentId: string) => Idea[]
   canDelete: (idea: Idea) => boolean
   canEdit: (idea: Idea) => boolean
+  canComplete: (idea: Idea) => boolean
 }
 
 const IdeasContext = createContext<IdeasContextValue | null>(null)
@@ -134,6 +139,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const { isEmbed } = useEmbedMode()
   const { usersById, isReady: usersReady } = useUsers()
   const { myGroupIds } = useGroups()
+  const { rulesByKey } = usePermissions()
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [isReady, setIsReady] = useState(false)
   const skipSplash = useMemo(
@@ -257,10 +263,18 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
   const stats = useMemo(() => computeStats(visibleIdeas), [visibleIdeas])
 
-  const canDelete = useCallback((idea: Idea) => canDeleteIdea(user, idea), [user])
+  const canDelete = useCallback(
+    (idea: Idea) => canDeleteIdeaWithRules(user, idea, myGroupIds, rulesByKey),
+    [user, myGroupIds, rulesByKey],
+  )
   const canEdit = useCallback(
-    (idea: Idea) => canEditIdea(user, idea, myGroupIds),
-    [user, myGroupIds],
+    (idea: Idea) => canEditIdeaWithRules(user, idea, myGroupIds, rulesByKey),
+    [user, myGroupIds, rulesByKey],
+  )
+  const canComplete = useCallback(
+    (idea: Idea) =>
+      canCompleteIdea(user, idea, myGroupIds, rulesByKey, usersById),
+    [user, myGroupIds, rulesByKey, usersById],
   )
 
   const getIdeaById = useCallback(
@@ -377,7 +391,17 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const updateIdea = useCallback(
     async (id: string, patch: Partial<Idea>): Promise<UpdateIdeaResult> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canEditIdea(user, idea, myGroupIds)) return { ok: false }
+      if (!idea) return { ok: false }
+
+      const isCompleting =
+        patch.workflowStatus === 'completed' && idea.workflowStatus !== 'completed'
+      if (isCompleting) {
+        if (!canCompleteIdea(user, idea, myGroupIds, rulesByKey, usersById)) {
+          return { ok: false }
+        }
+      } else if (!canEditIdeaWithRules(user, idea, myGroupIds, rulesByKey)) {
+        return { ok: false }
+      }
 
       if (usingCloud && user) await updateIdeaInDb(id, patch, user.id)
 
@@ -436,13 +460,15 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return { ok: true, emailNotify }
     },
-    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds, rulesByKey, usersById],
   )
 
   const deleteIdea = useCallback(
     async (id: string): Promise<boolean> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canDeleteIdea(user, idea)) return false
+      if (!idea || !canDeleteIdeaWithRules(user, idea, myGroupIds, rulesByKey)) {
+        return false
+      }
 
       if (usingCloud && user) await deleteIdeaFromDb(id, user.id)
 
@@ -467,7 +493,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return true
     },
-    [applyLocalIdeas, ideas, user, usingCloud],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds, rulesByKey],
   )
 
   const markCompleted = useCallback(
@@ -483,7 +509,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
   const scheduleIdeaOnTimeline = useCallback(
     async (id: string, plannedDate: string | null): Promise<boolean> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canScheduleOnTimeline(user, idea)) return false
+      if (!idea || !canScheduleTimelineWithRules(user, idea, myGroupIds, rulesByKey)) {
+        return false
+      }
 
       const patch: Partial<Idea> = { plannedDate }
 
@@ -502,13 +530,15 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return true
     },
-    [applyLocalIdeas, ideas, user, usingCloud],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds, rulesByKey],
   )
 
   const toggleSentToExecution = useCallback(
     async (id: string, send: boolean): Promise<boolean> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canManageMasterWorkflow(user, idea)) return false
+      if (!idea || !canManageExecutionWithRules(user, idea, myGroupIds, rulesByKey)) {
+        return false
+      }
 
       const patch: Partial<Idea> = send
         ? {
@@ -525,13 +555,15 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return true
     },
-    [applyLocalIdeas, ideas, user, usingCloud],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds, rulesByKey],
   )
 
   const setCheckCadence = useCallback(
     async (id: string, cadence: IdeaCheckCadence | null): Promise<boolean> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canManageMasterWorkflow(user, idea)) return false
+      if (!idea || !canManageExecutionWithRules(user, idea, myGroupIds, rulesByKey)) {
+        return false
+      }
 
       const patch: Partial<Idea> = cadence
         ? { checkCadence: cadence, plannedDate: null }
@@ -553,13 +585,19 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return true
     },
-    [applyLocalIdeas, ideas, user, usingCloud],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds, rulesByKey],
   )
 
   const markRoutineCheckDone = useCallback(
     async (id: string): Promise<boolean> => {
       const idea = ideas.find((i) => i.id === id)
-      if (!idea || !canManageMasterWorkflow(user, idea) || !idea.checkCadence) return false
+      if (
+        !idea ||
+        !canManageExecutionWithRules(user, idea, myGroupIds, rulesByKey) ||
+        !idea.checkCadence
+      ) {
+        return false
+      }
 
       const patch: Partial<Idea> = { lastCheckedAt: todayDateKey() }
 
@@ -571,7 +609,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       return true
     },
-    [applyLocalIdeas, ideas, user, usingCloud],
+    [applyLocalIdeas, ideas, user, usingCloud, myGroupIds, rulesByKey],
   )
 
   const value = useMemo(
@@ -598,6 +636,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getSubIdeas,
       canDelete,
       canEdit,
+      canComplete,
     }),
     [
       ideas,
@@ -622,6 +661,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       getSubIdeas,
       canDelete,
       canEdit,
+      canComplete,
     ],
   )
 

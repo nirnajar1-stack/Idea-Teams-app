@@ -1,11 +1,12 @@
 import { CirclePlus } from 'lucide-react'
 import { useLocation } from 'react-router-dom'
 import { NAV_LABELS, ROUTES } from '../../constants/app'
-import { mobileFooterNavItems } from '../../config/appNavigation'
+import { buildNavContext, mobileFooterNavItems } from '../../config/appNavigation'
 import { useAuth } from '../../context/AuthContext'
+import { useGroups } from '../../context/GroupsContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { usePermissions } from '../../context/PermissionsContext'
 import { useQuickAdd } from '../../context/QuickAddContext'
-import { canManageUsers, isMaster } from '../../lib/permissions'
 import { cn } from '../../lib/cn'
 import { Link } from 'react-router-dom'
 
@@ -13,12 +14,13 @@ export function Footer() {
   const { pathname } = useLocation()
   const { stats } = useIdeas()
   const { user } = useAuth()
+  const { myGroupIds } = useGroups()
+  const { rulesByKey } = usePermissions()
   const { openQuickAdd, isOpen: quickAddOpen } = useQuickAdd()
 
-  const navItems = mobileFooterNavItems({
-    canManageUsers: canManageUsers(user),
-    isMaster: isMaster(user),
-  })
+  const navItems = mobileFooterNavItems(
+    buildNavContext(user, myGroupIds, rulesByKey),
+  )
 
   return (
     <nav

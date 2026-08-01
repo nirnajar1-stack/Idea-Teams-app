@@ -1,4 +1,4 @@
-import { CalendarRange, LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell, Users, Tag, BarChart3 } from 'lucide-react'
+import { CalendarRange, LogOut, Mail, Lightbulb, RefreshCw, UserCog, Bell, Users, Tag, BarChart3, Shield, LayoutGrid } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -6,6 +6,7 @@ import { AppShell } from '../components/layout/AppShell'
 import { APP_NAME_FULL, ROUTES } from '../constants/app'
 import { useAuth } from '../context/AuthContext'
 import { useIdeas } from '../context/IdeasContext'
+import { usePermissions } from '../context/PermissionsContext'
 import { usePreferences } from '../context/PreferencesContext'
 import { canManageUsers, isMaster } from '../lib/permissions'
 import { ACCESS_LEVEL_LABELS } from '../types/user'
@@ -17,6 +18,7 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const { stats, getIdeasByUser } = useIdeas()
+  const { canViewPage } = usePermissions()
   const { prefs, updatePrefs, ready: prefsReady } = usePreferences()
   const [savingPrefs, setSavingPrefs] = useState(false)
 
@@ -25,6 +27,16 @@ export function ProfilePage() {
   const myIdeas = getIdeasByUser(user.id)
   const myInProgress = myIdeas.filter((i) => i.workflowStatus === 'in_progress')
   const isGuest = user.accessLevel === 'guest'
+  const master = isMaster(user)
+  const manager = canManageUsers(user)
+
+  const showUsers = canViewPage('page.users', manager)
+  const showGroups = canViewPage('page.groups', manager)
+  const showEmailLog = canViewPage('page.emailLog', manager)
+  const showLabels = canViewPage('page.labels', master)
+  const showTimeline = canViewPage('page.timeline', master)
+  const showOpenTasks = canViewPage('page.openTasks', true)
+  const showBoards = canViewPage('page.boards', true)
 
   const handleLogout = () => {
     logout()
@@ -70,7 +82,7 @@ export function ProfilePage() {
             </span>
           </div>
           <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
-            {canManageUsers(user) && (
+            {showUsers && (
               <Button
                 icon={<UserCog className="h-4 w-4" />}
                 onClick={() => navigate(ROUTES.users)}
@@ -78,7 +90,7 @@ export function ProfilePage() {
                 משתמשים
               </Button>
             )}
-            {canManageUsers(user) && (
+            {showGroups && (
               <Button
                 variant="secondary"
                 icon={<Users className="h-4 w-4" />}
@@ -87,7 +99,7 @@ export function ProfilePage() {
                 קבוצות
               </Button>
             )}
-            {canManageUsers(user) && (
+            {showEmailLog && (
               <Button
                 variant="secondary"
                 icon={<Mail className="h-4 w-4" />}
@@ -96,7 +108,7 @@ export function ProfilePage() {
                 יומן מיילים
               </Button>
             )}
-            {isMaster(user) && (
+            {showLabels && (
               <Button
                 variant="secondary"
                 icon={<Tag className="h-4 w-4" />}
@@ -105,7 +117,7 @@ export function ProfilePage() {
                 לייבלים
               </Button>
             )}
-            {isMaster(user) && (
+            {showTimeline && (
               <Button
                 variant="secondary"
                 icon={<CalendarRange className="h-4 w-4" />}
@@ -114,13 +126,33 @@ export function ProfilePage() {
                 טיימליין
               </Button>
             )}
-            <Button
-              variant="secondary"
-              icon={<BarChart3 className="h-4 w-4" />}
-              onClick={() => navigate(ROUTES.openTasksDashboard)}
-            >
-              משימות פתוחות
-            </Button>
+            {master && (
+              <Button
+                variant="secondary"
+                icon={<Shield className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.permissions)}
+              >
+                הרשאות
+              </Button>
+            )}
+            {showBoards && (
+              <Button
+                variant="secondary"
+                icon={<LayoutGrid className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.boards)}
+              >
+                לוחות
+              </Button>
+            )}
+            {showOpenTasks && (
+              <Button
+                variant="secondary"
+                icon={<BarChart3 className="h-4 w-4" />}
+                onClick={() => navigate(ROUTES.openTasksDashboard)}
+              >
+                משימות פתוחות
+              </Button>
+            )}
             <Button
               variant="secondary"
               icon={<RefreshCw className="h-4 w-4" />}

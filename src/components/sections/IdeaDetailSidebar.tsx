@@ -19,6 +19,7 @@ import { cn } from '../../lib/cn'
 export interface IdeaDetailSidebarProps {
   idea: Idea
   canEdit: boolean
+  canComplete?: boolean
   canDelete: boolean
   isContainer?: boolean
   onComplete: () => void
@@ -39,6 +40,7 @@ function workflowPatch(status: IdeaWorkflowStatus): Partial<Idea> {
 export function IdeaDetailSidebar({
   idea,
   canEdit,
+  canComplete = canEdit,
   canDelete,
   isContainer = false,
   onComplete,
@@ -70,15 +72,15 @@ export function IdeaDetailSidebar({
             <MasterWorkflowActions user={user} idea={idea} isContainer={isContainer} />
           )}
 
-          {canEdit && !isContainer && (
+          {(canEdit || canComplete) && !isContainer && (
             <WorkflowStatusSelect
               value={idea.workflowStatus}
-              disabled={!canEdit}
+              disabled={!canEdit && !canComplete}
               onChange={handleWorkflowChange}
             />
           )}
 
-          {canEdit && !isContainer && idea.workflowStatus !== 'completed' && (
+          {canComplete && !isContainer && idea.workflowStatus !== 'completed' && (
             <button
               type="button"
               onClick={onComplete}

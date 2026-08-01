@@ -34,12 +34,27 @@ export function OpenTasksDashboardSection({
     : 0
 
   return (
-    <section className="open-tasks-dashboard" aria-label="דשבורד משימות פתוחות">
-      <div className="open-tasks-dashboard__shell">
-        <header className="open-tasks-dashboard__header">
+    <section
+      className={cn('open-tasks-dashboard', isSnapshot && 'mb-5 md:mb-6')}
+      aria-label="דשבורד משימות פתוחות"
+    >
+      <div
+        className={cn(
+          'open-tasks-dashboard__shell',
+          isSnapshot && '!rounded-[1.35rem] !p-4 md:!p-5',
+        )}
+      >
+        <header
+          className={cn(
+            'open-tasks-dashboard__header',
+            isSnapshot && '!mb-4 !pb-3 md:!mb-4',
+          )}
+        >
           <div className="text-right">
             <span className="section-eyebrow">ניהול תפוקה</span>
-            <h2 className="font-display text-headline-md text-on-surface">משימות שלא נסגרו</h2>
+            <h2 className="font-display text-label-md text-on-surface md:text-headline-md">
+              משימות שלא נסגרו
+            </h2>
             {!isSnapshot && (
               <p className="mt-2 max-w-2xl font-body-md leading-relaxed text-secondary">
                 תמונת מצב מרוכזת לזיהוי עומסים, פערי סיווג וצווארי בקבוק — לפי מקור, לייבל,
@@ -50,7 +65,7 @@ export function OpenTasksDashboardSection({
           {showFullViewLink && (
             <Link
               to={ROUTES.openTasksDashboard}
-              className="btn-secondary-light inline-flex min-h-12 shrink-0 items-center gap-2 px-4 py-2.5 text-sm"
+              className="btn-secondary-light inline-flex min-h-10 shrink-0 items-center gap-2 px-3 py-2 text-sm"
             >
               <BarChart3 className="h-4 w-4" />
               תצוגה מלאה
@@ -58,8 +73,9 @@ export function OpenTasksDashboardSection({
           )}
         </header>
 
-        <div className={cn('open-tasks-dashboard__kpi-grid', isSnapshot && 'mb-0')}>
+        <div className={cn('open-tasks-dashboard__kpi-grid', isSnapshot && '!mb-0')}>
           <OpenTasksMetricTile
+            compact={isSnapshot}
             label="משימות פתוחות"
             value={analytics.totalOpen}
             hint="משימות שטרם הושלמו"
@@ -67,6 +83,7 @@ export function OpenTasksDashboardSection({
             tone="neutral"
           />
           <OpenTasksMetricTile
+            compact={isSnapshot}
             label="לטיפול עכשיו"
             value={analytics.attentionCount}
             hint={
@@ -86,13 +103,14 @@ export function OpenTasksDashboardSection({
             }
           />
           <OpenTasksMetricTile
+            compact={isSnapshot}
             label="ללא לייבל"
             value={analytics.unlabeledCount}
             hint="דורשות סיווג לפילוח מדויק"
             icon={Tag}
             tone={analytics.unlabeledCount > analytics.totalOpen * 0.4 ? 'attention' : 'neutral'}
           />
-          <OpenTasksInsightCard analytics={analytics} />
+          <OpenTasksInsightCard analytics={analytics} compact={isSnapshot} />
         </div>
 
         {!isSnapshot && (

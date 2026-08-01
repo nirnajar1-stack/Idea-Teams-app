@@ -30,6 +30,7 @@ export function IdeaDetailPage() {
     updateIdea,
     canDelete,
     canEdit,
+    canComplete,
   } = useIdeas()
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [permissionOpen, setPermissionOpen] = useState(false)
@@ -39,9 +40,10 @@ export function IdeaDetailPage() {
     ? `${window.location.origin}${routes.ideaDetail(idea.id)}`
     : undefined
   const editable = idea ? canEdit(idea) : false
+  const completable = idea ? canComplete(idea) : false
 
   const handleComplete = () => {
-    if (!idea) return
+    if (!idea || !completable) return
     void markCompleted(idea.id).then((result) => {
       if (!result.ok) {
         toast.error('העדכון נכשל')
@@ -116,7 +118,7 @@ export function IdeaDetailPage() {
       <AppShell variant="back" showShare shareUrl={shareUrl}>
         <div
           className={
-            editable
+            editable || completable
               ? 'grid grid-cols-1 gap-gutter pb-20 lg:grid-cols-12 lg:pb-0'
               : 'grid grid-cols-1 gap-gutter lg:grid-cols-12'
           }
@@ -132,6 +134,7 @@ export function IdeaDetailPage() {
           <IdeaDetailSidebar
             idea={idea}
             canEdit={editable}
+            canComplete={completable}
             canDelete={canDelete(idea)}
             isContainer={isContainerIdea(idea)}
             onComplete={handleComplete}
@@ -145,6 +148,7 @@ export function IdeaDetailPage() {
         <IdeaDetailMobileActions
           idea={idea}
           canEdit={editable}
+          canComplete={completable}
           isContainer={isContainerIdea(idea)}
           onComplete={handleComplete}
           onUpdate={(patch) => void handleUpdate(patch)}

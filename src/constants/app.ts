@@ -20,6 +20,10 @@ export const ROUTES = {
   groups: '/groups',
   emailLog: '/email-log',
   openTasksDashboard: '/insights/open-tasks',
+  permissions: '/permissions',
+  boards: '/boards',
+  boardsManage: '/boards/manage',
+  boardDetail: (id: string) => `/boards/${id}`,
 } as const
 
 /** נתיבים לשילוב ב-Power BI (iframe) */
@@ -57,4 +61,6 @@ export const NAV_LABELS = {
   emailLog: 'יומן מיילים',
   openTasks: 'משימות פתוחות',
   manage: 'ניהול',
+  permissions: 'הרשאות',
+  boards: 'לוחות',
 } as const

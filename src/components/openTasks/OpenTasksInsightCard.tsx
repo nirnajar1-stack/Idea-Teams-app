@@ -26,21 +26,45 @@ export function buildOpenTasksInsight(analytics: OpenTasksAnalytics): string {
   return 'המשך מעקב שבועי אחר משימות פתוחות ימנע הצטברות עומס.'
 }
 
-export function OpenTasksInsightCard({ analytics }: { analytics: OpenTasksAnalytics }) {
+export function OpenTasksInsightCard({
+  analytics,
+  compact = false,
+}: {
+  analytics: OpenTasksAnalytics
+  compact?: boolean
+}) {
   return (
-    <aside className="flex h-full flex-col justify-between border border-primary/15 bg-surface-container-lowest p-5 md:p-6">
+    <aside
+      className={
+        compact
+          ? 'flex h-full flex-col justify-between rounded-[1.35rem] border border-primary/15 bg-surface-container-lowest p-3.5 md:p-4'
+          : 'flex h-full flex-col justify-between border border-primary/15 bg-surface-container-lowest p-5 md:p-6'
+      }
+    >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-primary/12 text-primary">
-          <Lightbulb className="h-5 w-5" aria-hidden />
+        <div
+          className={
+            compact
+              ? 'flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary'
+              : 'flex h-10 w-10 shrink-0 items-center justify-center bg-primary/12 text-primary'
+          }
+        >
+          <Lightbulb className={compact ? 'h-4 w-4' : 'h-5 w-5'} aria-hidden />
         </div>
         <div>
           <p className="font-label-md text-on-surface">תובנה תפעולית</p>
-          <p className="mt-2 text-body-sm leading-relaxed text-on-surface-variant">
+          <p className="mt-1.5 text-body-sm leading-snug text-on-surface-variant md:leading-relaxed">
             {buildOpenTasksInsight(analytics)}
           </p>
         </div>
       </div>
-      <p className="mt-5 border-t border-border-light pt-4 text-xs text-secondary">
+      <p
+        className={
+          compact
+            ? 'mt-3 border-t border-border-light pt-2.5 text-xs text-secondary'
+            : 'mt-5 border-t border-border-light pt-4 text-xs text-secondary'
+        }
+      >
         מבוסס על {analytics.totalOpen} משימות פתוחות
         {analytics.attentionCount > 0
           ? ` · ${analytics.attentionCount} לטיפול מיידי`

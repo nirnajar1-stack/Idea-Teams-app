@@ -28,16 +28,19 @@ export function RecentIdeasSection() {
   const recent = getRecentIdeas(3, sort)
 
   return (
-    <section className="glass-card overflow-hidden animate-fade-up" aria-label="בקשות/רעיונות אחרונים">
-      <div className="flex items-center justify-between border-b border-border-light p-6 md:p-8">
-        <h3 className="font-display text-headline-md text-on-surface">
-          בקשות/רעיונות אחרונים
+    <section
+      className="glass-card mb-0 overflow-hidden animate-fade-up"
+      aria-label="בקשות/רעיונות אחרונים"
+    >
+      <div className="flex items-center justify-between gap-3 border-b border-border-light px-4 py-3 md:px-5">
+        <h3 className="font-display text-label-md text-on-surface md:text-headline-md">
+          אחרונים
         </h3>
         <Link
           to={ROUTES.ideas}
-          className="font-label-md text-primary transition-colors hover:underline"
+          className="shrink-0 font-label-md text-primary transition-colors hover:underline"
         >
-          צפה בכל הבקשות/רעיונות
+          הכל
         </Link>
       </div>
 
@@ -54,28 +57,24 @@ export function RecentIdeasSection() {
         />
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-right">
+          <table className="w-full min-w-[560px] text-right">
             <thead className="bg-surface-subtle">
               <tr>
-                <th className="px-4 py-4 font-label-md text-secondary md:px-8">
-                  שם הבקשה/רעיון
-                </th>
-                <th className="hidden px-8 py-4 font-label-md text-secondary sm:table-cell">
+                <th className="px-4 py-2.5 font-label-sm text-secondary">שם</th>
+                <th className="hidden px-4 py-2.5 font-label-sm text-secondary sm:table-cell">
                   קטגוריה
                 </th>
-                <th className="hidden px-8 py-4 font-label-md text-secondary lg:table-cell">
+                <th className="hidden px-4 py-2.5 font-label-sm text-secondary lg:table-cell">
                   יוצר
                 </th>
-                <th className="px-4 py-4 font-label-md text-secondary md:px-8">
-                  סטטוס
+                <th className="px-4 py-2.5 font-label-sm text-secondary">סטטוס</th>
+                <th className="hidden px-4 py-2.5 font-label-sm text-secondary md:table-cell">
+                  יעד
                 </th>
-                <th className="hidden px-8 py-4 font-label-md text-secondary md:table-cell">
-                  יעד התחלה
-                </th>
-                <th className="hidden px-8 py-4 font-label-md text-secondary xl:table-cell">
+                <th className="hidden px-4 py-2.5 font-label-sm text-secondary xl:table-cell">
                   נוצר
                 </th>
-                <th className="px-4 py-4 md:px-8" aria-hidden />
+                <th className="px-4 py-2.5" aria-hidden />
               </tr>
             </thead>
             <tbody className="divide-y divide-border-light">
@@ -94,6 +93,7 @@ export function RecentIdeasSection() {
                     date={formatIdeaDate(idea.createdAt)}
                     icon={meta.icon}
                     iconWrapperClassName={meta.className}
+                    compact
                   />
                 )
               })}
