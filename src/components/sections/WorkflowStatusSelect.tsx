@@ -1,4 +1,5 @@
 import { CheckCheck, Clock, Loader } from 'lucide-react'
+import { useFlashOnChange } from '../../hooks/useFlashOnChange'
 import { WORKFLOW_LABELS } from '../../lib/ideaUtils'
 import type { IdeaWorkflowStatus } from '../../types/idea'
 import { cn } from '../../lib/cn'
@@ -24,6 +25,8 @@ export function WorkflowStatusSelect({
   disabled = false,
   onChange,
 }: WorkflowStatusSelectProps) {
+  const flashClass = useFlashOnChange(value)
+
   return (
     <div className="space-y-2">
       <span className="block font-label-md text-secondary">סטטוס בקשה/רעיון</span>
@@ -35,10 +38,11 @@ export function WorkflowStatusSelect({
             disabled={disabled}
             onClick={() => onChange(opt)}
             className={cn(
-              'flex flex-col items-center gap-1 border py-3 font-label-sm transition-colors disabled:opacity-50',
+              'flex flex-col items-center gap-1 border py-3 font-label-sm transition-all duration-300 disabled:opacity-50',
               value === opt
                 ? `${color} bg-current/5 ring-2 ring-current/20`
                 : 'border-border-light text-on-surface-variant hover:border-primary/20',
+              value === opt && flashClass,
             )}
           >
             <Icon className="h-4 w-4" />

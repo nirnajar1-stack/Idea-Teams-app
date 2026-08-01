@@ -251,7 +251,7 @@ export function PermissionsManagementPage() {
 
         {/* מעבר ברור בין תצוגות ↔ פעולות */}
         <div
-          className="sticky top-14 z-30 -mx-4 mb-5 border-b border-border-light bg-background/95 px-4 py-2 backdrop-blur-md md:top-16 md:mx-0 md:mb-6 md:rounded-2xl md:border md:bg-surface-container-lowest md:px-2 md:py-2 md:shadow-soft md:backdrop-blur-none"
+          className="sticky top-[7.5rem] z-30 -mx-4 mb-5 border-b border-border-light bg-background/95 px-4 py-2 backdrop-blur-md md:top-16 md:mx-0 md:mb-6 md:rounded-2xl md:border md:bg-surface-container-lowest md:px-2 md:py-2 md:shadow-soft md:backdrop-blur-none"
           role="tablist"
           aria-label="קטגוריית הרשאות"
         >

@@ -152,6 +152,10 @@ export default {
       animation: {
         'fade-up': 'fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards',
         'soft-pulse': 'softPulse 5s ease-in-out infinite',
+        'page-enter': 'pageEnter 0.22s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'list-in': 'listIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both',
+        'status-flash': 'statusFlash 0.48s cubic-bezier(0.22, 1, 0.36, 1)',
+        'status-pop': 'statusPop 0.4s cubic-bezier(0.22, 1, 0.36, 1)',
       },
       keyframes: {
         fadeUp: {
@@ -161,6 +165,27 @@ export default {
         softPulse: {
           '0%, 100%': { opacity: '0.3' },
           '50%': { opacity: '0.55' },
+        },
+        pageEnter: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        listIn: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        statusFlash: {
+          '0%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgb(var(--primary-rgb) / 0)' },
+          '35%': {
+            transform: 'scale(1.04)',
+            boxShadow: '0 0 0 4px rgb(var(--primary-rgb) / 0.22)',
+          },
+          '100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgb(var(--primary-rgb) / 0)' },
+        },
+        statusPop: {
+          '0%': { opacity: '0', transform: 'scale(0.88)' },
+          '60%': { opacity: '1', transform: 'scale(1.05)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
       },
     },

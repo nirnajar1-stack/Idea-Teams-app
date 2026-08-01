@@ -37,7 +37,7 @@ export function IdeasListToolbar({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex w-full min-w-0 flex-wrap items-center gap-2 sm:gap-3">
         {showExport && onExportClick && (
           <button
             type="button"
@@ -49,12 +49,12 @@ export function IdeasListToolbar({
           </button>
         )}
 
-        <label className="flex items-center gap-2 font-label-sm text-on-surface">
+        <label className="flex min-w-0 flex-1 items-center gap-2 font-label-sm text-on-surface sm:flex-none">
           <span className="hidden text-secondary sm:inline">מיון</span>
           <select
             value={sort}
             onChange={(e) => onSortChange(e.target.value as IdeaSortOption)}
-            className="boutique-input min-w-[11rem] py-2.5 text-label-sm"
+            className="boutique-input w-full max-w-full py-2.5 text-label-sm sm:min-w-[11rem]"
             aria-label="מיון בקשות/רעיונות"
           >
             {(Object.keys(IDEA_SORT_LABELS) as IdeaSortOption[]).map((key) => (

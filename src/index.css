@@ -442,6 +442,42 @@
     animation-delay: 300ms;
   }
 
+  .page-enter {
+    @apply animate-page-enter;
+  }
+
+  .list-stagger > * {
+    @apply animate-list-in;
+  }
+
+  .list-stagger > *:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .list-stagger > *:nth-child(2) {
+    animation-delay: 40ms;
+  }
+  .list-stagger > *:nth-child(3) {
+    animation-delay: 80ms;
+  }
+  .list-stagger > *:nth-child(4) {
+    animation-delay: 120ms;
+  }
+  .list-stagger > *:nth-child(5) {
+    animation-delay: 160ms;
+  }
+  .list-stagger > *:nth-child(6) {
+    animation-delay: 200ms;
+  }
+  .list-stagger > *:nth-child(7) {
+    animation-delay: 240ms;
+  }
+  .list-stagger > *:nth-child(8) {
+    animation-delay: 280ms;
+  }
+  .list-stagger > *:nth-child(n + 9) {
+    animation-delay: 300ms;
+  }
+
   .lambo-empty {
     @apply rounded-[1.75rem] border border-transparent bg-surface-container-lowest px-6 py-14;
     box-shadow: var(--shadow-card);
@@ -926,4 +962,19 @@ html.embed-mode body {
 
 .embed-toolbar {
   flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .list-stagger > *,
+  .lambo-stagger > *,
+  .animate-fade-up,
+  .animate-page-enter,
+  .animate-list-in,
+  .animate-status-flash,
+  .animate-status-pop {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

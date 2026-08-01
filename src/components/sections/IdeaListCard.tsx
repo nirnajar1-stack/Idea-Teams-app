@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useAppRoutes } from '../../context/EmbedModeContext'
 import { useIdeas } from '../../context/IdeasContext'
+import { useFlashOnChange } from '../../hooks/useFlashOnChange'
 import {
   CATEGORY_LABELS,
   formatIdeaDate,
@@ -50,6 +51,8 @@ export function IdeaListCard({
 }: IdeaListCardProps) {
   const routes = useAppRoutes()
   const { getSubIdeas } = useIdeas()
+  const executionFlash = useFlashOnChange(idea.sentToExecution)
+  const priorityFlash = useFlashOnChange(idea.priority)
   const CategoryIcon =
     idea.category === 'development'
       ? Code
@@ -67,7 +70,10 @@ export function IdeaListCard({
         onExecutionToggle(idea.id, send)
         toast.success(send ? 'סומן לביצוע' : 'הוסר תיוג לביצוע')
       }}
-      className="inline-flex shrink-0 items-center gap-1 border border-primary/20 bg-primary/5 px-2.5 py-1.5 font-label-sm text-primary transition-colors hover:bg-primary/10"
+      className={cn(
+        'inline-flex shrink-0 items-center gap-1 border border-primary/20 bg-primary/5 px-2.5 py-1.5 font-label-sm text-primary transition-all duration-300 hover:bg-primary/10',
+        executionFlash,
+      )}
     >
       <ListTodo className="h-3.5 w-3.5" />
       {idea.sentToExecution ? 'הסר לביצוע' : 'תייג לביצוע'}
@@ -106,7 +112,10 @@ export function IdeaListCard({
             <h3 className="truncate font-label-md text-on-surface group-hover:text-primary">
               {idea.title}
             </h3>
-            <Badge variant={priorityVariant[idea.priority]} className="!py-0 text-[10px]">
+            <Badge
+              variant={priorityVariant[idea.priority]}
+              className={cn('!py-0 text-[10px]', priorityFlash)}
+            >
               {PRIORITY_LABELS[idea.priority]}
             </Badge>
             <TargetDateBadge
@@ -136,7 +145,10 @@ export function IdeaListCard({
 
   const primaryBadges = (
     <>
-      <Badge variant={priorityVariant[idea.priority]}>
+      <Badge
+        variant={priorityVariant[idea.priority]}
+        className={priorityFlash}
+      >
         {PRIORITY_LABELS[idea.priority]}
       </Badge>
       <Badge variant="surface" icon={<CategoryIcon className="h-3.5 w-3.5" />}>

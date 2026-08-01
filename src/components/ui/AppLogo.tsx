@@ -92,7 +92,7 @@ export function AppLogo({
     <div className={cn('flex min-w-0 items-center', s.gap, className)}>
       <LogoMark sizeClass={s.mark} />
       {showLabel && (
-        <div className="min-w-0 text-start leading-none">
+        <div className="min-w-0 text-start leading-none max-sm:hidden">
           <span
             className={cn(
               'block truncate font-display font-semibold tracking-tight text-on-surface',

@@ -47,13 +47,9 @@ export function CompletedIdeasSection({ ideas, compact }: CompletedIdeasSectionP
       )}
 
       {open && ideas.length > 0 && (
-        <div className={cn('space-y-3 opacity-90', compact && 'space-y-2')}>
-          {ideas.map((idea, i) => (
-            <div
-              key={idea.id}
-              className="animate-fade-up"
-              style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
-            >
+        <div className={cn('list-stagger space-y-3 opacity-90', compact && 'space-y-2')}>
+          {ideas.map((idea) => (
+            <div key={idea.id}>
               <IdeaListCard idea={idea} compact={compact} completed />
             </div>
           ))}

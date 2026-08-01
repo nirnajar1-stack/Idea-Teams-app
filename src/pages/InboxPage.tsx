@@ -7,6 +7,7 @@ import { IdeasListToolbar } from '../components/sections/IdeasListToolbar'
 import { EmptyState } from '../components/ui/EmptyState'
 import { useIdeas } from '../context/IdeasContext'
 import { ROUTES } from '../constants/app'
+import { cn } from '../lib/cn'
 import { loadIdeasViewPrefs, saveIdeasViewPrefs } from '../lib/ideasViewPrefs'
 import { filterIdeas, sortIdeas } from '../lib/ideaUtils'
 import { IDEA_SOURCES, type IdeasViewPrefs } from '../types/idea'
@@ -104,7 +105,7 @@ export function InboxPage() {
           />
         </div>
       ) : (
-        <div className={viewPrefs.compact ? 'space-y-2' : 'space-y-3'}>
+        <div className={cn('list-stagger', viewPrefs.compact ? 'space-y-2' : 'space-y-3')}>
           {inboxIdeas.map((idea) => (
             <IdeaListCard
               key={idea.id}

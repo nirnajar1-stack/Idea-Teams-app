@@ -74,7 +74,7 @@ export function LinkedBoardsPage() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="list-stagger grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {boards.map((board) => {
             const mode = resolveViewMode(board.provider, board.viewMode)
             return (
@@ -82,7 +82,7 @@ export function LinkedBoardsPage() {
                 key={board.id}
                 type="button"
                 onClick={() => openBoard(board.id, board.url, board.title, mode)}
-                className="glass-card-hover flex flex-col gap-3 p-4 text-right"
+                className="glass-card-hover flex flex-col gap-3 p-4 text-right active:scale-[0.98]"
               >
                 <div className="flex items-start gap-3">
                   <span

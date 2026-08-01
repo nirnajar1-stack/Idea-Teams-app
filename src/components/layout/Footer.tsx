@@ -35,7 +35,7 @@ export function Footer() {
               key={item.id}
               to={item.to}
               className={cn(
-                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 py-1 transition-colors duration-200',
+                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 py-1 transition-all duration-200 active:scale-95',
                 active ? 'text-white' : 'text-white/45',
               )}
               aria-current={active ? 'page' : undefined}
@@ -61,7 +61,7 @@ export function Footer() {
           type="button"
           onClick={openQuickAdd}
           className={cn(
-            'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 transition-colors duration-200',
+            'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 transition-all duration-200 active:scale-95',
             quickAddOpen || pathname === ROUTES.addIdea
               ? 'text-white'
               : 'text-white/45',

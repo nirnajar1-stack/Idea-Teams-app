@@ -87,7 +87,7 @@ export function Navbar({
       )}
     >
       <div className="nav-glass__scanline" aria-hidden />
-      <div className="flex h-14 items-center justify-between px-margin-mobile md:h-16 md:px-margin-desktop">
+      <div className="relative z-10 flex h-14 items-center justify-between px-margin-mobile md:h-16 md:px-margin-desktop">
         <div className="flex min-w-0 items-center gap-3">
           {variant === 'back' && (
             <button
@@ -130,7 +130,7 @@ export function Navbar({
           </div>
         )}
 
-        <div className="flex shrink-0 items-center gap-2 md:gap-3">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2 md:gap-3">
           {(variant === 'main' || variant === 'ideas') && (
             <button
               type="button"
@@ -157,7 +157,9 @@ export function Navbar({
               שיתוף
             </button>
           )}
-          <ThemeToggle />
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
           <NotificationBell />
           <Link to={ROUTES.profile} title={user?.name} className="block">
             <Avatar alt={user?.name ?? 'משתמש'} size="md" />
@@ -165,13 +167,26 @@ export function Navbar({
           <button
             type="button"
             onClick={handleLogout}
-            className="p-2 text-secondary transition-colors duration-300 hover:text-error"
+            className="hidden p-2 text-secondary transition-colors duration-300 hover:text-error sm:inline-flex"
             aria-label="יציאה"
           >
             <LogOut className="h-5 w-5" />
           </button>
         </div>
       </div>
+
+      {/* מובייל: מעבר דפים לחיץ מתחת לסרגל */}
+      {showMainNav && (
+        <div className="relative z-10 border-t border-border-light/70 px-2 pb-1.5 pt-1 md:hidden">
+          <NavTabs
+            items={primaryNavItems.filter((item) => item.id !== 'profile')}
+            manageItems={manageNavItems}
+            pathname={pathname}
+            inboxCount={stats.inboxCount}
+            compact
+          />
+        </div>
+      )}
 
       <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>

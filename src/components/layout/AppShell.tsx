@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useEmbedMode } from '../../context/EmbedModeContext'
 import { Footer } from './Footer'
@@ -22,11 +23,17 @@ export function AppShell({
 }: AppShellProps) {
   const { user } = useAuth()
   const { isEmbed } = useEmbedMode()
+  const { pathname } = useLocation()
   const maxWidthClass = {
     default: 'max-w-container-max',
     narrow: 'max-w-[800px]',
     full: 'max-w-container-max',
   }[maxWidth]
+
+  const showMobilePageNav =
+    navbarProps.variant === 'main' ||
+    navbarProps.variant === 'ideas' ||
+    navbarProps.variant == null
 
   if (isEmbed) {
     return (
@@ -38,7 +45,9 @@ export function AppShell({
             maxWidthClass,
           )}
         >
-          {children}
+          <div key={pathname} className="page-enter">
+            {children}
+          </div>
         </main>
       </div>
     )
@@ -49,11 +58,14 @@ export function AppShell({
       <Navbar connectedAs={connectedAs ?? user?.name} shareUrl={shareUrl} {...navbarProps} />
       <main
         className={cn(
-          'relative mx-auto px-4 pb-10 pt-16 md:px-margin-desktop md:pb-12 md:pt-24',
+          'relative mx-auto px-4 pb-10 md:px-margin-desktop md:pb-12 md:pt-24',
+          showMobilePageNav ? 'pt-[7.5rem]' : 'pt-16',
           maxWidthClass,
         )}
       >
-        {children}
+        <div key={pathname} className="page-enter">
+          {children}
+        </div>
       </main>
       <Footer />
     </div>

@@ -41,7 +41,7 @@ export function TargetDateBadge({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 border font-label-sm',
+        'inline-flex items-center gap-1.5 border font-label-sm transition-[color,background-color,border-color] duration-300',
         statusStyles[status],
         compact ? 'px-2.5 py-1' : 'px-3 py-1.5',
       )}

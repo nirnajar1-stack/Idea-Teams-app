@@ -53,11 +53,11 @@ export function IdeasFiltersPanel({
   }, [categories.length, sources.length, onlyMine, priority, onlyExecution])
 
   return (
-    <div className="sticky top-14 z-20 lg:top-24">
+    <div className="lg:sticky lg:top-24 lg:z-10">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="mb-4 flex w-full items-center justify-between rounded-[1.35rem] border border-transparent bg-surface-container-lowest px-4 py-3 shadow-soft transition-colors hover:shadow-card lg:hidden"
+        className="mb-3 flex w-full items-center justify-between rounded-[1.35rem] border border-transparent bg-surface-container-lowest px-4 py-3 shadow-soft transition-colors hover:shadow-card lg:hidden"
         aria-expanded={open}
       >
         <span className="flex items-center gap-2 font-label-md text-on-surface">

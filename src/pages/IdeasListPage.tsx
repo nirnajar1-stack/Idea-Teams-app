@@ -269,13 +269,9 @@ export function IdeasListPage() {
               onExecutionToggle={handleExecutionToggle}
             />
           ) : (
-            <div className="space-y-4">
-              {activeIdeas.map((idea, i) => (
-                <div
-                  key={idea.id}
-                  className="animate-fade-up"
-                  style={{ animationDelay: `${Math.min(i, 10) * 45}ms` }}
-                >
+            <div className="list-stagger space-y-4">
+              {activeIdeas.map((idea) => (
+                <div key={idea.id}>
                   <IdeaListCard
                     idea={idea}
                     showMasterExecutionToggle={canManageExecution}

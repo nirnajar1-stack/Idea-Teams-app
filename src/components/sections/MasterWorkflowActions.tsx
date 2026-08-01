@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { useGroups } from '../../context/GroupsContext'
 import { useIdeas } from '../../context/IdeasContext'
 import { usePermissions } from '../../context/PermissionsContext'
+import { useFlashOnChange } from '../../hooks/useFlashOnChange'
 import { canManageExecutionWithRules } from '../../lib/permissionMatrix'
 import { cn } from '../../lib/cn'
 import type { AppUser } from '../../types/user'
@@ -23,6 +24,7 @@ export function MasterWorkflowActions({
   const { toggleSentToExecution, setCheckCadence, markRoutineCheckDone } = useIdeas()
   const { myGroupIds } = useGroups()
   const { rulesByKey } = usePermissions()
+  const executionFlash = useFlashOnChange(idea.sentToExecution)
 
   if (
     !canManageExecutionWithRules(user, idea, myGroupIds, rulesByKey) ||
@@ -65,10 +67,11 @@ export function MasterWorkflowActions({
         onClick={() => void handleExecutionToggle()}
         disabled={idea.workflowStatus === 'completed'}
         className={cn(
-          'flex w-full items-center justify-center gap-2 border py-4 font-label-md transition-colors',
+          'flex w-full items-center justify-center gap-2 border py-4 font-label-md transition-all duration-300',
           idea.sentToExecution
             ? 'border-primary bg-primary/15 text-primary hover:bg-primary/20'
             : 'border-border-light bg-surface-container-low text-on-surface hover:border-primary/30',
+          executionFlash,
         )}
       >
         <ListTodo className="h-5 w-5" />
