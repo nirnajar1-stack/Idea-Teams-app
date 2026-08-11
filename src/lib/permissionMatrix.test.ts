@@ -5,52 +5,72 @@ import {
   passesPermissionGate,
 } from './permissionMatrix'
 import type { Idea } from '../types/idea'
-import type { PermissionRule } from '../types/permission'
+import type { PermissionKey, PermissionRule } from '../types/permission'
 import type { AppUser } from '../types/user'
 
 const master: AppUser = {
   id: 'm1',
   name: 'Master',
   email: 'm@x',
-  jobTitle: '',
+  jobTitle: 'מאסטר',
+  initials: 'MA',
+  username: 'master',
   accessLevel: 'master',
+  active: true,
 }
+
 const member: AppUser = {
   id: 'u1',
   name: 'Member',
   email: 'u@x',
-  jobTitle: '',
+  jobTitle: 'משתמש',
+  initials: 'ME',
+  username: 'member',
   accessLevel: 'member',
+  active: true,
 }
 
 const idea: Idea = {
   id: 'i1',
+  externalId: 'EXT-1',
   title: 't',
   description: '',
-  category: 'process',
-  source: 'employee',
+  category: 'development',
+  department: 'פיתוח',
+  ideaSource: 'mitamim',
+  priority: 'medium',
   workflowStatus: 'in_progress',
   progress: 10,
   progressStep: '',
   createdAt: '2024-01-01',
+  targetStartDate: '2024-01-15',
+  sendToMaybeInbox: false,
   createdByUserId: 'u1',
-  createdByName: 'Member',
-  visibility: 'public',
+  authorName: 'Member',
+  authorRole: 'משתמש',
+  authorInitials: 'ME',
+  tags: [],
+  goals: [],
+  attachments: [],
+  visibility: 'team',
   ideaKind: 'standard',
 }
 
 function rules(
-  entries: Partial<Record<string, Pick<PermissionRule, 'mode' | 'groupIds'>>>,
-): Map<string, PermissionRule> {
-  const map = new Map<string, PermissionRule>()
-  for (const [key, value] of Object.entries(entries)) {
+  entries: Partial<Record<PermissionKey, Pick<PermissionRule, 'mode' | 'groupIds'>>>,
+): Map<PermissionKey, PermissionRule> {
+  const map = new Map<PermissionKey, PermissionRule>()
+  for (const [key, value] of Object.entries(entries) as [
+    PermissionKey,
+    Pick<PermissionRule, 'mode' | 'groupIds'>,
+  ][]) {
     map.set(key, {
-      key: key as PermissionRule['key'],
-      mode: value!.mode,
-      groupIds: value!.groupIds ?? [],
+      key,
+      mode: value.mode,
+      groupIds: value.groupIds ?? [],
     })
   }
-  return map as Map<PermissionRule['key'], PermissionRule>
+  return map
 }
 
 describe('permission matrix', () => {
