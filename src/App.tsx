@@ -13,6 +13,7 @@ import { IdeasProvider } from './context/IdeasContext'
 import { UsersProvider } from './context/UsersContext'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { MasterRoute } from './components/layout/MasterRoute'
+import { ManagerRoute } from './components/layout/ManagerRoute'
 import { PermissionGate } from './components/layout/PermissionGate'
 import {
   DefaultHomeRedirect,
@@ -35,6 +36,7 @@ import { EmailLogPage } from './pages/EmailLogPage'
 import { OpenTasksDashboardPage } from './pages/OpenTasksDashboardPage'
 import { TimelinePage } from './pages/TimelinePage'
 import { PermissionsManagementPage } from './pages/PermissionsManagementPage'
+import { ManageHubPage } from './pages/ManageHubPage'
 import { LinkedBoardsPage } from './pages/LinkedBoardsPage'
 import { LinkedBoardViewerPage } from './pages/LinkedBoardViewerPage'
 import { LinkedBoardsManagePage } from './pages/LinkedBoardsManagePage'
@@ -139,6 +141,10 @@ function RoleDefaultGates() {
 
         <Route element={<MasterRoute />}>
           <Route path={ROUTES.permissions} element={<PermissionsManagementPage />} />
+        </Route>
+
+        <Route element={<ManagerRoute />}>
+          <Route path={ROUTES.manage} element={<ManageHubPage />} />
         </Route>
 
         <Route path="*" element={<DefaultHomeRedirect />} />

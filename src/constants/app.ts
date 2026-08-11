@@ -21,6 +21,7 @@ export const ROUTES = {
   emailLog: '/email-log',
   openTasksDashboard: '/insights/open-tasks',
   permissions: '/permissions',
+  manage: '/manage',
   boards: '/boards',
   boardsManage: '/boards/manage',
   boardDetail: (id: string) => `/boards/${id}`,
