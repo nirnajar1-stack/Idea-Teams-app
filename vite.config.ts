@@ -9,6 +9,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['ogen-logo.png', 'favicon.png'],
+      workbox: {
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        navigateFallback: 'index.html',
+      },
       manifest: {
         name: 'Ogen System',
         short_name: 'Ogen',
