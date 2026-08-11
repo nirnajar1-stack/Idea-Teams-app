@@ -1,9 +1,11 @@
-import { Shield } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { Shield, Users } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
 import { useGroups } from '../context/GroupsContext'
 import { usePermissions } from '../context/PermissionsContext'
+import { ROUTES } from '../constants/app'
 import { cn } from '../lib/cn'
 import {
   PERMISSION_CATALOG,
@@ -22,6 +24,30 @@ const MODE_OPTIONS: { mode: PermissionMode; short: string }[] = [
   { mode: 'groups', short: 'קבוצות' },
   { mode: 'disabled', short: 'חסום' },
 ]
+
+function ruleFingerprint(rules: Map<PermissionKey, PermissionRule>): string {
+  return PERMISSION_CATALOG.map((item) => {
+    const r = rules.get(item.key) ?? defaultRule(item.key)
+    const groups = [...r.groupIds].sort().join(',')
+    return `${r.key}:${r.mode}:${groups}`
+  }).join('|')
+}
+
+function cloneRulesMap(
+  source: Map<PermissionKey, PermissionRule>,
+): Map<PermissionKey, PermissionRule> {
+  const map = new Map<PermissionKey, PermissionRule>()
+  for (const [key, rule] of source) {
+    map.set(key, {
+      key: rule.key,
+      mode: rule.mode,
+      groupIds: [...rule.groupIds],
+      updatedAt: rule.updatedAt,
+      updatedByUserId: rule.updatedByUserId,
+    })
+  }
+  return map
+}
 
 function RuleRowEditor({
   itemKey,
@@ -65,7 +91,7 @@ function RuleRowEditor({
                   selected
                     ? 'bg-primary text-on-primary shadow-soft'
                     : 'text-secondary hover:text-on-surface',
-                  locked && 'opacity-60',
+                  locked && 'cursor-not-allowed opacity-60',
                 )}
               >
                 {short}
@@ -79,9 +105,18 @@ function RuleRowEditor({
         <div>
           <p className="mb-2 font-label-sm text-secondary">קבוצות מורשות</p>
           {groups.length === 0 ? (
-            <p className="text-body-sm text-secondary">
-              אין קבוצות פעילות — צרו קבוצות במסך הקבוצות תחילה.
-            </p>
+            <div className="rounded-xl border border-dashed border-border-light bg-surface-subtle px-4 py-3 text-right">
+              <p className="text-body-sm text-secondary">
+                אין קבוצות פעילות — אי אפשר לשמור מצב «קבוצות» בלי לבחור לפחות קבוצה אחת.
+              </p>
+              <Link
+                to={ROUTES.groups}
+                className="mt-2 inline-flex items-center gap-1.5 font-label-sm text-primary hover:underline"
+              >
+                <Users className="h-4 w-4" />
+                מעבר לניהול קבוצות
+              </Link>
+            </div>
           ) : (
             <div className="flex flex-wrap gap-2">
               {groups.map((g) => {
@@ -152,14 +187,18 @@ function PermissionCard({
 
 export function PermissionsManagementPage() {
   const { groups } = useGroups()
-  const { rulesByKey, saveRules, isReady } = usePermissions()
+  const { rulesByKey, saveRules, isReady, canManage, refresh } = usePermissions()
   const [drafts, setDrafts] = useState<Map<PermissionKey, PermissionRule>>(new Map())
   const [saving, setSaving] = useState(false)
   const [section, setSection] = useState<SectionTab>('pages')
+  const syncedFingerprint = useRef<string | null>(null)
 
   useEffect(() => {
     if (!isReady) return
-    setDrafts(new Map(rulesByKey))
+    const fp = ruleFingerprint(rulesByKey)
+    if (syncedFingerprint.current === fp) return
+    syncedFingerprint.current = fp
+    setDrafts(cloneRulesMap(rulesByKey))
   }, [isReady, rulesByKey])
 
   const pages = useMemo(
@@ -176,7 +215,13 @@ export function PermissionsManagementPage() {
   const updateDraft = (key: PermissionKey, next: PermissionRule) => {
     setDrafts((prev) => {
       const map = new Map(prev)
-      map.set(key, next)
+      map.set(key, {
+        key: next.key,
+        mode: next.mode,
+        groupIds: [...next.groupIds],
+        updatedAt: next.updatedAt,
+        updatedByUserId: next.updatedByUserId,
+      })
       return map
     })
   }
@@ -190,7 +235,7 @@ export function PermissionsManagementPage() {
       const sameMode = draft.mode === saved.mode
       const sameGroups =
         draft.groupIds.length === saved.groupIds.length &&
-        draft.groupIds.every((id) => saved.groupIds.includes(id))
+        [...draft.groupIds].sort().every((id, i) => id === [...saved.groupIds].sort()[i])
       if (!sameMode || !sameGroups) {
         changed.push({
           key: item.key,
@@ -208,22 +253,36 @@ export function PermissionsManagementPage() {
   }, [activeItems, dirtyRules])
 
   const handleSave = async () => {
+    if (!canManage) {
+      toast.error('רק מאסטר יכול לשמור הרשאות')
+      return
+    }
     if (dirtyRules.length === 0) {
       toast.message('אין שינויים לשמירה')
       return
     }
     for (const rule of dirtyRules) {
       if (rule.mode === 'groups' && rule.groupIds.length === 0) {
-        toast.error('יש לבחור לפחות קבוצה אחת בכל הרשאה במצב «קבוצות»')
+        const label =
+          PERMISSION_CATALOG.find((i) => i.key === rule.key)?.label ?? rule.key
+        toast.error(`«${label}»: יש לבחור לפחות קבוצה אחת במצב קבוצות`)
         return
       }
     }
     setSaving(true)
     try {
       await saveRules(dirtyRules)
+      syncedFingerprint.current = null
+      await refresh()
       toast.success('ההרשאות נשמרו')
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'שמירה נכשלה')
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as { message: string }).message)
+          : err instanceof Error
+            ? err.message
+            : 'שמירה נכשלה'
+      toast.error(message)
     } finally {
       setSaving(false)
     }
@@ -245,11 +304,26 @@ export function PermissionsManagementPage() {
             הרשאות מערכת
           </h1>
           <p className="mt-1 text-body-sm text-secondary">
-            בחרו קטגוריה, ואז הגדירו לכל פריט מי מורשה.
+            בחרו קטגוריה, ואז הגדירו לכל פריט מי מורשה. מאסטר תמיד עובר את ההגבלות — השינויים חלים על שאר המשתמשים.
           </p>
         </header>
 
-        {/* מעבר ברור בין תצוגות ↔ פעולות */}
+        {groups.length === 0 && (
+          <div className="mb-5 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-right">
+            <p className="font-label-md text-on-surface">עדיין אין קבוצות במערכת</p>
+            <p className="mt-1 text-body-sm text-secondary">
+              מצב «קבוצות» דורש לפחות קבוצה אחת. בינתיים אפשר להשתמש ב«לפי תפקיד» או «חסום».
+            </p>
+            <Link
+              to={ROUTES.groups}
+              className="mt-2 inline-flex items-center gap-1.5 font-label-sm text-primary hover:underline"
+            >
+              <Users className="h-4 w-4" />
+              יצירת קבוצה ראשונה
+            </Link>
+          </div>
+        )}
+
         <div
           className="sticky top-[7.5rem] z-30 -mx-4 mb-5 border-b border-border-light bg-background/95 px-4 py-2 backdrop-blur-md md:top-16 md:mx-0 md:mb-6 md:rounded-2xl md:border md:bg-surface-container-lowest md:px-2 md:py-2 md:shadow-soft md:backdrop-blur-none"
           role="tablist"
@@ -344,7 +418,6 @@ export function PermissionsManagementPage() {
         )}
       </div>
 
-      {/* שמירה קבועה במובייל מעל הניווט התחתון */}
       <div className="fixed inset-x-0 z-40 border-t border-border-light bg-background/95 px-4 py-3 backdrop-blur-md bottom-mobile-nav md:static md:inset-auto md:z-auto md:mt-8 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
         <div className="mx-auto flex max-w-container-max items-center justify-between gap-3 md:justify-end">
           <p className="text-body-sm text-secondary md:hidden">
@@ -354,7 +427,7 @@ export function PermissionsManagementPage() {
           </p>
           <button
             type="button"
-            disabled={saving || dirtyRules.length === 0}
+            disabled={saving || dirtyRules.length === 0 || !canManage}
             onClick={() => void handleSave()}
             className="btn-boutique min-h-12 shrink-0 px-6 disabled:opacity-40"
           >

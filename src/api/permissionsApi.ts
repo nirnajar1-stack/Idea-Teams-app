@@ -39,6 +39,11 @@ function rowToRule(row: RuleRow): PermissionRule {
   }
 }
 
+function formatSupabaseError(error: { message?: string; details?: string; hint?: string; code?: string }): string {
+  const parts = [error.message, error.details, error.hint].filter(Boolean)
+  return parts.join(' — ') || 'שמירת הרשאות נכשלה'
+}
+
 export async function fetchPermissionRules(): Promise<PermissionRule[]> {
   if (!isSupabaseEnabled()) return readLocal()
 
@@ -60,40 +65,55 @@ export async function upsertPermissionRule(
   rule: PermissionRule,
   actorUserId: string,
 ): Promise<PermissionRule> {
-  const next: PermissionRule = {
-    ...rule,
-    groupIds: rule.mode === 'groups' ? [...new Set(rule.groupIds)] : [],
-    updatedAt: new Date().toISOString(),
-    updatedByUserId: actorUserId,
-  }
-
-  if (isSupabaseEnabled()) {
-    const { error } = await getSupabase().from('app_permission_rules').upsert(
-      {
-        key: next.key,
-        mode: next.mode,
-        group_ids: next.groupIds,
-        updated_at: next.updatedAt,
-        updated_by_user_id: actorUserId,
-      },
-      { onConflict: 'key' },
-    )
-    if (error) throw error
-  }
-
-  const all = readLocal().filter((r) => r.key !== next.key)
-  all.push(next)
-  writeLocal(all)
-  return next
+  const saved = await upsertPermissionRules([rule], actorUserId)
+  return saved[0]!
 }
 
 export async function upsertPermissionRules(
   rules: PermissionRule[],
   actorUserId: string,
 ): Promise<PermissionRule[]> {
-  const saved: PermissionRule[] = []
-  for (const rule of rules) {
-    saved.push(await upsertPermissionRule(rule, actorUserId))
+  if (rules.length === 0) return []
+
+  const now = new Date().toISOString()
+  const nextRules: PermissionRule[] = rules.map((rule) => ({
+    ...rule,
+    groupIds: rule.mode === 'groups' ? [...new Set(rule.groupIds)] : [],
+    updatedAt: now,
+    updatedByUserId: actorUserId,
+  }))
+
+  if (isSupabaseEnabled()) {
+    const payload = nextRules.map((r) => ({
+      key: r.key,
+      mode: r.mode,
+      group_ids: r.groupIds,
+      updated_at: r.updatedAt,
+      updated_by_user_id: actorUserId,
+    }))
+
+    const { data, error } = await getSupabase()
+      .from('app_permission_rules')
+      .upsert(payload, { onConflict: 'key' })
+      .select('key, mode, group_ids, updated_at, updated_by_user_id')
+
+    if (error) {
+      console.error('upsertPermissionRules failed', error)
+      throw new Error(formatSupabaseError(error))
+    }
+
+    const saved = ((data as RuleRow[]) ?? []).map(rowToRule)
+    const byKey = new Map(saved.map((r) => [r.key, r]))
+    const merged = nextRules.map((r) => byKey.get(r.key) ?? r)
+
+    const all = readLocal().filter((r) => !merged.some((m) => m.key === r.key))
+    all.push(...merged)
+    writeLocal(all)
+    return merged
   }
-  return saved
+
+  const all = readLocal().filter((r) => !nextRules.some((m) => m.key === r.key))
+  all.push(...nextRules)
+  writeLocal(all)
+  return nextRules
 }
