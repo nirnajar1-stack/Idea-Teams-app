@@ -10,6 +10,7 @@ export interface IdeasListToolbarProps {
   onCompactChange: (compact: boolean) => void
   activeCount: number
   completedCount: number
+  cancelledCount?: number
   showExport?: boolean
   onExportClick?: () => void
 }
@@ -21,6 +22,7 @@ export function IdeasListToolbar({
   onCompactChange,
   activeCount,
   completedCount,
+  cancelledCount = 0,
   showExport,
   onExportClick,
 }: IdeasListToolbarProps) {
@@ -33,6 +35,11 @@ export function IdeasListToolbar({
         {completedCount > 0 && (
           <span className="rounded-full bg-success-vibrant/10 px-3 py-1 font-label-md text-success-vibrant">
             {completedCount} הושלמו
+          </span>
+        )}
+        {cancelledCount > 0 && (
+          <span className="rounded-full bg-error/10 px-3 py-1 font-label-md text-error">
+            {cancelledCount} בוטלו
           </span>
         )}
       </div>

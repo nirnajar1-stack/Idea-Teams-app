@@ -19,7 +19,11 @@ export function TodayFocusSection() {
 
   const { overdue, dueToday, mineOpen } = useMemo(() => {
     const open = visibleIdeas.filter(
-      (i) => isRootIdea(i) && i.workflowStatus !== 'completed' && !i.sendToMaybeInbox,
+      (i) =>
+        isRootIdea(i) &&
+        i.workflowStatus !== 'completed' &&
+        i.workflowStatus !== 'cancelled' &&
+        !i.sendToMaybeInbox,
     )
     const overdueList = open.filter(isActivelyOverdue)
     const dueTodayList = open.filter(

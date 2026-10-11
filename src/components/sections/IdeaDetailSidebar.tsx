@@ -1,6 +1,7 @@
-import { Archive, CheckCheck, Pencil, Rocket, Trash2 } from 'lucide-react'
+import { Archive, Ban, CheckCheck, Pencil, Rocket, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
+import { IDEA_TERM } from '../../constants/terminology'
 import { formatIdeaDateLong, WORKFLOW_LABELS } from '../../lib/ideaUtils'
 import type { Idea, IdeaWorkflowStatus } from '../../types/idea'
 import { DateInput } from '../ui/DateInput'
@@ -23,18 +24,38 @@ export interface IdeaDetailSidebarProps {
   canDelete: boolean
   isContainer?: boolean
   onComplete: () => void
+  onCancelRequest: () => void
   onDelete: () => void
   onUpdate: (patch: Partial<Idea>) => void
 }
 
 function workflowPatch(status: IdeaWorkflowStatus): Partial<Idea> {
   if (status === 'completed') {
-    return { workflowStatus: status, progress: 100, progressStep: WORKFLOW_LABELS.completed }
+    return {
+      workflowStatus: status,
+      progress: 100,
+      progressStep: WORKFLOW_LABELS.completed,
+      cancelReason: '',
+      cancelledAt: null,
+    }
   }
   if (status === 'in_progress') {
-    return { workflowStatus: status, progressStep: WORKFLOW_LABELS.in_progress }
+    return {
+      workflowStatus: status,
+      progressStep: WORKFLOW_LABELS.in_progress,
+      cancelReason: '',
+      cancelledAt: null,
+    }
   }
-  return { workflowStatus: status, progressStep: WORKFLOW_LABELS.pending }
+  if (status === 'cancelled') {
+    return { workflowStatus: status, progressStep: WORKFLOW_LABELS.cancelled }
+  }
+  return {
+    workflowStatus: status,
+    progressStep: WORKFLOW_LABELS.pending,
+    cancelReason: '',
+    cancelledAt: null,
+  }
 }
 
 export function IdeaDetailSidebar({
@@ -44,6 +65,7 @@ export function IdeaDetailSidebar({
   canDelete,
   isContainer = false,
   onComplete,
+  onCancelRequest,
   onDelete,
   onUpdate,
 }: IdeaDetailSidebarProps) {
@@ -60,8 +82,15 @@ export function IdeaDetailSidebar({
       onComplete()
       return
     }
+    if (status === 'cancelled') {
+      onCancelRequest()
+      return
+    }
     onUpdate(workflowPatch(status))
   }
+
+  const isCancelled = idea.workflowStatus === 'cancelled'
+  const isCompleted = idea.workflowStatus === 'completed'
 
   return (
     <aside className="space-y-6 lg:col-span-4">
@@ -77,10 +106,18 @@ export function IdeaDetailSidebar({
               value={idea.workflowStatus}
               disabled={!canEdit && !canComplete}
               onChange={handleWorkflowChange}
+              onRequestCancel={onCancelRequest}
             />
           )}
 
-          {canComplete && !isContainer && idea.workflowStatus !== 'completed' && (
+          {isCancelled && idea.cancelReason && (
+            <div className="rounded-2xl border border-error/20 bg-error/5 p-3">
+              <p className="font-label-sm text-error">{IDEA_TERM.cancelReason}</p>
+              <p className="mt-1 font-body-md text-on-surface">{idea.cancelReason}</p>
+            </div>
+          )}
+
+          {canComplete && !isContainer && !isCompleted && !isCancelled && (
             <button
               type="button"
               onClick={onComplete}
@@ -91,7 +128,21 @@ export function IdeaDetailSidebar({
             </button>
           )}
 
-          {canEdit && !isContainer && (
+          {canComplete && !isContainer && !isCompleted && !isCancelled && (
+            <button
+              type="button"
+              onClick={onCancelRequest}
+              className={cn(
+                'w-full items-center justify-center gap-2 border border-error/30 bg-error/5 py-4 font-label-md text-error transition-colors hover:bg-error/10',
+                primaryActionClass,
+              )}
+            >
+              <Ban className="h-5 w-5" />
+              {IDEA_TERM.cancel}
+            </button>
+          )}
+
+          {canEdit && !isContainer && !isCancelled && (
           <button
             type="button"
             onClick={() =>

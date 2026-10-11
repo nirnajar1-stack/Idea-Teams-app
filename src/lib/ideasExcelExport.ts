@@ -128,7 +128,11 @@ function filterForExport(ideas: Idea[], config: IdeasExportConfig): Idea[] {
 function matchesSlice(idea: Idea, slice: IdeasExportSlice): boolean {
   switch (slice) {
     case 'active':
-      return !idea.sendToMaybeInbox && idea.workflowStatus !== 'completed'
+      return (
+        !idea.sendToMaybeInbox &&
+        idea.workflowStatus !== 'completed' &&
+        idea.workflowStatus !== 'cancelled'
+      )
     case 'completed':
       return idea.workflowStatus === 'completed'
     case 'inbox':

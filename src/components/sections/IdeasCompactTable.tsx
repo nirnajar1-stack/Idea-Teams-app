@@ -10,6 +10,7 @@ import {
 import type { Idea } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
+import { WorkflowStatusBadge } from '../ui/WorkflowStatusBadge'
 import { cn } from '../../lib/cn'
 
 export interface IdeasCompactTableProps {
@@ -93,6 +94,7 @@ export function IdeasCompactTable({
                     {idea.title}
                   </p>
                   <div className="mt-1.5 flex flex-wrap items-center justify-end gap-1.5">
+                    <WorkflowStatusBadge status={idea.workflowStatus} compact />
                     <PriorityCell idea={idea} />
                     <span className="text-micro text-secondary">
                       {CATEGORY_LABELS[idea.category]}
@@ -126,6 +128,7 @@ export function IdeasCompactTable({
           <thead className="border-b border-border-light bg-surface-subtle">
             <tr>
               <th className="px-3 py-3 font-label-sm text-secondary md:px-4">כותרת</th>
+              <th className="px-3 py-3 font-label-sm text-secondary md:px-4">סטטוס</th>
               <th className="px-3 py-3 font-label-sm text-secondary md:px-4">חשיבות</th>
               <th className="hidden px-3 py-3 font-label-sm text-secondary sm:table-cell md:px-4">
                 קטגוריה
@@ -155,6 +158,9 @@ export function IdeasCompactTable({
                       {idea.authorName}
                     </span>
                   </Link>
+                </td>
+                <td className="px-3 py-2.5 md:px-4">
+                  <WorkflowStatusBadge status={idea.workflowStatus} compact />
                 </td>
                 <td className="px-3 py-2.5 md:px-4">
                   <PriorityCell idea={idea} />

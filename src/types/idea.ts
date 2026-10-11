@@ -20,7 +20,11 @@ export const DEFAULT_IDEA_SOURCE: IdeaSource = 'mitamim'
 
 export type IdeaPriority = 'low' | 'medium' | 'high'
 
-export type IdeaWorkflowStatus = 'in_progress' | 'completed' | 'pending'
+export type IdeaWorkflowStatus =
+  | 'in_progress'
+  | 'completed'
+  | 'pending'
+  | 'cancelled'
 
 export type IdeaPipeline = 'active' | 'inbox' | 'all'
 
@@ -29,8 +33,8 @@ export type IdeaCheckCadence = 'daily' | 'every_3_days' | 'weekly'
 
 export const IDEA_CHECK_CADENCES: IdeaCheckCadence[] = ['daily', 'every_3_days', 'weekly']
 
-/** active — לא הושלמו | completed — הושלמו בלבד | all — הכל */
-export type IdeaWorkflowFilter = 'active' | 'completed' | 'all'
+/** active — לא הושלמו/בוטלו | completed — הושלמו | cancelled — בוטלו | all — הכל */
+export type IdeaWorkflowFilter = 'active' | 'completed' | 'cancelled' | 'all'
 
 export type IdeaSortOption = 'date_desc' | 'priority_desc' | 'author_asc'
 
@@ -63,6 +67,10 @@ export interface Idea {
   ideaSource: IdeaSource
   priority: IdeaPriority
   workflowStatus: IdeaWorkflowStatus
+  /** סיבת ביטול — נשמרת כשהסטטוס cancelled */
+  cancelReason?: string
+  /** מועד הביטול (ISO) */
+  cancelledAt?: string | null
   createdAt: string
   targetStartDate: string
   /** תאריך תכנון בטיימליין מאסטר (גרירה ליום ביצוע) */

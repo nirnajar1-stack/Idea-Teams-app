@@ -65,6 +65,19 @@ export function isRootIdea(idea: Idea): boolean {
   return !idea.parentId
 }
 
+function isClosedWorkflow(
+  status: Idea['workflowStatus'] | undefined,
+): boolean {
+  return status === 'completed' || status === 'cancelled'
+}
+
+/** האם הסטטוס סוגר את המשימה (הושלם / בוטל) */
+export function isClosedIdeaStatus(
+  status: Idea['workflowStatus'] | undefined,
+): boolean {
+  return isClosedWorkflow(status)
+}
+
 export function isActiveIdea(idea: Idea): boolean {
   return !idea.sendToMaybeInbox
 }
@@ -97,7 +110,7 @@ export function todayDateKey(): string {
 
 /** האם הגיע זמן לבדיקה שוטפת חוזרת */
 export function isRoutineCheckDue(idea: Idea, today = todayDateKey()): boolean {
-  if (!idea.checkCadence || idea.workflowStatus === 'completed') return false
+  if (!idea.checkCadence || isClosedWorkflow(idea.workflowStatus)) return false
   const anchor = idea.lastCheckedAt ?? idea.createdAt
   return daysBetweenIso(anchor, today) >= CHECK_CADENCE_DAYS[idea.checkCadence]
 }
@@ -184,8 +197,14 @@ export function filterIdeas(ideas: Idea[], filters: IdeaFilters): Idea[] {
     if (pipeline === 'inbox' && !idea.sendToMaybeInbox) return false
     if (filters.onlySentToExecution && !idea.sentToExecution) return false
 
-    if (workflow === 'active' && idea.workflowStatus === 'completed') return false
+    if (
+      workflow === 'active' &&
+      (idea.workflowStatus === 'completed' || idea.workflowStatus === 'cancelled')
+    ) {
+      return false
+    }
     if (workflow === 'completed' && idea.workflowStatus !== 'completed') return false
+    if (workflow === 'cancelled' && idea.workflowStatus !== 'cancelled') return false
 
     if (
       filters.categories.length > 0 &&
@@ -248,7 +267,12 @@ export function getTargetDateStatus(
   targetStartDate: string,
   options?: { workflowStatus?: Idea['workflowStatus'] },
 ): TargetDateStatus {
-  if (options?.workflowStatus === 'completed') return 'done'
+  if (
+    options?.workflowStatus === 'completed' ||
+    options?.workflowStatus === 'cancelled'
+  ) {
+    return 'done'
+  }
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -270,9 +294,9 @@ export function getDaysUntilTarget(targetStartDate: string): number {
   return Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
 
-/** איחור פעיל — רק משימות שלא הושלמו עם יעד שעבר */
+/** איחור פעיל — רק משימות שלא הושלמו/בוטלו עם יעד שעבר */
 export function isActivelyOverdue(idea: Pick<Idea, 'targetStartDate' | 'workflowStatus'>): boolean {
-  if (idea.workflowStatus === 'completed' || !idea.targetStartDate) return false
+  if (isClosedWorkflow(idea.workflowStatus) || !idea.targetStartDate) return false
   return getTargetDateStatus(idea.targetStartDate) === 'overdue'
 }
 
@@ -280,7 +304,7 @@ export function isActivelyOverdue(idea: Pick<Idea, 'targetStartDate' | 'workflow
 export function needsAttentionToday(
   idea: Pick<Idea, 'targetStartDate' | 'workflowStatus'>,
 ): boolean {
-  if (idea.workflowStatus === 'completed' || !idea.targetStartDate) return false
+  if (isClosedWorkflow(idea.workflowStatus) || !idea.targetStartDate) return false
   const days = getDaysUntilTarget(idea.targetStartDate)
   return days <= 0
 }
@@ -343,6 +367,7 @@ export const WORKFLOW_LABELS = {
   in_progress: 'בביצוע',
   completed: 'הושלם',
   pending: 'ממתין',
+  cancelled: 'בוטל',
 } as const
 
 export const TARGET_STATUS_LABELS: Record<TargetDateStatus, string> = {

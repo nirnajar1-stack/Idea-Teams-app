@@ -53,7 +53,13 @@ export function TimelineBoard({
   }, [usersById])
 
   const activeIdeas = useMemo(
-    () => ideas.filter((i) => i.workflowStatus !== 'completed' && !i.parentId),
+    () =>
+      ideas.filter(
+        (i) =>
+          i.workflowStatus !== 'completed' &&
+          i.workflowStatus !== 'cancelled' &&
+          !i.parentId,
+      ),
     [ideas],
   )
 

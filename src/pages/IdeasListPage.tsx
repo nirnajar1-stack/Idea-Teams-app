@@ -2,6 +2,7 @@ import { Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { AppShell } from '../components/layout/AppShell'
+import { CancelledIdeasSection } from '../components/sections/CancelledIdeasSection'
 import { CompletedIdeasSection } from '../components/sections/CompletedIdeasSection'
 import { IdeaListCard } from '../components/sections/IdeaListCard'
 import { IdeasCompactTable } from '../components/sections/IdeasCompactTable'
@@ -111,6 +112,15 @@ export function IdeasListPage() {
     () =>
       sortIdeas(
         filterIdeas(visibleIdeas, { ...baseFilters, workflow: 'completed' }),
+        viewPrefs.sort,
+      ),
+    [visibleIdeas, baseFilters, viewPrefs.sort],
+  )
+
+  const cancelledIdeas = useMemo(
+    () =>
+      sortIdeas(
+        filterIdeas(visibleIdeas, { ...baseFilters, workflow: 'cancelled' }),
         viewPrefs.sort,
       ),
     [visibleIdeas, baseFilters, viewPrefs.sort],
@@ -236,6 +246,7 @@ export function IdeasListPage() {
             onCompactChange={(compact) => updateViewPrefs({ compact })}
             activeCount={activeIdeas.length}
             completedCount={completedIdeas.length}
+            cancelledCount={cancelledIdeas.length}
             showExport={canExport}
             onExportClick={() => setExportOpen(true)}
           />
@@ -283,6 +294,7 @@ export function IdeasListPage() {
           )}
 
           <CompletedIdeasSection ideas={completedIdeas} compact={viewPrefs.compact} />
+          <CancelledIdeasSection ideas={cancelledIdeas} compact={viewPrefs.compact} />
         </div>
       </div>
 

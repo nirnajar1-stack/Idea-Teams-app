@@ -9,7 +9,6 @@ import {
   formatIdeaDate,
   isContainerIdea,
   PRIORITY_LABELS,
-  WORKFLOW_LABELS,
 } from '../../lib/ideaUtils'
 import { cn } from '../../lib/cn'
 import type { Idea, IdeaPriority } from '../../types/idea'
@@ -20,6 +19,7 @@ import { InboxBadge } from '../ui/InboxBadge'
 import { IdeaSourceBadge } from '../ui/IdeaSourceBadge'
 import { MetaBadgeRow } from '../ui/MetaBadgeRow'
 import { TargetDateBadge } from '../ui/TargetDateBadge'
+import { WorkflowStatusBadge } from '../ui/WorkflowStatusBadge'
 
 export interface IdeaListCardProps {
   idea: Idea
@@ -100,7 +100,9 @@ export function IdeaListCard({
       <article
         className={cn(
           'group flex items-center gap-3 border border-border-light bg-surface-container-lowest/90 px-3 py-2.5 transition-colors hover:border-primary/30 hover:bg-primary/5',
-          completed && 'border-success-vibrant/20 bg-success-vibrant/5',
+          (completed || idea.workflowStatus === 'completed') &&
+            'border-success-vibrant/20 bg-success-vibrant/5',
+          idea.workflowStatus === 'cancelled' && 'border-error/20 bg-error/5',
           showInboxActions && 'border-inbox/20',
         )}
       >
@@ -118,6 +120,10 @@ export function IdeaListCard({
             >
               {PRIORITY_LABELS[idea.priority]}
             </Badge>
+            <WorkflowStatusBadge
+              status={completed ? 'completed' : idea.workflowStatus}
+              compact
+            />
             <TargetDateBadge
               targetStartDate={idea.targetStartDate}
               workflowStatus={completed ? 'completed' : idea.workflowStatus}
@@ -151,6 +157,9 @@ export function IdeaListCard({
       >
         {PRIORITY_LABELS[idea.priority]}
       </Badge>
+      <WorkflowStatusBadge
+        status={completed ? 'completed' : idea.workflowStatus}
+      />
       <Badge variant="surface" icon={<CategoryIcon className="h-3.5 w-3.5" />}>
         {CATEGORY_LABELS[idea.category]}
       </Badge>
@@ -159,11 +168,6 @@ export function IdeaListCard({
         workflowStatus={completed ? 'completed' : idea.workflowStatus}
         compact
       />
-      {completed && (
-        <Badge variant="surface" className="text-success-vibrant">
-          {WORKFLOW_LABELS.completed}
-        </Badge>
-      )}
     </>
   )
 
@@ -188,7 +192,9 @@ export function IdeaListCard({
     <article
       className={cn(
         'glass-card-hover group p-6 md:p-7',
-        completed && 'border-success-vibrant/25 bg-success-vibrant/5',
+        (completed || idea.workflowStatus === 'completed') &&
+          'border-success-vibrant/25 bg-success-vibrant/5',
+        idea.workflowStatus === 'cancelled' && 'border-error/25 bg-error/5',
         showInboxActions && 'border-inbox/20',
       )}
     >
