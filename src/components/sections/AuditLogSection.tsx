@@ -9,6 +9,7 @@ const ACTION_LABELS: Record<string, string> = {
   updated: 'עודכן',
   deleted: 'נמחק',
   status_changed: 'סטטוס השתנה',
+  cancelled: 'בוטל',
   assignee_changed: 'הוקצה משתמש',
   attachment_added: 'קובץ נוסף',
 }

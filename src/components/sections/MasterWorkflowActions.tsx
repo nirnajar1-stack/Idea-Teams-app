@@ -65,7 +65,9 @@ export function MasterWorkflowActions({
       <button
         type="button"
         onClick={() => void handleExecutionToggle()}
-        disabled={idea.workflowStatus === 'completed'}
+        disabled={
+          idea.workflowStatus === 'completed' || idea.workflowStatus === 'cancelled'
+        }
         className={cn(
           'flex w-full items-center justify-center gap-2 border py-4 font-label-md transition-all duration-300',
           idea.sentToExecution
@@ -80,7 +82,9 @@ export function MasterWorkflowActions({
 
       <CheckCadenceSelect
         value={idea.checkCadence}
-        disabled={idea.workflowStatus === 'completed'}
+        disabled={
+          idea.workflowStatus === 'completed' || idea.workflowStatus === 'cancelled'
+        }
         onChange={(cadence) => void handleCadenceChange(cadence)}
       />
 

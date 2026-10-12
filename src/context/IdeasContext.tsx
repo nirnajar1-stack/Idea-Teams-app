@@ -79,6 +79,7 @@ interface IdeasContextValue {
   updateIdea: (id: string, patch: Partial<Idea>) => Promise<UpdateIdeaResult>
   deleteIdea: (id: string) => Promise<boolean>
   markCompleted: (id: string) => Promise<UpdateIdeaResult>
+  cancelIdea: (id: string, reason: string) => Promise<UpdateIdeaResult>
   scheduleIdeaOnTimeline: (id: string, plannedDate: string | null) => Promise<boolean>
   toggleSentToExecution: (id: string, send: boolean) => Promise<boolean>
   setCheckCadence: (id: string, cadence: IdeaCheckCadence | null) => Promise<boolean>
@@ -395,7 +396,9 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
 
       const isCompleting =
         patch.workflowStatus === 'completed' && idea.workflowStatus !== 'completed'
-      if (isCompleting) {
+      const isCancelling =
+        patch.workflowStatus === 'cancelled' && idea.workflowStatus !== 'cancelled'
+      if (isCompleting || isCancelling) {
         if (!canCompleteIdea(user, idea, myGroupIds, rulesByKey, usersById)) {
           return { ok: false }
         }
@@ -502,7 +505,24 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
         workflowStatus: 'completed',
         progress: 100,
         progressStep: 'הושלם',
+        cancelReason: '',
+        cancelledAt: null,
       }),
+    [updateIdea],
+  )
+
+  const cancelIdea = useCallback(
+    (id: string, reason: string) => {
+      const trimmed = reason.trim()
+      if (!trimmed) return Promise.resolve({ ok: false })
+      return updateIdea(id, {
+        workflowStatus: 'cancelled',
+        progressStep: 'בוטל',
+        cancelReason: trimmed,
+        cancelledAt: new Date().toISOString(),
+        sendToMaybeInbox: false,
+      })
+    },
     [updateIdea],
   )
 
@@ -625,6 +645,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       updateIdea,
       deleteIdea,
       markCompleted,
+      cancelIdea,
       scheduleIdeaOnTimeline,
       toggleSentToExecution,
       setCheckCadence,
@@ -650,6 +671,7 @@ export function IdeasProvider({ children }: { children: ReactNode }) {
       updateIdea,
       deleteIdea,
       markCompleted,
+      cancelIdea,
       scheduleIdeaOnTimeline,
       toggleSentToExecution,
       setCheckCadence,

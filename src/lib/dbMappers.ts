@@ -24,6 +24,8 @@ export interface IdeaRow {
   idea_source: Idea['ideaSource']
   priority: Idea['priority']
   workflow_status: Idea['workflowStatus']
+  cancel_reason: string | null
+  cancelled_at: string | null
   created_at: string
   target_start_date: string
   planned_date: string | null
@@ -109,6 +111,8 @@ export function ideaRowToIdea(row: IdeaRow): Idea {
     ideaSource: row.idea_source ?? 'mitamim',
     priority: row.priority,
     workflowStatus: row.workflow_status,
+    cancelReason: row.cancel_reason ?? undefined,
+    cancelledAt: row.cancelled_at ?? undefined,
     createdAt: row.created_at,
     targetStartDate: row.target_start_date,
     plannedDate: row.planned_date ?? undefined,
@@ -153,6 +157,8 @@ export function ideaToRow(idea: Idea): IdeaRow {
     idea_source: idea.ideaSource,
     priority: idea.priority,
     workflow_status: idea.workflowStatus,
+    cancel_reason: idea.cancelReason?.trim() ? idea.cancelReason.trim() : null,
+    cancelled_at: idea.cancelledAt ?? null,
     created_at: idea.createdAt,
     target_start_date: idea.targetStartDate,
     planned_date: idea.plannedDate ?? null,
@@ -191,6 +197,10 @@ export function ideaPatchToRow(patch: Partial<Idea>): Partial<IdeaRow> {
   if (patch.ideaSource !== undefined) row.idea_source = patch.ideaSource
   if (patch.priority !== undefined) row.priority = patch.priority
   if (patch.workflowStatus !== undefined) row.workflow_status = patch.workflowStatus
+  if (patch.cancelReason !== undefined) {
+    row.cancel_reason = patch.cancelReason?.trim() ? patch.cancelReason.trim() : null
+  }
+  if (patch.cancelledAt !== undefined) row.cancelled_at = patch.cancelledAt ?? null
   if (patch.createdAt !== undefined) row.created_at = patch.createdAt
   if (patch.targetStartDate !== undefined) row.target_start_date = patch.targetStartDate
   if (patch.plannedDate !== undefined) row.planned_date = patch.plannedDate ?? null

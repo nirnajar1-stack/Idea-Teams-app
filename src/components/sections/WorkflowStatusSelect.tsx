@@ -1,4 +1,4 @@
-import { CheckCheck, Clock, Loader } from 'lucide-react'
+import { Ban, CheckCheck, Clock, Loader } from 'lucide-react'
 import { useFlashOnChange } from '../../hooks/useFlashOnChange'
 import { WORKFLOW_LABELS } from '../../lib/ideaUtils'
 import type { IdeaWorkflowStatus } from '../../types/idea'
@@ -12,31 +12,41 @@ const OPTIONS: {
   { value: 'pending', icon: Clock, color: 'border-secondary/30 text-secondary' },
   { value: 'in_progress', icon: Loader, color: 'border-primary/30 text-primary' },
   { value: 'completed', icon: CheckCheck, color: 'border-success-vibrant/30 text-success-vibrant' },
+  { value: 'cancelled', icon: Ban, color: 'border-error/30 text-error' },
 ]
 
 export interface WorkflowStatusSelectProps {
   value: IdeaWorkflowStatus
   disabled?: boolean
   onChange: (status: IdeaWorkflowStatus) => void
+  /** בחירת «בוטל» — פותח מודאל עם סיבה במקום שינוי ישיר */
+  onRequestCancel?: () => void
 }
 
 export function WorkflowStatusSelect({
   value,
   disabled = false,
   onChange,
+  onRequestCancel,
 }: WorkflowStatusSelectProps) {
   const flashClass = useFlashOnChange(value)
 
   return (
     <div className="space-y-2">
       <span className="block font-label-md text-secondary">סטטוס בקשה/רעיון</span>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {OPTIONS.map(({ value: opt, icon: Icon, color }) => (
           <button
             key={opt}
             type="button"
             disabled={disabled}
-            onClick={() => onChange(opt)}
+            onClick={() => {
+              if (opt === 'cancelled') {
+                if (value !== 'cancelled') onRequestCancel?.()
+                return
+              }
+              onChange(opt)
+            }}
             className={cn(
               'flex flex-col items-center gap-1 border py-3 font-label-sm transition-all duration-300 disabled:opacity-50',
               value === opt

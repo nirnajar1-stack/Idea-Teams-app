@@ -33,7 +33,11 @@ export interface OpenTasksAnalytics {
 }
 
 export function isOpenTask(idea: Idea): boolean {
-  return idea.workflowStatus !== 'completed' && isRootIdea(idea)
+  return (
+    idea.workflowStatus !== 'completed' &&
+    idea.workflowStatus !== 'cancelled' &&
+    isRootIdea(idea)
+  )
 }
 
 function daysOpen(idea: Idea, today = new Date().toISOString().slice(0, 10)): number {

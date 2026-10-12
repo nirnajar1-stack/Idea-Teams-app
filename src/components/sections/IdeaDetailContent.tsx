@@ -1,21 +1,22 @@
 import {
   Calendar,
-  CheckCircle,
   Download,
   FileText,
   Image,
   AlertCircle,
+  Ban,
 } from 'lucide-react'
 import {
   formatIdeaDateLong,
   PRIORITY_LABELS,
-  WORKFLOW_LABELS,
 } from '../../lib/ideaUtils'
 import { Link } from 'react-router-dom'
 import { useAppRoutes } from '../../context/EmbedModeContext'
 import { isContainerIdea, isSubIdea } from '../../lib/ideaUtils'
+import { IDEA_TERM } from '../../constants/terminology'
 import type { Idea, IdeaPriority } from '../../types/idea'
 import { Badge } from '../ui/Badge'
+import { WorkflowStatusBadge } from '../ui/WorkflowStatusBadge'
 import { CollapsibleBlock } from '../ui/CollapsibleBlock'
 import { ContainerBadge } from '../ui/ContainerBadge'
 import { ExecutionBadge } from '../ui/ExecutionBadge'
@@ -75,9 +76,7 @@ export function IdeaDetailContent({
               >
                 עדיפות {PRIORITY_LABELS[idea.priority]}
               </Badge>
-              <Badge variant="success" icon={<CheckCircle className="h-3.5 w-3.5" />}>
-                {WORKFLOW_LABELS[idea.workflowStatus]}
-              </Badge>
+              <WorkflowStatusBadge status={idea.workflowStatus} />
               <TargetDateBadge
                 targetStartDate={idea.targetStartDate}
                 workflowStatus={idea.workflowStatus}
@@ -116,6 +115,15 @@ export function IdeaDetailContent({
         <p className="mb-8 font-body-lg leading-relaxed text-on-surface-variant">
           {idea.description}
         </p>
+        {idea.workflowStatus === 'cancelled' && idea.cancelReason && (
+          <div className="mb-8 flex gap-3 rounded-2xl border border-error/20 bg-error/5 p-4">
+            <Ban className="mt-0.5 h-5 w-5 shrink-0 text-error" aria-hidden />
+            <div>
+              <p className="font-label-md text-error">{IDEA_TERM.cancelReason}</p>
+              <p className="mt-1 font-body-md text-on-surface">{idea.cancelReason}</p>
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-6 border border-border-light bg-surface-subtle p-6 md:grid-cols-2">
           <div>
             <h3 className="mb-2 font-label-md uppercase tracking-wider text-secondary">

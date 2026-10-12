@@ -5,11 +5,11 @@ import {
   CATEGORY_LABELS,
   formatIdeaDate,
   PRIORITY_LABELS,
-  WORKFLOW_LABELS,
 } from '../../lib/ideaUtils'
 import type { Idea } from '../../types/idea'
 import { Badge } from '../ui/Badge'
 import { ProgressBar } from '../ui/ProgressBar'
+import { WorkflowStatusBadge } from '../ui/WorkflowStatusBadge'
 import { cn } from '../../lib/cn'
 
 export interface SubIdeasSectionProps {
@@ -75,9 +75,7 @@ export function SubIdeasSection({ parent, subIdeas, canAdd }: SubIdeasSectionPro
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <Badge variant="surface">{CATEGORY_LABELS[sub.category]}</Badge>
                   <Badge variant="priority-medium">{PRIORITY_LABELS[sub.priority]}</Badge>
-                  <span className="font-label-sm text-secondary">
-                    {WORKFLOW_LABELS[sub.workflowStatus]}
-                  </span>
+                  <WorkflowStatusBadge status={sub.workflowStatus} compact />
                   <span className="mr-auto font-label-sm text-secondary">
                     {formatIdeaDate(sub.createdAt)}
                   </span>

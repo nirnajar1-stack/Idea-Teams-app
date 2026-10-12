@@ -5,6 +5,7 @@ import { completionNotifyToasts } from '../lib/emailNotifyFeedback'
 import { useChatNotifications } from '../context/ChatNotificationsContext'
 import { AppShell } from '../components/layout/AppShell'
 import { ConfirmModal } from '../components/ui/ConfirmModal'
+import { CancelIdeaModal } from '../components/sections/CancelIdeaModal'
 import { IdeaDetailContent } from '../components/sections/IdeaDetailContent'
 import { IdeaDetailMobileActions } from '../components/sections/IdeaDetailMobileActions'
 import { IdeaDetailSidebar } from '../components/sections/IdeaDetailSidebar'
@@ -13,6 +14,7 @@ import { useIdeas } from '../context/IdeasContext'
 import { useAppRoutes, useEmbedMode } from '../context/EmbedModeContext'
 import { canAddSubIdea } from '../lib/permissions'
 import { isContainerIdea, isSubIdea } from '../lib/ideaUtils'
+import { IDEA_TERM } from '../constants/terminology'
 
 export function IdeaDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -26,6 +28,7 @@ export function IdeaDetailPage() {
     getIdeaById,
     getSubIdeas,
     markCompleted,
+    cancelIdea,
     deleteIdea,
     updateIdea,
     canDelete,
@@ -33,6 +36,7 @@ export function IdeaDetailPage() {
     canComplete,
   } = useIdeas()
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [cancelOpen, setCancelOpen] = useState(false)
   const [permissionOpen, setPermissionOpen] = useState(false)
 
   const idea = id ? getIdeaById(id) : undefined
@@ -56,6 +60,18 @@ export function IdeaDetailPage() {
           else toast.warning(t.text)
         }
       }
+    })
+  }
+
+  const handleCancelConfirm = (reason: string) => {
+    if (!idea || !completable) return
+    setCancelOpen(false)
+    void cancelIdea(idea.id, reason).then((result) => {
+      if (!result.ok) {
+        toast.error('הביטול נכשל')
+        return
+      }
+      toast.success(`${IDEA_TERM.the} בוטל`)
     })
   }
 
@@ -138,6 +154,7 @@ export function IdeaDetailPage() {
             canDelete={canDelete(idea)}
             isContainer={isContainerIdea(idea)}
             onComplete={handleComplete}
+            onCancelRequest={() => setCancelOpen(true)}
             onDelete={handleDelete}
             onUpdate={(patch) => void handleUpdate(patch)}
           />
@@ -151,9 +168,17 @@ export function IdeaDetailPage() {
           canComplete={completable}
           isContainer={isContainerIdea(idea)}
           onComplete={handleComplete}
+          onCancelRequest={() => setCancelOpen(true)}
           onUpdate={(patch) => void handleUpdate(patch)}
         />
       )}
+
+      <CancelIdeaModal
+        open={cancelOpen}
+        ideaTitle={idea.title}
+        onConfirm={handleCancelConfirm}
+        onCancel={() => setCancelOpen(false)}
+      />
 
       <ConfirmModal
         open={deleteOpen}

@@ -1,6 +1,7 @@
-import { Archive, CheckCheck, Pencil, Rocket } from 'lucide-react'
+import { Archive, Ban, CheckCheck, Pencil, Rocket } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../constants/app'
+import { IDEA_TERM } from '../../constants/terminology'
 import type { Idea } from '../../types/idea'
 import { cn } from '../../lib/cn'
 
@@ -10,6 +11,7 @@ export interface IdeaDetailMobileActionsProps {
   canComplete?: boolean
   isContainer?: boolean
   onComplete: () => void
+  onCancelRequest: () => void
   onUpdate: (patch: Partial<Idea>) => void
 }
 
@@ -20,15 +22,18 @@ export function IdeaDetailMobileActions({
   canComplete = canEdit,
   isContainer = false,
   onComplete,
+  onCancelRequest,
   onUpdate,
 }: IdeaDetailMobileActionsProps) {
   const navigate = useNavigate()
 
   if (!canEdit && !canComplete) return null
 
-  const showComplete =
-    canComplete && !isContainer && idea.workflowStatus !== 'completed'
-  const showInbox = canEdit && !isContainer
+  const closed =
+    idea.workflowStatus === 'completed' || idea.workflowStatus === 'cancelled'
+  const showComplete = canComplete && !isContainer && !closed
+  const showCancel = canComplete && !isContainer && !closed
+  const showInbox = canEdit && !isContainer && !closed
 
   return (
     <div
@@ -45,6 +50,16 @@ export function IdeaDetailMobileActions({
           >
             <CheckCheck className="h-5 w-5 shrink-0" aria-hidden />
             הושלם
+          </button>
+        )}
+        {showCancel && (
+          <button
+            type="button"
+            onClick={onCancelRequest}
+            className="flex min-h-12 min-w-12 items-center justify-center border border-error/30 bg-error/5 px-3 text-error"
+            aria-label={IDEA_TERM.cancel}
+          >
+            <Ban className="h-5 w-5" aria-hidden />
           </button>
         )}
         {showInbox && (
