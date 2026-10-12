@@ -1,6 +1,9 @@
+import { Search } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import type { StoredUser } from '../../types/user'
 import type { AppGroup } from '../../types/group'
 import { cn } from '../../lib/cn'
+import { matchesGroupSearch, matchesPeopleSearch } from '../../lib/peopleSearch'
 
 export function AssigneeSelect({
   users,
@@ -17,8 +20,23 @@ export function AssigneeSelect({
   disabled?: boolean
   onChange: (next: { userIds: string[]; groupIds: string[] }) => void
 }) {
-  const options = users.filter((u) => u.active && u.accessLevel !== 'guest')
-  const activeGroups = groups.filter((g) => g.active)
+  const [peopleQuery, setPeopleQuery] = useState('')
+  const [groupQuery, setGroupQuery] = useState('')
+
+  const options = useMemo(
+    () => users.filter((u) => u.active && u.accessLevel !== 'guest'),
+    [users],
+  )
+  const activeGroups = useMemo(() => groups.filter((g) => g.active), [groups])
+
+  const filteredPeople = useMemo(
+    () => options.filter((u) => matchesPeopleSearch(u, peopleQuery)),
+    [options, peopleQuery],
+  )
+  const filteredGroups = useMemo(
+    () => activeGroups.filter((g) => matchesGroupSearch(g, groupQuery)),
+    [activeGroups, groupQuery],
+  )
 
   const toggleUser = (id: string) => {
     const set = new Set(userIds)
@@ -38,11 +56,28 @@ export function AssigneeSelect({
     <div className="space-y-4">
       <div>
         <label className="mb-2 block font-label-md text-secondary">משתמשים מוקצים</label>
+        <div className="relative mb-2">
+          <Search
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary"
+            aria-hidden
+          />
+          <input
+            type="search"
+            value={peopleQuery}
+            onChange={(e) => setPeopleQuery(e.target.value)}
+            disabled={disabled}
+            placeholder="חיפוש אנשים…"
+            aria-label="חיפוש אנשים"
+            className="boutique-input h-10 bg-surface-container-low py-2 pr-10 text-sm"
+          />
+        </div>
         <div className="max-h-40 space-y-1 overflow-y-auto border border-border-light bg-surface-subtle p-2">
           {options.length === 0 ? (
             <p className="font-label-sm text-secondary">אין משתמשים זמינים</p>
+          ) : filteredPeople.length === 0 ? (
+            <p className="font-label-sm text-secondary">לא נמצאו אנשים התואמים לחיפוש</p>
           ) : (
-            options.map((u) => {
+            filteredPeople.map((u) => {
               const checked = userIds.includes(u.id)
               return (
                 <label
@@ -62,7 +97,10 @@ export function AssigneeSelect({
                   />
                   <span>
                     {u.name}{' '}
-                    <span className="text-secondary">({u.jobTitle})</span>
+                    <span className="text-secondary">
+                      ({u.jobTitle}
+                      {u.username ? ` · @${u.username}` : ''})
+                    </span>
                   </span>
                 </label>
               )
@@ -73,13 +111,30 @@ export function AssigneeSelect({
 
       <div>
         <label className="mb-2 block font-label-md text-secondary">קבוצות מוקצות</label>
+        <div className="relative mb-2">
+          <Search
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary"
+            aria-hidden
+          />
+          <input
+            type="search"
+            value={groupQuery}
+            onChange={(e) => setGroupQuery(e.target.value)}
+            disabled={disabled}
+            placeholder="חיפוש קבוצות…"
+            aria-label="חיפוש קבוצות"
+            className="boutique-input h-10 bg-surface-container-low py-2 pr-10 text-sm"
+          />
+        </div>
         <div className="max-h-36 space-y-1 overflow-y-auto border border-border-light bg-surface-subtle p-2">
           {activeGroups.length === 0 ? (
             <p className="font-label-sm text-secondary">
               אין קבוצות — ניתן ליצור בניהול קבוצות
             </p>
+          ) : filteredGroups.length === 0 ? (
+            <p className="font-label-sm text-secondary">לא נמצאו קבוצות התואמות לחיפוש</p>
           ) : (
-            activeGroups.map((g) => {
+            filteredGroups.map((g) => {
               const checked = groupIds.includes(g.id)
               return (
                 <label
