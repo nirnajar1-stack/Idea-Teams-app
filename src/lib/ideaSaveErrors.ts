@@ -37,6 +37,14 @@ export function formatIdeaSaveError(error: unknown): string {
     return 'מזהה בקשה/רעיון כבר קיים — נסה שוב'
   }
 
+  if (
+    msg.includes('ideas_workflow_status_check') ||
+    msg.includes('cancel_reason') ||
+    msg.includes('cancelled_at')
+  ) {
+    return 'סטטוס ביטול לא נתמך בשרת — הרץ ב-Supabase את migrations/037_cancel_idea_status.sql'
+  }
+
   if (msg) return `שמירת הבקשה/רעיון נכשלה: ${msg}`
   return 'שמירת הבקשה/רעיון נכשלה'
 }
