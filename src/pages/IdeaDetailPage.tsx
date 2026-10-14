@@ -66,13 +66,17 @@ export function IdeaDetailPage() {
   const handleCancelConfirm = (reason: string) => {
     if (!idea || !completable) return
     setCancelOpen(false)
-    void cancelIdea(idea.id, reason).then((result) => {
-      if (!result.ok) {
-        toast.error('הביטול נכשל')
-        return
-      }
-      toast.success(`${IDEA_TERM.the} בוטל`)
-    })
+    void cancelIdea(idea.id, reason)
+      .then((result) => {
+        if (!result.ok) {
+          toast.error('הביטול נכשל')
+          return
+        }
+        toast.success(`${IDEA_TERM.the} בוטל`)
+      })
+      .catch(() => {
+        toast.error('הביטול נכשל — ודאו ש-migration 037 רץ ב-Supabase')
+      })
   }
 
   useEffect(() => {
@@ -94,19 +98,24 @@ export function IdeaDetailPage() {
   const canAddSub = canAddSubIdea(user, idea)
 
   const handleUpdate = async (patch: Parameters<typeof updateIdea>[1]) => {
-    const result = await updateIdea(idea.id, patch)
-    if (result.ok) {
-      toast.success('הבקשה/רעיון עודכן')
-      if (result.emailNotify) {
-        for (const t of completionNotifyToasts(result.emailNotify)) {
-          if (t.level === 'message') toast.message(t.text)
-          else toast.warning(t.text)
+    try {
+      const result = await updateIdea(idea.id, patch)
+      if (result.ok) {
+        toast.success('הבקשה/רעיון עודכן')
+        if (result.emailNotify) {
+          for (const t of completionNotifyToasts(result.emailNotify)) {
+            if (t.level === 'message') toast.message(t.text)
+            else toast.warning(t.text)
+          }
         }
+      } else {
+        toast.error('העדכון נכשל')
       }
-    } else {
-      toast.error('העדכון נכשל')
+      return result.ok
+    } catch {
+      toast.error('העדכון נכשל — השינוי לא נשמר בשרת')
+      return false
     }
-    return result.ok
   }
 
   const handleDelete = () => {
