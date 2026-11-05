@@ -1,4 +1,4 @@
-import { Plus, Trash2, Users } from 'lucide-react'
+import { Plus, Search, Trash2, Users } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { AppShell } from '../components/layout/AppShell'
@@ -8,6 +8,7 @@ import { Input } from '../components/ui/Input'
 import { useGroups } from '../context/GroupsContext'
 import { useUsers } from '../context/UsersContext'
 import { cn } from '../lib/cn'
+import { matchesPeopleSearch } from '../lib/peopleSearch'
 
 export function GroupsManagementPage() {
   const { groups, create, update, remove } = useGroups()
@@ -16,9 +17,15 @@ export function GroupsManagementPage() {
 
   const [name, setName] = useState('')
   const [memberIds, setMemberIds] = useState<string[]>([])
+  const [peopleQuery, setPeopleQuery] = useState('')
   const [editId, setEditId] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+
+  const filteredUsers = useMemo(
+    () => users.filter((u) => matchesPeopleSearch(u, peopleQuery)),
+    [users, peopleQuery],
+  )
 
   const editing = useMemo(
     () => (editId ? groups.find((g) => g.id === editId) : null),
@@ -37,12 +44,14 @@ export function GroupsManagementPage() {
     setEditId(id)
     setName(g.name)
     setMemberIds([...g.memberIds])
+    setPeopleQuery('')
   }
 
   const resetForm = () => {
     setEditId(null)
     setName('')
     setMemberIds([])
+    setPeopleQuery('')
   }
 
   const handleSave = async () => {
@@ -103,27 +112,52 @@ export function GroupsManagementPage() {
           />
           <div>
             <span className="mb-2 block font-label-md text-secondary">חברי הקבוצה</span>
+            <div className="relative mb-2">
+              <Search
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-secondary"
+                aria-hidden
+              />
+              <input
+                type="search"
+                value={peopleQuery}
+                onChange={(e) => setPeopleQuery(e.target.value)}
+                placeholder="חיפוש אנשים…"
+                aria-label="חיפוש אנשים"
+                className="boutique-input h-10 bg-surface-container-low py-2 pr-10 text-sm"
+              />
+            </div>
             <div className="max-h-48 space-y-1 overflow-y-auto border border-border-light p-2">
-              {users.map((u) => {
-                const checked = memberIds.includes(u.id)
-                return (
-                  <label
-                    key={u.id}
-                    className={cn(
-                      'flex cursor-pointer items-center gap-2 px-2 py-1.5 font-label-sm',
-                      checked ? 'bg-primary/10 text-primary' : 'hover:bg-surface-container-low',
-                    )}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => toggleMember(u.id)}
-                      className="accent-primary"
-                    />
-                    {u.name}
-                  </label>
-                )
-              })}
+              {users.length === 0 ? (
+                <p className="font-label-sm text-secondary">אין משתמשים זמינים</p>
+              ) : filteredUsers.length === 0 ? (
+                <p className="font-label-sm text-secondary">לא נמצאו אנשים התואמים לחיפוש</p>
+              ) : (
+                filteredUsers.map((u) => {
+                  const checked = memberIds.includes(u.id)
+                  return (
+                    <label
+                      key={u.id}
+                      className={cn(
+                        'flex cursor-pointer items-center gap-2 px-2 py-1.5 font-label-sm',
+                        checked ? 'bg-primary/10 text-primary' : 'hover:bg-surface-container-low',
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleMember(u.id)}
+                        className="accent-primary"
+                      />
+                      <span>
+                        {u.name}
+                        {u.username ? (
+                          <span className="text-secondary"> · @{u.username}</span>
+                        ) : null}
+                      </span>
+                    </label>
+                  )
+                })
+              )}
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
