@@ -46,7 +46,7 @@ export function NavTabs({
                   ? 'min-h-11 min-w-[4.25rem] flex-col justify-center gap-0.5 px-2.5 py-1.5'
                   : 'gap-2 px-3.5 py-2 text-label-md',
                 active
-                  ? 'bg-primary text-on-primary shadow-boutique'
+                  ? 'bg-primary-container text-primary'
                   : 'text-secondary hover:bg-surface-container hover:text-on-surface',
               )}
               aria-current={active ? 'page' : undefined}
@@ -80,7 +80,7 @@ export function NavTabs({
               ? 'min-h-11 min-w-[4.25rem] flex-col justify-center gap-0.5 px-2.5 py-1.5'
               : 'gap-2 px-3.5 py-2 text-label-md',
             manageActive
-              ? 'bg-primary text-on-primary shadow-boutique'
+              ? 'bg-primary-container text-primary'
               : 'text-secondary hover:bg-surface-container hover:text-on-surface',
           )}
           aria-current={manageActive ? 'page' : undefined}

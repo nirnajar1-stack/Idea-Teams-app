@@ -52,7 +52,7 @@ export function EmbedToolbar() {
                 className={cn(
                   'shrink-0 rounded-full px-3 py-1.5 text-label-sm transition-colors',
                   active
-                    ? 'bg-primary text-on-primary'
+                    ? 'bg-primary-container text-primary'
                     : 'text-secondary hover:bg-surface-container-high hover:text-on-surface',
                 )}
               >

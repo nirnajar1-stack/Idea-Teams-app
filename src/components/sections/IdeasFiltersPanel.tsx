@@ -57,11 +57,18 @@ export function IdeasFiltersPanel({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="mb-3 flex w-full items-center justify-between rounded-[1.35rem] border border-transparent bg-surface-container-lowest px-4 py-3 shadow-soft transition-colors hover:shadow-card lg:hidden"
+        className={cn(
+          'mb-3 flex w-full items-center justify-between rounded-[1.35rem] border bg-surface-container-lowest px-4 py-3 shadow-soft transition-colors hover:shadow-card lg:hidden',
+          activeCount > 0
+            ? 'border-primary/35 bg-primary-container/60'
+            : 'border-transparent',
+        )}
         aria-expanded={open}
       >
         <span className="flex items-center gap-2 font-label-md text-on-surface">
-          <SlidersHorizontal className="h-5 w-5 text-primary" />
+          <SlidersHorizontal
+            className={cn('h-5 w-5', activeCount > 0 ? 'text-primary' : 'text-secondary')}
+          />
           פילטרים
           {activeCount > 0 && (
             <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-on-primary">

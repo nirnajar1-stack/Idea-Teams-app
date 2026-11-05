@@ -49,7 +49,7 @@ export function Footer() {
                 {item.label}
               </span>
               {item.id === 'inbox' && stats.inboxCount > 0 && (
-                <span className="absolute top-0 end-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-white px-1 text-[10px] font-bold text-[var(--color-nav-pill)]">
+                <span className="absolute top-0 end-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-on-primary ring-2 ring-[var(--color-nav-pill)]">
                   {stats.inboxCount}
                 </span>
               )}
