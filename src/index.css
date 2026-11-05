@@ -4,31 +4,35 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ——— Boutique light — cool canvas, ink actions, floating white cards ——— */
+/* ——— Boutique light — cool canvas, royal-blue actions, floating white cards ——— */
 :root {
   color-scheme: light;
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display',
     'Inter', 'Heebo', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-  --primary-rgb: 26 26 26;
-  --primary-fixed-rgb: 245 246 250;
+  /* Royal blue accent (Tailwind blue-600 / 700 / 50 / 300) */
+  --primary-rgb: 37 99 235;
+  --primary-fixed-rgb: 239 246 255;
   --inbox-rgb: 142 144 153;
   --inbox-soft-rgb: 245 246 250;
   --error-rgb: 220 38 38;
   --error-container-rgb: 254 226 226;
-  --accent-rgb: 142 144 153;
-  --accent-soft-rgb: 245 246 250;
+  --accent-rgb: 37 99 235;
+  --accent-soft-rgb: 239 246 255;
   --surface-subtle-rgb: 245 246 250;
   --surface-rgb: 245 246 250;
   --surface-container-low-rgb: 255 255 255;
   --surface-container-lowest-rgb: 255 255 255;
 
-  --color-primary-deep: #000000;
+  --color-primary: #2563eb;
+  --color-primary-deep: #1d4ed8;
+  --color-primary-soft: #eff6ff;
+  --color-primary-ring: #93c5fd;
   --color-on-primary: #ffffff;
-  --color-primary-container: #1a1a1a;
-  --color-on-primary-container: #ffffff;
-  --color-primary-fixed-dim: #9ca0ab;
+  --color-primary-container: #eff6ff;
+  --color-on-primary-container: #2563eb;
+  --color-primary-fixed-dim: #93c5fd;
   --color-background: #f5f6fa;
   --color-on-background: #1a1a1a;
   --color-surface: #f5f6fa;
@@ -46,9 +50,9 @@
   --color-tertiary-container: #1a1a1a;
   --color-success-vibrant: #16a34a;
   --color-on-error-container: #b91c1c;
-  --color-glow: #1a1a1a;
+  --color-glow: #2563eb;
   --color-gold-text: #ffc107;
-  --color-link-hover: #000000;
+  --color-link-hover: #1d4ed8;
   --color-teal-action: #6b6f7b;
   --color-nav-pill: #1a1a1a;
   --color-nav-pill-fg: #ffffff;
@@ -57,37 +61,40 @@
   --shadow-card-hover: 0 14px 44px rgba(26, 26, 26, 0.1), 0 4px 12px rgba(26, 26, 26, 0.05);
   --shadow-nav: 0 12px 40px rgba(26, 26, 26, 0.28), 0 4px 12px rgba(26, 26, 26, 0.12);
   --shadow-glow: none;
-  --shadow-boutique: 0 6px 20px rgba(26, 26, 26, 0.16), 0 2px 6px rgba(26, 26, 26, 0.08);
+  --shadow-boutique: 0 6px 20px rgba(37, 99, 235, 0.22), 0 2px 6px rgba(37, 99, 235, 0.12);
   --shadow-inner-glow: none;
   --shadow-soft: 0 4px 18px rgba(26, 26, 26, 0.07), 0 1px 3px rgba(26, 26, 26, 0.04);
 
   --bg-vignette: none;
   --bg-noise-opacity: 0;
-  --selection-bg: rgba(26, 26, 26, 0.12);
+  --selection-bg: rgba(37, 99, 235, 0.14);
 }
 
-/* ——— Soft warm neutrals (ביניים) ——— */
+/* ——— Soft warm neutrals (ביניים) — surfaces warm, accent still royal blue ——— */
 .dim {
   color-scheme: light;
 
-  --primary-rgb: 28 24 22;
-  --primary-fixed-rgb: 244 240 235;
+  --primary-rgb: 37 99 235;
+  --primary-fixed-rgb: 239 246 255;
   --inbox-rgb: 140 132 126;
   --inbox-soft-rgb: 244 240 235;
   --error-rgb: 185 28 28;
   --error-container-rgb: 254 226 226;
-  --accent-rgb: 120 110 102;
-  --accent-soft-rgb: 244 240 235;
+  --accent-rgb: 37 99 235;
+  --accent-soft-rgb: 239 246 255;
   --surface-subtle-rgb: 244 240 235;
   --surface-rgb: 244 240 235;
   --surface-container-low-rgb: 255 252 248;
   --surface-container-lowest-rgb: 255 252 248;
 
-  --color-primary-deep: #140f0c;
-  --color-on-primary: #fffdf9;
-  --color-primary-container: #1c1816;
-  --color-on-primary-container: #fffdf9;
-  --color-primary-fixed-dim: #9a9088;
+  --color-primary: #2563eb;
+  --color-primary-deep: #1d4ed8;
+  --color-primary-soft: #eff6ff;
+  --color-primary-ring: #93c5fd;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #eff6ff;
+  --color-on-primary-container: #2563eb;
+  --color-primary-fixed-dim: #93c5fd;
   --color-background: #f4f0eb;
   --color-on-background: #1c1816;
   --color-surface: #f4f0eb;
@@ -105,9 +112,9 @@
   --color-tertiary-container: #1c1816;
   --color-success-vibrant: #15803d;
   --color-on-error-container: #991b1b;
-  --color-glow: #1c1816;
+  --color-glow: #2563eb;
   --color-gold-text: #ffc107;
-  --color-link-hover: #140f0c;
+  --color-link-hover: #1d4ed8;
   --color-teal-action: #6f655e;
   --color-nav-pill: #1c1816;
   --color-nav-pill-fg: #fffdf9;
@@ -116,37 +123,40 @@
   --shadow-card-hover: 0 14px 44px rgba(28, 24, 22, 0.11), 0 4px 12px rgba(28, 24, 22, 0.05);
   --shadow-nav: 0 12px 40px rgba(28, 24, 22, 0.28), 0 4px 12px rgba(28, 24, 22, 0.12);
   --shadow-glow: none;
-  --shadow-boutique: 0 6px 20px rgba(28, 24, 22, 0.16), 0 2px 6px rgba(28, 24, 22, 0.08);
+  --shadow-boutique: 0 6px 20px rgba(37, 99, 235, 0.2), 0 2px 6px rgba(37, 99, 235, 0.1);
   --shadow-inner-glow: none;
   --shadow-soft: 0 4px 18px rgba(28, 24, 22, 0.08), 0 1px 3px rgba(28, 24, 22, 0.04);
 
   --bg-vignette: none;
   --bg-noise-opacity: 0;
-  --selection-bg: rgba(28, 24, 22, 0.14);
+  --selection-bg: rgba(37, 99, 235, 0.16);
 }
 
-/* ——— Boutique dark ——— */
+/* ——— Boutique dark — surfaces dark, royal-blue accent ——— */
 .dark {
   color-scheme: dark;
 
-  --primary-rgb: 255 255 255;
-  --primary-fixed-rgb: 32 33 38;
+  --primary-rgb: 37 99 235;
+  --primary-fixed-rgb: 30 58 138;
   --inbox-rgb: 156 160 171;
   --inbox-soft-rgb: 32 33 38;
   --error-rgb: 248 113 113;
   --error-container-rgb: 69 30 30;
-  --accent-rgb: 156 160 171;
-  --accent-soft-rgb: 32 33 38;
+  --accent-rgb: 37 99 235;
+  --accent-soft-rgb: 30 58 138;
   --surface-subtle-rgb: 18 18 20;
   --surface-rgb: 18 18 20;
   --surface-container-low-rgb: 28 29 34;
   --surface-container-lowest-rgb: 32 33 38;
 
-  --color-primary-deep: #ffffff;
-  --color-on-primary: #1a1a1a;
-  --color-primary-container: #ffffff;
-  --color-on-primary-container: #1a1a1a;
-  --color-primary-fixed-dim: #8e9099;
+  --color-primary: #2563eb;
+  --color-primary-deep: #1d4ed8;
+  --color-primary-soft: #172554;
+  --color-primary-ring: #93c5fd;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #172554;
+  --color-on-primary-container: #93c5fd;
+  --color-primary-fixed-dim: #60a5fa;
   --color-background: #121214;
   --color-on-background: #f5f6fa;
   --color-surface: #121214;
@@ -164,9 +174,9 @@
   --color-tertiary-container: #f5f6fa;
   --color-success-vibrant: #4ade80;
   --color-on-error-container: #fca5a5;
-  --color-glow: #ffffff;
+  --color-glow: #2563eb;
   --color-gold-text: #ffc107;
-  --color-link-hover: #ffffff;
+  --color-link-hover: #93c5fd;
   --color-teal-action: #9ca0ab;
   --color-nav-pill: #1a1a1a;
   --color-nav-pill-fg: #ffffff;
@@ -175,13 +185,13 @@
   --shadow-card-hover: 0 14px 44px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-nav: 0 12px 40px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-glow: none;
-  --shadow-boutique: 0 6px 20px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-boutique: 0 6px 20px rgba(37, 99, 235, 0.35), 0 2px 6px rgba(37, 99, 235, 0.2);
   --shadow-inner-glow: none;
   --shadow-soft: 0 4px 18px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
 
   --bg-vignette: none;
   --bg-noise-opacity: 0;
-  --selection-bg: rgba(255, 255, 255, 0.16);
+  --selection-bg: rgba(37, 99, 235, 0.28);
 }
 
 @layer base {
@@ -290,6 +300,13 @@
   .boutique-input {
     @apply h-12 w-full rounded-[1.25rem] border border-border-light bg-surface-container-lowest px-5 text-base text-on-surface transition-all placeholder:text-outline-variant focus:border-primary focus:outline-none;
     box-shadow: var(--shadow-soft);
+  }
+
+  .boutique-input:focus {
+    border-color: var(--color-primary);
+    box-shadow:
+      var(--shadow-soft),
+      0 0 0 3px color-mix(in srgb, var(--color-primary-ring) 55%, transparent);
   }
 
   textarea.boutique-input {
